@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--服务器类型映射表-->
+<root>
+	<db>					<!--数据库服务器-->
+		<service>H2memDB</service>
+	</db>				
+	<gis>					<!--gis服务器-->
+		<app>Remote</app>
+		<app>RemoteRest</app>
+		<app>RemoteServices</app>
+		<app>WMTS</app>
+		<app>LogServer</app>
+		<app>arcgis_js_api</app>
+		<app>SysRestServices</app>
+	</gis>				
+	<main>				<!--运维服务器-->
+		<app>GeoShareManager</app>
+		<app>BufferAnalyst</app>
+		<app>GeoCoding</app>
+		<app>GeoPortal</app>
+		<app>FileServices</app>
+		<app>ServiceAggregatorServer</app>
+		<app>ShareExchange</app>
+		<app>TileServices</app>
+		<app>dojoweb</app>
+	</main>			
+	<agent>			<!--监控代理服务器-->
+		<service>GeoShareMonitorAgent</service>
+	</agent>			
+	<msg>				<!--消息服务器-->
+		<service>ActiveMQ</service>
+	</msg>				
+	<token>				<!--token服务器-->
+		<app>RemoteTokenServer</app>
+	</token>			
+	<web>				<!--web服务器-->
+		<app>Portal</app>
+		<app>arcgis_js_api</app>
+		<app>application</app>
+		<app>userfiles</app>
+		<app>dojoweb</app>
+	</web>				
+</root>
