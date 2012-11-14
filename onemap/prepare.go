@@ -14,7 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
-  "path/filepath"
+	"path/filepath"
 	"strings"
 )
 
@@ -54,6 +54,44 @@ func Exists(path string) bool {
 	return false
 }
 
+// Copy file or dirctory
+func Copy(srcfile string, dstfile string) error {
+	// first check the srcfile whether exist
+	fi, serr := os.Stat(srcfile)
+	if os.IsNotExist(serr) {
+		//fmt.Printf("ERROR: Source file(%s) isn't existed!\n", srcfile)
+		return os.ErrNotExist
+	}
+
+	// check dstfile's parent path whether existed
+	dir := filepath.Dir(dstfile)
+	_, derr := os.Stat(dir)
+	if os.IsNotExist(derr) {
+		//fmt.Printf("WARN: Destination path(%s) isn't existed and then create it!\n", dstfile)
+
+		if serr = os.MkdirAll(dir, 0755); serr != nil {
+			//fmt.Printf("ERROR: Make base directory(%s) failed!\n", dir)
+			return serr
+		}
+	}
+
+	// check the srcfile is file or directory
+	if fi.IsDir() {
+		cmd := exec.Command("cp", "-r", srcfile, dstfile)
+		serr = cmd.Run()
+	} else {
+		cmd := exec.Command("cp", srcfile, dstfile)
+		serr = cmd.Run()
+	}
+	// exec the copy comand
+	if serr != nil {
+		//fmt.Println("ERROR: Exec the cmdline failed!")
+		return serr
+	}
+
+	return nil
+}
+
 // copy OneMap modules from source directory to destination directory
 // update: Add input params src and dst for common session. And 
 //         not copy public part when copied. [zuow, 2012/11/08]
@@ -91,85 +129,88 @@ func (om *OMPInfo) OMCopy(src string, dst string) int {
 	// copy public
 	var cmdline string
 	if (Exists(dst + "/arcgis")) != true {
-		cmdline = "cp -r " + src + "/arcgis/ " + dst
+		if err := Copy(src+"/arcgis", dst); err != nil {
+			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/arcgis")
+			return 2
+		}
+		//		cmdline = "cp -r " + src + "/arcgis/ " + dst
 	}
 	if (Exists(dst + "/bin")) != true {
-		if cmdline != "" {
-			cmdline = cmdline + ";"
+		//cmdline = cmdline + "cp -r " + src + "/bin " + dst
+		if err := Copy(src+"/bin", dst); err != nil {
+			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/bin")
+			return 2
 		}
-		cmdline = cmdline + "cp -r " + src + "/bin " + dst
 	}
 	if (Exists(dst + "/config")) != true {
-		if cmdline != "" {
-			cmdline = cmdline + ";"
+		//cmdline = cmdline + "cp -r " + src + "/config " + dst
+		if err := Copy(src+"/config", dst); err != nil {
+			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/config")
+			return 2
 		}
-		cmdline = cmdline + "cp -r " + src + "/config " + dst
 	}
 	if (Exists(dst + "/java")) != true {
-		if cmdline != "" {
-			cmdline = cmdline + ";"
+		//cmdline = cmdline + "cp -r " + src + "/java " + dst
+		if err := Copy(src+"/java", dst); err != nil {
+			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/java")
+			return 2
 		}
-		cmdline = cmdline + "cp -r " + src + "/java " + dst
 	}
 	if (Exists(dst + "/temp")) != true {
-		if cmdline != "" {
-			cmdline = cmdline + ";"
+		//cmdline = cmdline + "cp -r " + src + "/temp " + dst
+		if err := Copy(src+"/temp", dst); err != nil {
+			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/temp")
+			return 2
 		}
-		cmdline = cmdline + "cp -r " + src + "/temp " + dst
-	}
-
-	cmd := exec.Command(cmdline)
-	err := cmd.Run()
-	if err != nil {
-		fmt.Println("ERROR: Copy OneMap public part failed!")
-		return 2
 	}
 
 	// copy modules
 	if len(om.Apps) > 0 {
 		// copy web container
-		cmdline = "cp -r " + src + "/" + om.Container + " " + dst
-		cmd = exec.Command(cmdline)
-		err = cmd.Run()
-		if err != nil {
+		if err := Copy(src+"/"+om.Container, dst); err != nil {
 			fmt.Printf("ERROR: Copy OneMap web container %s failed!\n", om.Container)
 			return 2
 		}
 
 		for i := 0; i < len(om.Apps); i++ {
-			cmdline = "cp -r " + src + "/" + om.Container + "/webapps/" + om.Apps[i] + " " + dst + "/" + om.Container + "/webapps"
+			//cmdline = "cp -r " + src + "/" + om.Container + "/webapps/" + om.Apps[i] + " " + dst + "/" + om.Container + "/webapps"
+			if err = Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
+				fmt.Printf("ERROR: Copy module %s failed!\n", om.Apps[i])
+				return 2
+			}
 
 			switch om.Apps[i] {
 			case "H2memDB":
-				cmdline = cmdline + "; cp -r " + src + "/db " + dst
+				//cmdline = cmdline + "; cp -r " + src + "/db " + dst
+				if err = Copy(src+"/db", dst); err != nil {
+					fmt.Println("ERROR: Copy db directory failed!")
+					return 2
+				}
 			case "GeoShareManager":
-				cmdline = cmdline + "; cp -r " + src + "/example_data " + dst
-			}
-
-			cmd = exec.Command(cmdline)
-			err = cmd.Run()
-			if err != nil {
-				fmt.Printf("WARN: Copy OneMap %s module failed!\n", om.Apps[i])
+				//cmdline = cmdline + "; cp -r " + src + "/example_data " + dst
+				if err = Copy(src+"/example_data", dst); err != nil {
+					fmt.Println("ERROR: Copy example data directory failed!")
+					return 2
+				}
 			}
 		}
 	}
 
 	// copy services  
 	if len(om.Services) > 0 {
-		// create services directory
-		if err = os.Mkdir(ONEMAP_NAME+"/services", 0755); err != nil {
-			fmt.Println("ERROR: Create services directory failed!")
-			return 3
-		}
-
 		for i := 0; i < len(om.Services); i++ {
-			cmdline = "cp -r " + ONEMAP_NAME + om.Version + "/services/" + om.Services[i] + " " + ONEMAP_NAME + "/services"
+			//cmdline = "cp -r " + ONEMAP_NAME + om.Version + "/services/" + om.Services[i] + " " + ONEMAP_NAME + "/services"
 
-			cmd = exec.Command(cmdline)
-			err = cmd.Run()
-			if err != nil {
-				fmt.Printf("ERROR: Copy OneMap %s module failed!\n", om.Services[i])
-				return 3
+			//cmd = exec.Command(cmdline)
+			//err = cmd.Run()
+			//if err != nil {
+			//fmt.Printf("ERROR: Copy OneMap %s module failed!\n", om.Services[i])
+			//return 3
+			//}
+
+			if err := Copy(src+"/services/"+om.Services[i], dst+"/services/"+om.Services[i]); err != nil {
+				fmt.Printf("ERROR: Copy OneMap service %s failed!\n", om.Services[i])
+				return 2
 			}
 		}
 	}
