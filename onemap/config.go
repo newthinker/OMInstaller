@@ -3,11 +3,11 @@ package onemap
 import (
 	"encoding/xml"
 	"fmt"
-
-//  "errors"
+	"io/ioutil"
+	"os"
 )
 
-/////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 // SysMapping struct
 type ServerMapping struct {
 	XMLName     xml.Name `xml:"root"`
@@ -54,7 +54,7 @@ func (s *Server) GetCurrentValue(mdlname string) (name string, e error) {
 }
 */
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 // SysInfo struct
 type SysInfo struct {
 	XMLName     xml.Name      `xml:"root"`
@@ -107,12 +107,13 @@ func (sm *SysInfo) AddMachineInfo(os string,
 	sm.Machines = append(sm.Machines, newm)
 }
 
-/////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 // SysConfig struct
 type SysConfig struct {
 	XMLName    xml.Name `xml:"root"`
 	OneMapHome string   `xml:"OneMapHome,attr"`
-	LayOut     Layout   `xml:",any"`
+	LayOut     Layout   `xml:""`
+	FileMap    Filemap  `xml:""`
 }
 
 type Layout struct {
@@ -120,11 +121,51 @@ type Layout struct {
 	Servers []ServerInfo `xml:",any"`
 }
 
+type Filemap struct {
+	XMLName    xml.Name    `xml:"FileMapping"`
+	Containers []Container `xml:",any"`
+}
+
+type Container struct {
+	XMLName xml.Name    `xml:""`
+	Path    string      `xml:"path,attr"`
+	Modules []ModuleMap `xml:",any"`
+}
+
+type ModuleMap struct {
+	XMLName    xml.Name    `xml:""`
+	ServersMap []ServerMap `xml:",any"`
+}
+
+/// 目前只解析到服务器类型这一层 
+type ServerMap struct {
+	XMLName xml.Name `xml:""`
+}
+
 func (lo *Layout) AddServerInfo(srvtype string, attrarray []AttrInfo) {
 	news := ServerInfo{}
 	news.XMLName.Local = srvtype
 	news.Attrs = attrarray
 	lo.Servers = append(lo.Servers, news)
+}
+
+func (mm *ModuleMap) AddServerMap(srvname string) {
+	newm := ServerMap{}
+	newm.XMLName.Local = srvname
+	mm.ServersMap = append(mm.ServersMap, newm)
+}
+
+func (c *Container) AddModuleMap(mdlname string, arrServers []ServerMap) {
+	newm := ModuleMap{}
+	newm.XMLName.Local = mdlname
+	c.Modules = append(c.Modules, newm)
+}
+
+func (fm *Filemap) AddContainer(conname string, conpath string, arrmodule []ModuleMap) {
+	newc := Container{Path: conpath}
+	newc.XMLName.Local = conname
+	newc.Modules = arrmodule
+	fm.Containers = append(fm.Containers, newc)
 }
 
 ////////////////////////////////////////////////////////
@@ -213,7 +254,7 @@ func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) int {
 
 /*///////////////////////////////////////////////////////
 func main() {
-	file, err := os.Open("SrvMapping.xml")
+	file, err := os.Open("../conf/SrvMapping.xml")
 	defer file.Close()
 	if err != nil {
 		fmt.Printf("error: %v", err)
@@ -238,7 +279,7 @@ func main() {
 	}
 
 	fmt.Println("-------------------------------------")
-	file, err = os.Open("SysInfo.xml")
+	file, err = os.Open("../conf/SysInfo.xml")
 	defer file.Close()
 	if err != nil {
 		fmt.Printf("error: %v", err)
@@ -263,7 +304,7 @@ func main() {
 
 	fmt.Println("-------------------------------------")
 	fmt.Println("SysConfig's info:")
-	file, err = os.Open("SysConfig.xml")
+	file, err = os.Open("../conf/SysConfig.xml")
 	defer file.Close()
 	if err != nil {
 		fmt.Printf("error: %v", err)
@@ -285,5 +326,9 @@ func main() {
 	for i := 0; i < len(sc.LayOut.Servers); i++ {
 		fmt.Printf("The %d Server is:%s\n", i+1, sc.LayOut.Servers[i])
 	}
+
+	fmt.Println("-------------------------------------")
+	fmt.Printf("The FileMap is:%s\n", sc.FileMap)
+
 }
 */

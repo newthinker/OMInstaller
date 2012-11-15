@@ -517,3 +517,80 @@ func (om *OMPInfo) OMRemoteExec(rcmd string) int {
 
 	return 0
 }
+
+// search the input server params
+func (om *OMPInfo) OMInputParams(sc *SysConfig) []string {
+	var srvlist = []string{} // save the input server type
+
+	// first check whether install any app or service
+	if len(om.Apps) < 1 && len(om.Services) < 1 {
+		fmt.Println("WARN: No installed modules!")
+		return srvlist
+	}
+
+	// get the relative server type 
+	// first the apps
+	for i := range om.Apps {
+		mdlname := om.Apps[i]
+
+		for j := range sc.FileMap.Containers {
+			var container *Container = &(sc.FileMap.Containers[j])
+			conname := strings.ToUpper(container.XMLName.Local)
+			if conname == strings.ToUpper(TOMCAT) || conname == strings(WEBLOGIC) {
+				for k := range container.Modules {
+					var module *ModuleMap = container.Modules[k]
+
+					for l := range module.ServersMap {
+						var srvname = module.ServersMap[l].XMLName.Local
+
+						var flag bool = true
+
+						for m := range srvlist {
+							if srvname == srvlist[m] {
+								flag = false
+								break
+							}
+						}
+
+						if flag { // remove the repeat server type
+							srvlist = append(srvlist, srvname)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for i := range om.Services {
+		srvname := om.Services[i]
+
+		for j := range sc.FileMap.Containers {
+			var container *Container = &(sc.FileMap.Containers[j])
+			conname := strings.ToUpper(container.XMLName.Local)
+			if conname == strings.ToUpper("SERVICES") {
+				for k := range container.Modules {
+					var module *ModuleMap = container.Modules[k]
+
+					for l := range module.ServersMap {
+						var srvname = module.ServersMap[l].XMLName.Local
+
+						var flag bool = true
+
+						for m := range srvlist {
+							if srvname == srvlist[m] {
+								flag = false
+								break
+							}
+						}
+
+						if flag { // remove the repeat server type
+							srvlist = append(srvlist, srvname)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return srvlist
+}
