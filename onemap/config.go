@@ -3,8 +3,6 @@ package onemap
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
-	"os"
 )
 
 ///////////////////////////////////////////////////////

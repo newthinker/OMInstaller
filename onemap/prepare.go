@@ -36,6 +36,7 @@ type OMPInfo struct {
 	Ip        string   // 目标机器ip地址
 	User      string   // 目标机器系统登录用户名
 	Pwd       string   // 目标机器系统登录密码
+	Basedir   string   // 当前安装包根目录
 	Apps      []string // OneMap应用模块
 	Services  []string // OneMap服务
 	Servers   []string // OneMap server types	
@@ -127,7 +128,7 @@ func (om *OMPInfo) OMCopy(src string, dst string) int {
 	}
 
 	// copy public
-	var cmdline string
+	//var cmdline string
 	if (Exists(dst + "/arcgis")) != true {
 		if err := Copy(src+"/arcgis", dst); err != nil {
 			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/arcgis")
@@ -174,7 +175,7 @@ func (om *OMPInfo) OMCopy(src string, dst string) int {
 
 		for i := 0; i < len(om.Apps); i++ {
 			//cmdline = "cp -r " + src + "/" + om.Container + "/webapps/" + om.Apps[i] + " " + dst + "/" + om.Container + "/webapps"
-			if err = Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
+			if err := Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
 				fmt.Printf("ERROR: Copy module %s failed!\n", om.Apps[i])
 				return 2
 			}
@@ -182,13 +183,13 @@ func (om *OMPInfo) OMCopy(src string, dst string) int {
 			switch om.Apps[i] {
 			case "H2memDB":
 				//cmdline = cmdline + "; cp -r " + src + "/db " + dst
-				if err = Copy(src+"/db", dst); err != nil {
+				if err := Copy(src+"/db", dst); err != nil {
 					fmt.Println("ERROR: Copy db directory failed!")
 					return 2
 				}
 			case "GeoShareManager":
 				//cmdline = cmdline + "; cp -r " + src + "/example_data " + dst
-				if err = Copy(src+"/example_data", dst); err != nil {
+				if err := Copy(src+"/example_data", dst); err != nil {
 					fmt.Println("ERROR: Copy example data directory failed!")
 					return 2
 				}
@@ -285,14 +286,19 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) int {
 		fmt.Println("ERROR: Get machine's intput param(pwd) is invalid!")
 		return 2
 	}
-	// get the version
-	ret := om.OMGetVersion(".")
+	//	// get the version
+	//	var curdir string = "./"
+	//	var err error
+	//	if curdir, err = filepath.Abs("./"); err != nil || curdir == "" {
+	//		return 2
+	//	}
+	ret, filename := om.OMGetVersion(om.Basedir)
 	if ret != 0 {
 		fmt.Println("ERROR: Get OneMap version failed!")
 		return 2
 	}
 	// get the container
-	ret = om.OMGetContainer(".")
+	ret = om.OMGetContainer(om.Basedir, filename)
 	if ret != 0 {
 		fmt.Println("ERROR: Get OneMap container failed!")
 		return 2
@@ -311,7 +317,7 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) int {
 
 			if srvtype == srv.XMLName.Local {
 				for k := 0; k < len(srv.ModuleList); k++ {
-					var mdl *Module = &(srv.ModuleList[k])
+					var mdl Module = srv.ModuleList[k]
 					if mdl.XMLName.Local == "app" {
 						om.Apps = append(om.Apps, mdl.ModuleName)
 					} else if mdl.XMLName.Local == "srv" {
@@ -379,22 +385,22 @@ func getSubDir(path string) ([]string, error) {
 }
 
 // get onemap's version
-func (om *OMPInfo) OMGetVersion(basedir string) int {
+func (om *OMPInfo) OMGetVersion(basedir string) (int, string) {
 	if flag := Exists(basedir); flag != true {
 		fmt.Printf("ERROR: Input directory(%s) isn't existed!\n", basedir)
-		return 1
+		return 1, ""
 	}
 
 	// get all sub directory name and search the onemap package directory
 	subpath, err := getSubDir(basedir)
 	if err != nil {
 		fmt.Printf("ERROR: Get all the sub directory failed!\n", basedir)
-		return 2
+		return 2, ""
 	}
 
 	var base string // the onemap package directory
 	for i := range subpath {
-		var filename string = path.Base(subpath[i]) // get the base filename
+		filename := path.Base(subpath[i]) // get the base filename
 		filename = strings.ToUpper(filename)
 		if strings.Index(filename, strings.ToUpper(ONEMAP_NAME)) < 0 {
 			continue
@@ -409,7 +415,7 @@ func (om *OMPInfo) OMGetVersion(basedir string) int {
 	// get the file/path name
 	if base == "" {
 		fmt.Println("ERROR: Invalid OneMap package!")
-		return 3
+		return 3, ""
 	}
 
 	// parse the path name and get the version
@@ -417,21 +423,21 @@ func (om *OMPInfo) OMGetVersion(basedir string) int {
 	om.Version = arr[len(arr)-1]
 	if om.Version == "" {
 		fmt.Printf("ERROR: Invalid package name(%s) and have no version information!\n", base)
-		return 4
+		return 4, ""
 	}
 
-	return 0
+	return 0, base
 }
 
 // get web container's name
-func (om *OMPInfo) OMGetContainer(basedir string) int {
-	if flag := Exists(basedir); flag != true {
+func (om *OMPInfo) OMGetContainer(basedir string, subdirname string) int {
+	if flag := Exists(basedir + "/" + subdirname); flag != true {
 		fmt.Printf("ERROR: Input directory(%s) isn't existed!\n", basedir)
 		return 1
 	}
 
 	// get all sub directory name and search the onemap package directory
-	subpath, err := getSubDir(basedir)
+	subpath, err := getSubDir(basedir + "/" + subdirname)
 	if err != nil {
 		fmt.Printf("ERROR: Get all the sub directory failed!\n", basedir)
 		return 2
@@ -439,11 +445,16 @@ func (om *OMPInfo) OMGetContainer(basedir string) int {
 
 	var base string // the onemap package directory
 	for i := range subpath {
-		var filename string = path.Base(subpath[i]) // get the base filename
-		filename = strings.ToUpper(filename)
-		if (strings.Index(filename, strings.ToUpper(TOMCAT)) < 0) && (strings.Index(filename, strings.ToUpper(WEBLOGIC)) < 0) {
+		base = path.Base(subpath[i]) // get the base filename
+		if ((strings.Index(strings.ToUpper(base), strings.ToUpper(TOMCAT))) >= 0) ||
+			((strings.Index(strings.ToUpper(base), strings.ToUpper(WEBLOGIC))) > 0) {
+			break
+		} else {
 			continue
 		}
+
+		fmt.Println("ERROR: Get container's path failed!")
+		return 3
 	}
 
 	// get the file/path name
@@ -461,8 +472,7 @@ func (om *OMPInfo) OMGetContainer(basedir string) int {
 // remote copy the OneMap package
 func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) int {
 	// check whether installed sshpass package
-	cmdline := "sshpass -V"
-	cmd := exec.Command(cmdline)
+	cmd := exec.Command("sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("ERROR: sshpass isn't installed!")
@@ -476,14 +486,15 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) int {
 	}
 	fi, _ := os.Stat(srcdir)
 	if fi.IsDir() {
-		cmdline = "sshpass -p " + om.Pwd + " scp -r " + srcdir + om.User + "@" + om.Ip + ":" + dstdir
+		//		cmdline = "sshpass -p " + om.Pwd + " scp -r " + srcdir + om.User + "@" + om.Ip + ":" + dstdir
+		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.User+"@"+om.Ip+":"+dstdir)
 	} else {
-		cmdline = "sshpass -p " + om.Pwd + " scp " + srcdir + om.User + "@" + om.Ip + ":" + dstdir
+		//cmdline = "sshpass -p " + om.Pwd + " scp " + srcdir + om.User + "@" + om.Ip + ":" + dstdir
+		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", srcdir, om.User+"@"+om.Ip+":"+dstdir)
 	}
-	cmd = exec.Command(cmdline)
 	err = cmd.Run()
 	if err != nil {
-		fmt.Printf("ERROR: Exec remote copy command(%s) failed!\n", cmdline)
+		fmt.Println("ERROR: Exec remote copy command failed!")
 		return 3
 	}
 
@@ -499,19 +510,19 @@ func (om *OMPInfo) OMRemoteExec(rcmd string) int {
 	}
 
 	// check whether installed sshpass package
-	cmdline := "sshpass -V"
-	cmd := exec.Command(cmdline)
+	cmd := exec.Command("sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("ERROR: sshpass isn't installed!")
 		return 2
 	}
 
-	cmdline = "sshpass -p " + om.Pwd + " ssh " + om.User + "@" + om.Ip + " " + rcmd
-	cmd = exec.Command(cmdline)
+	//cmdline = "sshpass -p " + om.Pwd + " ssh " + om.User + "@" + om.Ip + " " + rcmd
+	cmd = exec.Command("sshpass", "-p", om.Pwd, "ssh", om.User+"@"+om.Ip, rcmd)
 	err = cmd.Run()
 	if err != nil {
-		fmt.Printf("ERROR: Exec remote command(%s) failed!", cmdline)
+		fmt.Printf("ERROR: Exec remote command(%s) failed!",
+			"sshpass -p "+om.Pwd+" ssh "+om.User+"@"+om.Ip+" "+rcmd)
 		return 3
 	}
 
@@ -536,24 +547,26 @@ func (om *OMPInfo) OMInputParams(sc *SysConfig) []string {
 		for j := range sc.FileMap.Containers {
 			var container *Container = &(sc.FileMap.Containers[j])
 			conname := strings.ToUpper(container.XMLName.Local)
-			if conname == strings.ToUpper(TOMCAT) || conname == strings(WEBLOGIC) {
+			if conname == strings.ToUpper(TOMCAT) || conname == strings.ToUpper(WEBLOGIC) {
 				for k := range container.Modules {
-					var module *ModuleMap = container.Modules[k]
+					var module *ModuleMap = &(container.Modules[k])
 
-					for l := range module.ServersMap {
-						var srvname = module.ServersMap[l].XMLName.Local
+					if mdlname == module.XMLName.Local {
+						for l := range module.ServersMap {
+							var srvname = module.ServersMap[l].XMLName.Local
 
-						var flag bool = true
+							var flag bool = true
 
-						for m := range srvlist {
-							if srvname == srvlist[m] {
-								flag = false
-								break
+							for m := range srvlist {
+								if srvname == srvlist[m] {
+									flag = false
+									break
+								}
 							}
-						}
 
-						if flag { // remove the repeat server type
-							srvlist = append(srvlist, srvname)
+							if flag { // remove the repeat server type
+								srvlist = append(srvlist, srvname)
+							}
 						}
 					}
 				}
@@ -569,22 +582,24 @@ func (om *OMPInfo) OMInputParams(sc *SysConfig) []string {
 			conname := strings.ToUpper(container.XMLName.Local)
 			if conname == strings.ToUpper("SERVICES") {
 				for k := range container.Modules {
-					var module *ModuleMap = container.Modules[k]
+					var module *ModuleMap = &(container.Modules[k])
 
-					for l := range module.ServersMap {
-						var srvname = module.ServersMap[l].XMLName.Local
+					if srvname == module.XMLName.Local {
+						for l := range module.ServersMap {
+							var srvname = module.ServersMap[l].XMLName.Local
 
-						var flag bool = true
+							var flag bool = true
 
-						for m := range srvlist {
-							if srvname == srvlist[m] {
-								flag = false
-								break
+							for m := range srvlist {
+								if srvname == srvlist[m] {
+									flag = false
+									break
+								}
 							}
-						}
 
-						if flag { // remove the repeat server type
-							srvlist = append(srvlist, srvname)
+							if flag { // remove the repeat server type
+								srvlist = append(srvlist, srvname)
+							}
 						}
 					}
 				}

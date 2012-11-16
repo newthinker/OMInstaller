@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
-  "os"
-  "io/ioutil"
-  "encoding/xml"
 	"github.com/newthinker/onemap-installer/onemap"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 var sm onemap.ServerMapping
@@ -15,7 +16,7 @@ var sc onemap.SysConfig
 // open the config files
 func openconfigs(basedir string) int {
 	// check the base dir whether existed
-  if flag := onemap.Exists(basedir); flag != true {
+	if flag := onemap.Exists(basedir); flag != true {
 		fmt.Printf("ERROR: The input directory(%s) isn't existed!\n", basedir)
 		return 1
 	}
@@ -30,7 +31,7 @@ func openconfigs(basedir string) int {
 		fmt.Printf("Read SrvMapping config file failed: %v\n", err)
 		return 2
 	}
-	if err:=xml.Unmarshal([]byte(data), &sm); err!=nil {
+	if err := xml.Unmarshal([]byte(data), &sm); err != nil {
 		fmt.Printf("Parse SrvMapping config file failed: %v\n", err)
 		return 3
 	}
@@ -65,23 +66,30 @@ func openconfigs(basedir string) int {
 		return 3
 	}
 
-  return 0
+	return 0
 }
 
 func main() {
-//	var curdir string // current working directory
+	//	var curdir string // current working directory
 
 	/// start web service and get the input params into configs
 
 	// parse the configs
-	basedir := "./"
+	var basedir string
+	var err error
+	if basedir, err = filepath.Abs("./"); err != nil || basedir == "" {
+		fmt.Println("ERROR: Current directory is invalid!")
+		return
+	}
+	fmt.Printf("MSG: Current working dirctory is: %s\n", basedir)
+
 	if ret := openconfigs(basedir); ret != 0 {
 		fmt.Println("ERROR: Open and parse configs failed and exit!")
 		return
 	}
 
 	// update the params except monitoragent module
-	ret:=onemap.UpdateConfig(&si, &sc)
+	ret := onemap.UpdateConfig(&si, &sc)
 	if ret != 0 {
 		fmt.Println("ERROR: Update system config failed!")
 		return
@@ -89,7 +97,9 @@ func main() {
 
 	// package the OneMap installer package
 	for i := 0; i < len(si.Machines); i++ {
-    var om onemap.OMPInfo
+		var om onemap.OMPInfo
+		om.Basedir = basedir
+
 		// get the info of the current machine
 		var mi *(onemap.MachineInfo) = &(si.Machines[i])
 		ret = om.OMGetInfo(mi, &sm)
@@ -100,7 +110,7 @@ func main() {
 
 		// package the onemap
 		// create the onemap directory first
-    dstdir := basedir + onemap.ONEMAP_NAME
+		dstdir := basedir + "/" + onemap.ONEMAP_NAME
 		if flag := onemap.Exists(dstdir); flag != true { // create the onemap directory first
 			fmt.Println("WARN: OneMap directory isn't existed!")
 			if err := os.Mkdir(dstdir, 0755); err != nil {
@@ -108,7 +118,7 @@ func main() {
 				return
 			}
 		}
-		srcdir := "./" + onemap.ONEMAP_NAME + om.Version
+		srcdir := om.Basedir + "/" + onemap.ONEMAP_NAME + "_Linux_" + om.Version
 		ret = om.OMCopy(srcdir, dstdir)
 		if ret != 0 {
 			fmt.Println("ERROR: Package onemap failed!")
@@ -123,8 +133,13 @@ func main() {
 		}
 
 		// remote copy OneMap package
-		srcdir = basedir + onemap.ONEMAP_NAME
+		srcdir = om.Basedir + "/" + onemap.ONEMAP_NAME
 		dstdir = om.OMHome
+		///////////////////test//////////////////////////
+		om.Ip = "192.168.80.60"
+		om.User = "root"
+		om.Pwd = "dasiyebushuo"
+		/////////////////////////////////////////////////
 		ret = om.OMRemoteCopy(srcdir, dstdir)
 
 		// remote exec the install bash script
