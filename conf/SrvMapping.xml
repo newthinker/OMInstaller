@@ -2,7 +2,7 @@
 <!--服务器类型映射表-->
 <root>
 	<db>					<!--数据库服务器-->
-		<service>H2memDB</service>
+		<srv>H2CommonMemDB</srv>
 	</db>				
 	<gis>					<!--gis服务器-->
 		<app>Remote</app>
@@ -25,10 +25,10 @@
 		<app>dojoweb</app>
 	</main>			
 	<agent>			<!--监控代理服务器-->
-		<service>GeoShareMonitorAgent</service>
+		<srv>GeoShareMonitorAgent</srv>
 	</agent>			
 	<msg>				<!--消息服务器-->
-		<service>ActiveMQ</service>
+		<srv>activemq5.4.1</srv>
 	</msg>				
 	<token>				<!--token服务器-->
 		<app>RemoteTokenServer</app>
