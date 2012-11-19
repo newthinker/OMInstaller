@@ -2,7 +2,9 @@ package onemap
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
+	"strconv"
 )
 
 ///////////////////////////////////////////////////////
@@ -168,7 +170,7 @@ func (fm *Filemap) AddContainer(conname string, conpath string, arrmodule []Modu
 
 ////////////////////////////////////////////////////////
 // update SysConfig.xml file except MonitorAgent module
-func UpdateConfig(si *SysInfo, sc *SysConfig) int {
+func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 	flag := make(map[string]bool) // flag of whether update
 	// initialize
 	for i := 0; i < len(sc.LayOut.Servers); i++ {
@@ -212,15 +214,16 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) int {
 		}
 	}
 	if num > 0 && nomodules != "" {
-		fmt.Printf("WARN: There are %d modules(%s) not updated!", num, nomodules)
-		return 1
+		msg := "WARN: There are " + strconv.Itoa(num) + " modules(" + nomodules + ") not updated!"
+		fmt.Println(msg)
+		return errors.New(msg)
 	}
 
-	return 0
+	return nil
 }
 
 // update SysConfig.xml file's MonitorAgent module
-func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) int {
+func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) error {
 	var flag bool = false
 	for i := 0; i < len(mi.Servers); i++ {
 		var mi_srvinfo *ServerInfo = &(mi.Servers[i])
@@ -243,11 +246,10 @@ func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) int {
 	}
 
 	if !flag {
-		fmt.Println("WARN: There's no MonitorAgent module in config files!")
-		return 1
+		return errors.New("WARN: There's no MonitorAgent module in config files!")
 	}
 
-	return 0
+	return nil
 }
 
 /*///////////////////////////////////////////////////////
