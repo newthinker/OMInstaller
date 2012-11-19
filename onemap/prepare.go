@@ -10,6 +10,7 @@
 package onemap
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -96,33 +97,32 @@ func Copy(srcfile string, dstfile string) error {
 // copy OneMap modules from source directory to destination directory
 // update: Add input params src and dst for common session. And 
 //         not copy public part when copied. [zuow, 2012/11/08]
-func (om *OMPInfo) OMCopy(src string, dst string) int {
+func (om *OMPInfo) OMCopy(src string, dst string) error {
 	// first check the src and dst directory
 	if src == "" || dst == "" {
-		fmt.Println("ERROR: Invalid source or destination directory!")
-		return 1
+		return errors.New("ERROR: Invalid source or destination directory!")
 	}
 
 	if (Exists(src)) != true {
-		fmt.Printf("ERROR: Source directory(%s) isn't existed!", src)
-		return 1
+		msg := "ERROR: Source directory (" + src + ") isn't existed!"
+		return errors.New(msg)
 	}
 	if (Exists(dst)) != true {
 		if err := os.Mkdir(dst, 0755); err != nil {
-			fmt.Printf("ERROR: Destination directory(%s) isn't existed and create failed!", dst)
-			return 1
+			msg := "ERROR: Destination directory (" + dst + ") isn't existed and create failed!"
+			return errors.New(msg)
 		}
 	} else {
 		if (Exists(dst + "/services")) == true {
 			if err := os.RemoveAll(dst + "/services"); err != nil {
-				fmt.Printf("ERROR: Remove directory %s failed!", dst+"/services")
-				return 1
+				msg := "ERROR: Remove directory (" + dst + "/services) failed!"
+				return errors.New(msg)
 			}
 		}
 		if (Exists(dst + "/" + om.Container + "/webapps")) == true {
 			if err := os.RemoveAll(dst + "/" + om.Container + "/webapps"); err != nil {
-				fmt.Printf("ERROR: Remove directory %s failed!", dst+"/"+om.Container+"/webapps")
-				return 1
+				msg := "ERROR: Remove directory (" + dst + "/" + om.Container + "/webapps) failed!"
+				return errors.New(msg)
 			}
 		}
 	}
@@ -131,37 +131,32 @@ func (om *OMPInfo) OMCopy(src string, dst string) int {
 	//var cmdline string
 	if (Exists(dst + "/arcgis")) != true {
 		if err := Copy(src+"/arcgis", dst); err != nil {
-			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/arcgis")
-			return 2
+			msg := "ERROR: Copy directory (" + src + "/arcgis) failed!"
+			return errors.New(msg)
 		}
-		//		cmdline = "cp -r " + src + "/arcgis/ " + dst
 	}
 	if (Exists(dst + "/bin")) != true {
-		//cmdline = cmdline + "cp -r " + src + "/bin " + dst
 		if err := Copy(src+"/bin", dst); err != nil {
-			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/bin")
-			return 2
+			msg := "ERROR: Copy directory(" + src + "/bin) failed!"
+			return errors.New(msg)
 		}
 	}
 	if (Exists(dst + "/config")) != true {
-		//cmdline = cmdline + "cp -r " + src + "/config " + dst
 		if err := Copy(src+"/config", dst); err != nil {
-			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/config")
-			return 2
+			msg := "ERROR: Copy directory(" + src + "/config) failed!"
+			return errors.New(msg)
 		}
 	}
 	if (Exists(dst + "/java")) != true {
-		//cmdline = cmdline + "cp -r " + src + "/java " + dst
 		if err := Copy(src+"/java", dst); err != nil {
-			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/java")
-			return 2
+			msg := "ERROR: Copy directory(" + src + "/java) failed!"
+			return errors.New(msg)
 		}
 	}
 	if (Exists(dst + "/temp")) != true {
-		//cmdline = cmdline + "cp -r " + src + "/temp " + dst
 		if err := Copy(src+"/temp", dst); err != nil {
-			fmt.Printf("ERROR: Copy directory(%s) failed!\n", src+"/temp")
-			return 2
+			msg := "ERROR: Copy directory(" + src + "/temp) failed!"
+			return errors.New(msg)
 		}
 	}
 
@@ -169,29 +164,24 @@ func (om *OMPInfo) OMCopy(src string, dst string) int {
 	if len(om.Apps) > 0 {
 		// copy web container
 		if err := Copy(src+"/"+om.Container, dst); err != nil {
-			fmt.Printf("ERROR: Copy OneMap web container %s failed!\n", om.Container)
-			return 2
+			msg := "ERROR: Copy OneMap web container (" + om.Container + ") failed!"
+			return errors.New(msg)
 		}
 
 		for i := 0; i < len(om.Apps); i++ {
-			//cmdline = "cp -r " + src + "/" + om.Container + "/webapps/" + om.Apps[i] + " " + dst + "/" + om.Container + "/webapps"
 			if err := Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
-				fmt.Printf("ERROR: Copy module %s failed!\n", om.Apps[i])
-				return 2
+				msg := "ERROR: Copy module (" + om.Apps[i] + ") failed!"
+				return errors.New(msg)
 			}
 
 			switch om.Apps[i] {
 			case "H2memDB":
-				//cmdline = cmdline + "; cp -r " + src + "/db " + dst
 				if err := Copy(src+"/db", dst); err != nil {
-					fmt.Println("ERROR: Copy db directory failed!")
-					return 2
+					return errors.New("ERROR: Copy db directory failed!")
 				}
 			case "GeoShareManager":
-				//cmdline = cmdline + "; cp -r " + src + "/example_data " + dst
 				if err := Copy(src+"/example_data", dst); err != nil {
-					fmt.Println("ERROR: Copy example data directory failed!")
-					return 2
+					return errors.New("ERROR: Copy example data directory failed!")
 				}
 			}
 		}
@@ -200,24 +190,15 @@ func (om *OMPInfo) OMCopy(src string, dst string) int {
 	// copy services  
 	if len(om.Services) > 0 {
 		for i := 0; i < len(om.Services); i++ {
-			//cmdline = "cp -r " + ONEMAP_NAME + om.Version + "/services/" + om.Services[i] + " " + ONEMAP_NAME + "/services"
-
-			//cmd = exec.Command(cmdline)
-			//err = cmd.Run()
-			//if err != nil {
-			//fmt.Printf("ERROR: Copy OneMap %s module failed!\n", om.Services[i])
-			//return 3
-			//}
-
 			if err := Copy(src+"/services/"+om.Services[i], dst+"/services/"+om.Services[i]); err != nil {
-				fmt.Printf("ERROR: Copy OneMap service %s failed!\n", om.Services[i])
-				return 2
+				msg := "ERROR: Copy OneMap service (" + om.Services[i] + ") failed!"
+				return errors.New(msg)
 			}
 		}
 	}
 
 	fmt.Println("MSG: Copy OneMap files successfully!")
-	return 0
+	return nil
 }
 
 func (om *OMPInfo) OMPackage() int {
@@ -243,65 +224,51 @@ func (om *OMPInfo) OMPackage() int {
 }
 
 // parse the current machine info
-func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) int {
+func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 	if mi == nil || sm == nil {
-		fmt.Println("ERROR: Input MachineInfo and SrvMapping object is nil!")
-		return 1
+		return errors.New("ERROR: Input MachineInfo and SrvMapping object is nil!")
 	}
 
 	// get attributes
 	if mi.Os != "" {
 		om.Os = mi.Os
 	} else {
-		fmt.Println("ERROR: Get machine's input param(os) is invalid!")
-		return 2
+		return errors.New("ERROR: Get machine's input param(os) is invalid!")
 	}
 	if mi.Arch != "" {
 		om.Arch = mi.Arch
 	} else {
-		fmt.Println("ERROR: Get machine's input param(arch) is invalid!")
-		return 2
+		return errors.New("ERROR: Get machine's input param(arch) is invalid!")
 	}
 	if mi.Ip != "" {
 		om.Ip = mi.Ip
 	} else {
-		fmt.Println("ERROR: Get machine's input param(ip) is invalid!")
-		return 2
+		return errors.New("ERROR: Get machine's input param(ip) is invalid!")
 	}
 	if mi.User != "" {
 		om.User = mi.Ip
 	} else {
-		fmt.Println("ERROR: Get machine's input param(user) is invalid!")
-		return 2
+		return errors.New("ERROR: Get machine's input param(user) is invalid!")
 	}
 	if mi.Pwd != "" {
 		om.Pwd = mi.Pwd
 	} else {
-		fmt.Println("ERROR: Get machine's input param(pwd) is invalid!")
-		return 2
+		return errors.New("ERROR: Get machine's input param(pwd) is invalid!")
 	}
 	if mi.Omhome != "" {
 		om.OMHome = mi.Omhome
 	} else {
-		fmt.Println("ERROR: Get machine's intput param(pwd) is invalid!")
-		return 2
+		return errors.New("ERROR: Get machine's intput param(pwd) is invalid!")
 	}
-	//	// get the version
-	//	var curdir string = "./"
-	//	var err error
-	//	if curdir, err = filepath.Abs("./"); err != nil || curdir == "" {
-	//		return 2
-	//	}
-	ret, filename := om.OMGetVersion(om.Basedir)
-	if ret != 0 {
-		fmt.Println("ERROR: Get OneMap version failed!")
-		return 2
+
+	filename, err := om.OMGetVersion(om.Basedir)
+	if err != nil {
+		return errors.New("ERROR: Get OneMap version failed!")
 	}
+
 	// get the container
-	ret = om.OMGetContainer(om.Basedir, filename)
-	if ret != 0 {
-		fmt.Println("ERROR: Get OneMap container failed!")
-		return 2
+	if err = om.OMGetContainer(om.Basedir, filename); err != nil {
+		return errors.New("ERROR: Get OneMap container failed!")
 	}
 
 	// Get the web app modules name and services name
@@ -331,7 +298,7 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) int {
 		}
 	}
 
-	return 0
+	return nil
 }
 
 // list files in the path recursion
@@ -385,20 +352,20 @@ func getSubDir(path string) ([]string, error) {
 }
 
 // get onemap's version
-func (om *OMPInfo) OMGetVersion(basedir string) (int, string) {
+func (om *OMPInfo) OMGetVersion(basedir string) (string, error) {
+	var base string // the onemap package directory
 	if flag := Exists(basedir); flag != true {
-		fmt.Printf("ERROR: Input directory(%s) isn't existed!\n", basedir)
-		return 1, ""
+		msg := "ERROR: Input directory(" + basedir + ") isn't existed!"
+		return base, errors.New(msg)
 	}
 
 	// get all sub directory name and search the onemap package directory
 	subpath, err := getSubDir(basedir)
 	if err != nil {
-		fmt.Printf("ERROR: Get all the sub directory failed!\n", basedir)
-		return 2, ""
+		msg := "ERROR: Get all the sub directory failed!"
+		return base, errors.New(msg)
 	}
 
-	var base string // the onemap package directory
 	for i := range subpath {
 		filename := path.Base(subpath[i]) // get the base filename
 		filename = strings.ToUpper(filename)
@@ -414,33 +381,33 @@ func (om *OMPInfo) OMGetVersion(basedir string) (int, string) {
 
 	// get the file/path name
 	if base == "" {
-		fmt.Println("ERROR: Invalid OneMap package!")
-		return 3, ""
+		msg := "ERROR: Invalid OneMap package!"
+		return base, errors.New(msg)
 	}
 
 	// parse the path name and get the version
 	var arr = strings.Split(base, "_")
 	om.Version = arr[len(arr)-1]
 	if om.Version == "" {
-		fmt.Printf("ERROR: Invalid package name(%s) and have no version information!\n", base)
-		return 4, ""
+		msg := "ERROR: Invalid package name(" + base + ") and have no version information!"
+		return base, errors.New(msg)
 	}
 
-	return 0, base
+	return base, nil
 }
 
 // get web container's name
-func (om *OMPInfo) OMGetContainer(basedir string, subdirname string) int {
+func (om *OMPInfo) OMGetContainer(basedir string, subdirname string) error {
 	if flag := Exists(basedir + "/" + subdirname); flag != true {
-		fmt.Printf("ERROR: Input directory(%s) isn't existed!\n", basedir)
-		return 1
+		msg := "ERROR: Input directory(" + basedir + ") isn't existed!"
+		return errors.New(msg)
 	}
 
 	// get all sub directory name and search the onemap package directory
 	subpath, err := getSubDir(basedir + "/" + subdirname)
 	if err != nil {
-		fmt.Printf("ERROR: Get all the sub directory failed!\n", basedir)
-		return 2
+		msg := "ERROR: Get all the sub directory failed!"
+		return errors.New(msg)
 	}
 
 	var base string // the onemap package directory
@@ -453,80 +420,75 @@ func (om *OMPInfo) OMGetContainer(basedir string, subdirname string) int {
 			continue
 		}
 
-		fmt.Println("ERROR: Get container's path failed!")
-		return 3
+		return errors.New("ERROR: Get container's path failed!")
 	}
 
 	// get the file/path name
 	if base == "" {
-		fmt.Println("ERROR: Invalid OneMap package!")
-		return 3
+		return errors.New("ERROR: Invalid OneMap package!")
 	}
 
 	// parse the path name and get the version
 	om.Container = base
 
-	return 0
+	return nil
 }
 
 // remote copy the OneMap package
-func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) int {
+func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 	// check whether installed sshpass package
 	cmd := exec.Command("sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("ERROR: sshpass isn't installed!")
-		return 1
+		return errors.New("ERROR: sshpass isn't installed!")
 	}
 
 	// check srcdir is a file or directory
 	if flag := Exists(srcdir); flag != true {
-		fmt.Printf("ERROR: Source file or directory(%s) isn't existed!\n", srcdir)
-		return 2
+		msg := "ERROR: Source file or directory " + srcdir + " isn't existed!"
+		return errors.New(msg)
 	}
+
 	fi, _ := os.Stat(srcdir)
 	if fi.IsDir() {
-		//		cmdline = "sshpass -p " + om.Pwd + " scp -r " + srcdir + om.User + "@" + om.Ip + ":" + dstdir
 		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.User+"@"+om.Ip+":"+dstdir)
 	} else {
-		//cmdline = "sshpass -p " + om.Pwd + " scp " + srcdir + om.User + "@" + om.Ip + ":" + dstdir
 		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", srcdir, om.User+"@"+om.Ip+":"+dstdir)
 	}
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println("ERROR: Exec remote copy command failed!")
-		return 3
+		return errors.New("ERROR: Exec remote copy command failed!")
 	}
 
-	return 0
+	return nil
 }
 
 // exec the remote command
-func (om *OMPInfo) OMRemoteExec(rcmd string) int {
-	//check the cmdline
-	if rcmd == "" {
-		fmt.Println("ERROR: The cmd is null!")
-		return 1
+func (om *OMPInfo) OMRemoteExec() error {
+	// parse the remote command line
+	if len(om.Servers) <= 0 {
+		return errors.New("ERROR: No install modules!")
 	}
 
 	// check whether installed sshpass package
 	cmd := exec.Command("sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("ERROR: sshpass isn't installed!")
-		return 2
+		return errors.New("ERROR: Sshpass isn't installed!")
 	}
 
-	//cmdline = "sshpass -p " + om.Pwd + " ssh " + om.User + "@" + om.Ip + " " + rcmd
-	cmd = exec.Command("sshpass", "-p", om.Pwd, "ssh", om.User+"@"+om.Ip, rcmd)
-	err = cmd.Run()
-	if err != nil {
-		fmt.Printf("ERROR: Exec remote command(%s) failed!",
-			"sshpass -p "+om.Pwd+" ssh "+om.User+"@"+om.Ip+" "+rcmd)
-		return 3
+	// exec the remote command line
+	for i := 0; i < len(om.Servers); i++ {
+		cmd = exec.Command("sshpass", "-p", om.Pwd, "ssh", om.User+"@"+om.Ip,
+			"/bin/bash", om.OMHome+"/install.sh", om.Servers[i])
+		err = cmd.Run()
+		if err != nil {
+			msg := "ERROR: Install " + om.Servers[i] + " module failed!"
+			return errors.New(msg)
+		}
 	}
 
-	return 0
+	return nil
 }
 
 // search the input server params
