@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"github.com/newthinker/onemap-installer/onemap"
 	"io/ioutil"
@@ -14,59 +15,50 @@ var si onemap.SysInfo
 var sc onemap.SysConfig
 
 // open the config files
-func openconfigs(basedir string) int {
+func openconfigs(basedir string) error {
 	// check the base dir whether existed
 	if flag := onemap.Exists(basedir); flag != true {
-		fmt.Printf("ERROR: The input directory(%s) isn't existed!\n", basedir)
-		return 1
+		msg := "ERROR: The input directory(" + basedir + ") isn't existed!"
+		return errors.New(msg)
 	}
 
 	file, err := os.Open(basedir + "/conf/" + onemap.SERVER_MAPPING)
 	if err != nil {
-		fmt.Printf("Open SrvMapping config file failed: %v\n", err)
-		return 1
+		return err
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Printf("Read SrvMapping config file failed: %v\n", err)
-		return 2
+		return err
 	}
 	if err := xml.Unmarshal([]byte(data), &sm); err != nil {
-		fmt.Printf("Parse SrvMapping config file failed: %v\n", err)
-		return 3
+		return err
 	}
 
 	file, err = os.Open(basedir + "/conf/" + onemap.SYS_INFO)
 	if err != nil {
-		fmt.Printf("Open SysInfo config file failed: %v\n", err)
-		return 1
+		return err
 	}
 	data, err = ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Printf("Read SysInfo config file failed: %v\n", err)
-		return 2
+		return err
 	}
 	if err = xml.Unmarshal([]byte(data), &si); err != nil {
-		fmt.Printf("Parse SysInfo config file failed: %v\n", err)
-		return 3
+		return err
 	}
 
 	file, err = os.Open(basedir + "/conf/" + onemap.SYS_CONFIG)
 	if err != nil {
-		fmt.Printf("Open SysConfig config file failed: %v\n", err)
-		return 1
+		return err
 	}
 	data, err = ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Printf("Read SysConfig file failed: %v\n", err)
-		return 2
+		return err
 	}
 	if err = xml.Unmarshal([]byte(data), &sc); err != nil {
-		fmt.Printf("Parse SysConfig file failed: %v\n", err)
-		return 3
+		return err
 	}
 
-	return 0
+	return nil
 }
 
 func main() {
@@ -83,14 +75,13 @@ func main() {
 	}
 	fmt.Printf("MSG: Current working dirctory is: %s\n", basedir)
 
-	if ret := openconfigs(basedir); ret != 0 {
+	if err = openconfigs(basedir); err != nil {
 		fmt.Println("ERROR: Open and parse configs failed and exit!")
 		return
 	}
 
 	// update the params except monitoragent module
-	ret := onemap.UpdateConfig(&si, &sc)
-	if ret != 0 {
+	if err = onemap.UpdateConfig(&si, &sc); err != nil {
 		fmt.Println("ERROR: Update system config failed!")
 		return
 	}
@@ -102,8 +93,7 @@ func main() {
 
 		// get the info of the current machine
 		var mi *(onemap.MachineInfo) = &(si.Machines[i])
-		ret = om.OMGetInfo(mi, &sm)
-		if ret != 0 {
+		if err = om.OMGetInfo(mi, &sm); err != nil {
 			fmt.Printf("ERROR: Get the %d machine's info failed!", i+1)
 			return
 		}
@@ -119,15 +109,13 @@ func main() {
 			}
 		}
 		srcdir := om.Basedir + "/" + onemap.ONEMAP_NAME + "_Linux_" + om.Version
-		ret = om.OMCopy(srcdir, dstdir)
-		if ret != 0 {
+		if err = om.OMCopy(srcdir, dstdir); err != nil {
 			fmt.Println("ERROR: Package onemap failed!")
 			return
 		}
 
 		// update the monitoragent module
-		ret = onemap.UpdateMdlAgent(mi, &sc)
-		if ret != 0 {
+		if err = onemap.UpdateMdlAgent(mi, &sc); err != nil {
 			fmt.Printf("ERROR: Update the %d machine's monitoragent module failed!\n", i+1)
 			return
 		}
@@ -140,22 +128,13 @@ func main() {
 		om.User = "root"
 		om.Pwd = "dasiyebushuo"
 		/////////////////////////////////////////////////
-		ret = om.OMRemoteCopy(srcdir, dstdir)
-
-		// remote exec the install bash script
-		cmdline := "/bin/bash " + om.OMHome + "/install.sh"
-		for i := range om.Servers {
-			if i == 0 {
-				cmdline += " "
-			} else if i > 0 {
-				cmdline += "|"
-			}
-
-			cmdline += om.Servers[i]
+		if err := om.OMRemoteCopy(srcdir, dstdir); err != nil {
+			fmt.Println("ERROR: Exec retmote copy failed!")
+			return
 		}
 
-		ret = om.OMRemoteExec(cmdline)
-		if ret != 0 {
+		// remote exec the install bash script
+		if err := om.OMRemoteExec(); err != nil {
 			fmt.Println("ERROR: Exec retmote command failed!")
 			return
 		}
