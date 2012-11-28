@@ -1,0 +1,454 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>OneMap Config Tool</title>
+<meta name="description" content="OneMap分布式安装配置工具."> 
+ 
+<style type="text/css">
+<!--
+@import 'custom.css';
+-->
+</style>
+
+</head>
+
+<body>
+
+<div id="om-wrapper"><div id="om-wrapper-inner">
+
+<h2 class="om-def">OneMap Config Tool</h2>
+
+<div id="om" class="omlayout">  
+<div class="tabs-container">
+<form name="sysconfig">
+
+<!-- 服务器基本参数 -->
+<div class="base-info" id="base">
+<fieldset>
+  
+	<legend class="legend">服务器基本参数信息</legend>  
+
+	<div class="select-controls">
+		<!-- Select Basic -->
+		<div class="select-control" id="base-select-os">
+			<label class="control-label">OS:</label>		
+			<select class="select-value" id="base-os">
+				<option>Windows</option>
+				<option>Linux</option>
+			</select>
+		</div>
+		
+		<div class="select-control" id="base-select-arch">
+			<label class="control-label">ARCH:</label>	    
+			<select class="select-value" id="base-arch">
+				<option>i386</option>
+				<option>amd64</option>
+			</select>
+		</div>
+		
+		<div class="select-control" id="base-select-container">
+			<label class="control-label">WEB容器类型:</label>
+            <select class="select-value" id="base-container">
+				<option>Tomcat</option>
+				<option>Weblogic</option>
+			</select>
+         </div>		
+	</div>
+
+	<div class="input-controls">
+	  <!-- Text input-->
+	  <div class="input-control">
+	  <label class="control-label" for="base-label-ip">IP:</label>
+		<input type="text" placeholder="服务器IP地址" class="input-value" id="base-ip">
+		<p class="help-block"></p>
+	  </div>
+
+	  <div class="input-control">
+	  <label class="control-label" for="base-label-user">USER:</label>
+		<input type="text" placeholder="系统管理员帐户" class="input-value" id="base-user">
+		<p class="help-block"></p>
+	  </div>
+
+	  <div class="input-control">
+	  <label class="control-label" for="base-label-pwd">PWD:</label>
+		<input type="text" placeholder="用户密码" class="input-value" id="base-pwd">
+		<p class="help-block"></p>
+	  </div>
+
+	  <div class="input-control">
+	  <label class="control-label" for="base-label-omhome">OMHome:</label>
+		<input type="text" placeholder="OneMap安装目录" class="input-value" id="base-omhome">
+		<p class="help-block"></p>
+	  </div>
+	</div>
+
+</fieldset>
+</div>
+
+<!-- 服务器配置信息 -->
+<div class="config-info" id="config">
+<fieldset>
+<legend>服务器配置</legend>
+<!-- 配置控件 -->
+<div class="config-checks" id="config-check-servers">
+<!--form class="config-form" id="config-form-servers"-->
+	<fieldset>
+		<legend>请选择安装服务器类型</legend>
+		<div class="check-controls">
+			<div class="check-control">
+				<input type="checkbox" name="srvtype" value="agent" checked="checked" class="check-value" id="config-check-agent">
+				<label class="control-label" for="config-label-agent">AGENT</label>
+			</div>
+			<div class="check-control">
+				<input type="checkbox" name="srvtype" value="db" class="check-value" id="config-check-db">
+				<label class="control-label" for="config-label-db">DB</label>
+			</div>
+			<div class="check-control">
+				<input type="checkbox" name="srvtype" value="gis" class="check-value" id="config-check-gis">
+				<label class="control-label" for="config-label-gis">GIS</label>
+			</div>	
+			<div class="check-control">
+				<input type="checkbox" name="srvtype" value="main" class="check-value" id="config-check-main">
+				<label class="control-label" for="config-label-main">MAIN</label>
+			</div>	
+			<div class="check-control">
+				<input type="checkbox" name="srvtype" value="msg" class="check-value" id="config-check-msg">
+				<label class="control-label" for="config-label-msg">MSG</label>
+			</div>	
+			<div class="check-control">
+				<input type="checkbox" name="srvtype" value="token" class="check-value" id="config-check-token">
+				<label class="control-label" for="config-label-token">TOKEN</label>
+			</div>	
+			<div class="check-control">
+				<input type="checkbox" name="srvtype" value="web" class="check-value" id="config-check-web">
+				<label class="control-label" for="config-label-web">WEB</label>
+			</div>	
+			<div class="check-control">
+				<input type="button" value="添加" onclick="configServer()">
+			</div>	
+		</div>
+	</fieldset>
+<!--/form-->
+</div>
+
+<!-- 服务器参数信息 -->
+<div class="config-servers" id="servers">
+	
+	<!-- agent -->
+	<!--div class="config-server" id="server-agent">
+		<fieldset style="display:none">
+			<legend>AGENT Server</legend>
+			<div class="input-control" id="input-agent-ip">
+				<label class="control-label" for="config-label">MonitorAgent IP:</label>
+				<input type="text" placeholder="监控代理服务器IP地址" class="input-value" id="agent-ip">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-agent-port">
+				<label class="control-label" for="config-label">MonitorAgent PORT:</label>
+				<input type="text" placeholder="监控代理服务器PORT端口" class="input-value" id="agent-port">
+				<p class="help-block"></p>
+			</div>			
+		</fieldset>
+	</div-->
+	
+	<!-- db -->
+	<div class="config-server">
+		<!--form class="config-form" id="config-form-db"-->
+		<fieldset id="server-db" style="display:none">
+			<!-- 数据库服务器IP id="db-ip" -->
+			<!-- 内存数据库IP id="db-h2" -->			
+			<div type="hidden" class="input-control" id="input-db-port">
+				<label class="control-label" for="config-label">数据库服务器PORT:</label>
+				<input placeholder="数据库服务器PORT端口" class="input-value" id="db-port">
+				<p class="help-block"></p>
+			</div>			
+			<div class="input-control" id="input-db-sid">
+				<label class="control-label" for="config-label">数据库服务器实例名:</label>
+				<input type="text" placeholder="数据库服务器实例名" class="input-value" id="db-sid">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-manager-user">
+				<label class="control-label" for="config-label">运维数据库用户名:</label>
+				<input type="text" placeholder="GeoShareManager数据库用户名" class="input-value" id="manager-user">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-manager-pwd">
+				<label class="control-label" for="config-label">运维数据库密码</label>
+				<input type="text" placeholder="GeoShareManager数据库密码" class="input-value" id="manager-pwd" encrypt="true">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-portal-user">
+				<label class="control-label" for="config-label">门户数据库用户名:</label>
+				<input type="text" placeholder="GeoSharePortal数据库用户名" class="input-value" id="portal-user">
+				<p class="help-block"></p>
+			</div>			
+			<div class="input-control" id="input-portal-pwd">
+				<label class="control-label" for="config-label">门户数据库密码</label>
+				<input type="text" placeholder="GeoSharePortal数据库密码" class="input-value" id="portal-pwd" encrypt="true">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-geocoding-user">
+				<label class="control-label" for="config-label">GeoCoding数据库用户名:</label>
+				<input type="text" placeholder="GeoCoding数据库用户名" class="input-value" id="geocoding-user">
+				<p class="help-block"></p>
+			</div>			
+			<div class="input-control" id="input-manager-pwd">
+				<label class="control-label" for="config-label">GeoSharePortal数据库密码</label>
+				<input type="text" placeholder="GeoCoding数据库密码" class="input-value" id="geocoding-pwd" encrypt="true">
+				<p class="help-block"></p>
+			</div>	
+			<div class="input-control" id="input-geoportal-user">
+				<label class="control-label" for="config-label">GeoPortal数据库用户名:</label>
+				<input type="text" placeholder="GeoPortal数据库用户名" class="input-value" id="geoportal-user">
+				<p class="help-block"></p>
+			</div>			
+			<div class="input-control" id="input-manager-pwd">
+				<label class="control-label" for="config-label">GeoPortal数据库密码</label>
+				<input type="text" placeholder="GeoPortal数据库密码" class="input-value" id="geoportal-pwd" encrypt="true">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-sub-user">
+				<label class="control-label" for="config-label">分平台数据库用户名:</label>
+				<input type="text" placeholder="分平台数据库用户名" class="input-value" id="sub-user">
+				<p class="help-block"></p>
+			</div>						
+		</fieldset>
+		<!--/form-->	
+	</div>	
+	
+	<!-- gis -->
+	<div class="config-server">
+		<!--form class="config-form" id="config-form-gis"-->
+		<fieldset id="server-gis"  style="display:none">
+			<!-- gis服务器ip id="gis-ip" -->
+			<!-- gis服务器port id="gis-port" -->
+			<!-- ags服务器ip id="gis-ags-ip" -->
+			<!-- WMTS系统的ip id="WMTS-ip" -->
+			<!-- WMTS系统的port id="WMTS-port" -->
+			<!-- SysRest系统的ip id="sysrest-ip" -->
+			<!-- SysRest系统的port id="sysrest-port" -->			
+			<div class="input-control" id="input-gis-ags-user">
+				<label class="control-label" for="config-label">ArcGISServer服务器用户名:</label>
+				<input type="text" placeholder="ArcGISServer Manager登录用户名" class="input-value" id="gis-ags-user">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-gis-ags-pwd">
+				<label class="control-label" for="config-label">ArcGISServer服务器密码:</label>
+				<input type="text" placeholder="ArcGISServer Manager登录密码" class="input-value" id="gis-ags-pwd" encrypt="true">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-gis-sharekey">
+				<label class="control-label" for="config-label">sharekey:</label>
+				<input type="text" placeholder="sharekey" class="input-value" id="gis-sharekey" encrypt="true">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-ags-log-path">
+				<label class="control-label" for="config-label">ArcGISServer日志路径:</label>
+				<input type="text" placeholder="ArcGISServer日志本地存放路径" class="input-value" id="ags-log-path">
+				<p class="help-block"></p>
+			</div>		
+			<div class="input-control" id="input-gis-basemap-type">
+				<label class="control-label" for="config-label">底图服务类型:</label>
+				<input type="text" placeholder="底图服务类型" class="input-value" id="gis-basemap-type">
+				<p class="help-block"></p>
+			</div>			
+			<div class="input-control" id="input-gis-services-port">
+				<label class="control-label" for="config-label">RemoteRest系统网络端口:</label>
+				<input type="text" placeholder="RemoteRest系统的HTTP PORT" class="input-value" id="gis-services-port">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-gis-basemap-type">
+				<label class="control-label" for="config-label">底图服务类型:</label>
+				<input type="text" placeholder="底图服务类型" class="input-value" id="gis-basemap-type">
+				<p class="help-block"></p>
+			</div>			
+		</fieldset>
+		<!--/form-->	
+	</div>	
+	
+	<!-- main -->
+	<div class="config-server">
+		<!--form class="config-form" id="config-form-main"-->
+		<fieldset id="server-main"  style="display:none">
+			<!-- 运维服务器ip id="main-ip" -->
+			<!-- 运维服务器port id="main-port" -->
+			<!-- geocoding系统ip id="geocoding-ip" -->
+			<!-- geocoding系统port id="geocoding-port" -->
+			<!-- geoportal系统ip id="geoportal-ip" -->
+			<!-- geoportal系统port id="geoportal-port" -->	
+			<!-- fileservices系统ip id="file-ip" -->
+			<!-- fileservices系统port id="file-port" -->
+			<!-- tileservices系统ip id="tile-ip" -->
+			<!-- tileservices系统port id="tile-port" -->
+			<!-- aggregator系统ip id="aggregator-ip" -->
+			<!-- aggregator系统port id="aggregator-port" -->
+			<div class="input-control" id="input-main-upload-level">
+				<label class="control-label" for="config-label">运维文件上传目录深度:</label>
+				<input type="text" placeholder="运维文件上传目录深度" class="input-value" id="main-upload-level">
+				<p class="help-block"></p>
+			</div>
+			<div class="input-control" id="input-main-upload-num">
+				<label class="control-label" for="config-label">运维文件上传最大值:</label>
+				<input type="text" placeholder="运维文件上传最大值" class="input-value" id="main-upload-num">
+				<p class="help-block"></p>
+			</div>			
+			<div class="input-control" id="input-sub-upload-num">
+				<label class="control-label" for="config-label">分平台文件上传最大值:</label>
+				<input type="text" placeholder="分平台文件上传最大值" class="input-value" id="sub-upload-num">
+				<p class="help-block"></p>
+			</div>			
+			<div class="select-control" id="select-sub-syn-code">
+				<label class="control-label">分平台同步模式:</label>
+				<select class="select-value" id="sub-syn-code">	<!-- 0表示主分平台之间进行同步，!0表示主主平台之间进行同步 -->
+					<option>主平台与分平台之间同步</option>
+					<option>主平台与主平台之间同步</option>
+				</select>
+          </div>
+			
+		</fieldset>
+		<!--/form-->	
+	</div>	
+	
+	<!-- msg -->
+	<div class="config-server">
+		<!--form class="config-form" id="config-form-msg"-->
+		<fieldset id="server-msg"  style="display:none">
+			<!-- JMS服务器ip -->
+			<div class="input-control" id="input-jms-port">
+				<label class="control-label" for="config-label">JMS服务器PORT:</label>
+				<input type="text" placeholder="JMS消息服务器端口" class="input-value" id="jms-port">
+				<p class="help-block"></p>
+			</div>			
+		</fieldset>
+		<!--/form-->	
+	</div>	
+	
+	<!-- token -->
+	<div class="config-server">
+		<!--form class="config-form" id="config-form-token"-->
+		<fieldset id="server-token" style="display:none">
+			<!-- Token服务器ip -->
+			<!-- Token服务器port -->
+		</fieldset>
+		<!--/form-->	
+	</div>		
+	
+	<!-- web -->
+	<div class="config-server">
+		<!--form class="config-form" id="config-form-web"-->
+		<fieldset id="server-web" style="display:none">
+			<!-- 门户ip id="web-ip" -->
+			<!-- 门户port id="web-port" -->
+			<!-- Flex发布服务器ip id="flex-ip" -->
+			<!-- Flex发布服务器port id="flex-port" -->	
+			<!-- Silverlight发布服务器ip id="sl-ip" -->
+			<!-- Silverlight发布服务器port id="sl-port" -->			
+			<!-- 快速搭建服务器ip id="ria-ip" -->
+			<!-- 快速搭建服务器port id="ria-port" -->
+			<!-- silverlight文件生成路径 -->
+			<div class="select-control" id="params-web-csw">
+				<label class="control-label">是否启用csw服务:</label>
+				<select class="select-value" id="web-csw">
+					<option>禁用</option>
+					<option>开启</option>
+				</select>
+			</div>			
+		</fieldset>
+		<!--/form-->	
+	</div>		
+	
+</div>
+
+</fieldset>
+</form>
+
+</div>	
+</div></div>
+
+<script type="text/javascript">
+
+<!-- 配置服务器 -->
+function configServer() {
+	var chkboxes = document.forms['sysconfig']['srvtype']
+	var count = 0;		// 确定的checkbox个数
+	var agent = 0;		// 监控代理服务器必须配置
+	// 遍历checkboxes，获取所有确定checkboxes
+	for(var i=0,elm;elm=chkboxes[i];i++) {
+		var type = elm.value;		// 获取确定服务器类型
+		switch (type)
+		{
+		case "agent":
+			if(elm.checked) {
+				agent = 1;
+				count++;
+			}
+			break;
+		case "db":
+			if(elm.checked) {
+				document.getElementById('server-db').style.display='block';
+				count++;
+			} else {
+				document.getElementById('server-db').style.display='none';
+			}
+			break;
+		case "gis":
+			if(elm.checked) {
+				document.getElementById('server-gis').style.display='block';
+				count++;
+			} else {
+				document.getElementById('server-gis').style.display='none';
+			}
+			break;
+		case "main":
+			if(elm.checked) {
+				document.getElementById('server-main').style.display='block';
+				count++;
+			} else {
+				document.getElementById('server-main').style.display='none';
+			}
+			break;
+		case "msg":
+			if(elm.checked) {
+				document.getElementById('server-msg').style.display='block';
+				count++;
+			} else {
+				document.getElementById('server-msg').style.display='none';
+			}
+			break;
+		case "token":
+			if(elm.checked) {
+				//document.getElementById('server-token').style.display='block';
+				count++;
+			} else {
+				document.getElementById('server-token').style.display='none';
+			}
+			break;
+		case "web":
+			if(elm.checked) {
+				document.getElementById('server-web').style.display='block';
+				count++;
+			} else {
+				document.getElementById('server-web').style.display='none';
+			}
+			break;
+		}		
+	}
+	
+	
+	if(count<=1) {		// 没有配置
+		alert("请配置服务器!");
+		return;
+	} else if(agent!=1) {	// 没有配置监控代理模块
+		alert("请配置监控代理服务器!");
+		return;
+	} 
+	
+}
+
+</script>
+
+</div></div> 
+</body>
+</html>
