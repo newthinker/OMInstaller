@@ -17,7 +17,16 @@
 </head>
 
 <body>
-<div id="sptree"></div>
+<div id="om-wrapper"><div id="om-wrapper-inner">
+
+<h2 class="om-def">OneMap SubPlatform Config Tool</h2>
+
+<div class="om-layout" id="sptree">
+<div class="tree-container">
+<form name="subplatform" id="sub-platform">
+
+<div class="sp-info" >
+
 <script type="text/javascript">
 	function sel(){
 		var selids=d.getCheckedNodes();
@@ -27,6 +36,7 @@
 		}
 		alert(str);
 	}
+	
 	var d = new dTree('d','images/system/menu/');
 	d.config.folderLinks=true;
 	d.config.useCookies=false;
@@ -97,5 +107,13 @@
 		d.co(funcs.funcs[n].menudm).checked=true;
 	}
 </script>
+
+</div>
+
+<!-- 自动保存到目录下的sql文件中 -->
+
+</form>
+</div></div>
+</div></div>
 </body>
 </html>
