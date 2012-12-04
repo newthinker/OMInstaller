@@ -42,8 +42,8 @@
 			<gis_geo_map name="几何服务地址:">http://127.0.0.1:8099/arcgis/rest/services/Geometry/GeometryServer</gis_geo_map-->
 			<gis_basemap_type name="底图服务类型:">dynamic</gis_basemap_type>
 			<gis_services_port name="RemoteServices系统的HTTPSPORT:">8443</gis_services_port>
-			<WMTS_ip name="WMTS系统的IP:">127.0.0.2</WMTS_ip>
-			<WMTS_port name="WMTS系统的PORT:">8080</WMTS_port>	
+			<wmts_ip name="WMTS系统的IP:">127.0.0.2</wmts_ip>
+			<wmts_port name="WMTS系统的PORT:">8080</wmts_port>	
 			<!--web_base_map name="基础底图路径:">http://127.0.0.1:8080/RemoteRest/services/usa/MapServer</web_base_map-->		
 			<sysrest_ip name="SysRest服务IP:">127.0.0.2</sysrest_ip>
 			<sysrest_port name="SysRest服务PORT">8081</sysrest_port>
@@ -58,13 +58,13 @@
 			<geoportal_ip name="GeoPortal系统的IP:">127.0.0.2</geoportal_ip>
 			<geoportal_port name="GeoPortal系统的PORT:">8080</geoportal_port>
 			<sub_upload_num name="分平台文件上传最大值">10</sub_upload_num>
-			<sub_syn_code name="分平台同步代码">0</sub_syn_code>
-			<File_ip name="FileServices系统的IP:">127.0.0.2</File_ip>
-			<File_port name="FileServices系统的PORT号:">8080</File_port>			
-			<Tile_ip name="TileServices系统的IP:">127.0.0.2</Tile_ip>
-			<Tile_port name="TileServices系统的PORT:">8080</Tile_port>
-			<Aggregator_ip name="Aggregator系统的IP:">127.0.0.2</Aggregator_ip>
-			<Aggregator_port name="Aggregator系统的PORT:">8080</Aggregator_port>			
+            <sub_syn_code name="分平台同步代码">0</sub_syn_code>    <!-- 0表示主分平台之间进行同步，!0表示主主平台之间进行同步 -->
+			<file_ip name="FileServices系统的IP:">127.0.0.2</file_ip>
+			<file_port name="FileServices系统的PORT号:">8080</file_port>			
+			<tile_ip name="TileServices系统的IP:">127.0.0.2</tile_ip>
+			<tile_port name="TileServices系统的PORT:">8080</tile_port>
+			<aggregator_ip name="Aggregator系统的IP:">127.0.0.2</aggregator_ip>
+			<aggregator_port name="Aggregator系统的PORT:">8080</aggregator_port>			
 		</main>
 		<token>
 			<token_ip name="Token服务器ip:">127.0.0.2</token_ip>
@@ -458,8 +458,8 @@
 					<file path="WMTS/WEB-INF/conf/log4j.properties">
 						<key template="[OneMapHome]/Tomcat6.0.29/webapps/WMTS/WEB-INF/logs">log4j.log.dir</key></file>	
 					<file path="WMTS/WEB-INF/conf/config.properties">
-						<key template="http://[WMTS_ip]:[WMTS_portt]">ARCGISSERVER_REST_URI_PORT</key>
-						<key template="http://[WMTS_ip]:[WMTS_port]">WMTS_URI_PORT</key></file>
+						<key template="http://[wmts_ip]:[wmts_portt]">ARCGISSERVER_REST_URI_PORT</key>
+						<key template="http://[wmts_ip]:[wmts_port]">WMTS_URI_PORT</key></file>
 				</gis>
 			</WMTS>
 			<TileServices>
@@ -505,11 +505,11 @@
 						<key template="[TomcatAppPath]\GeoShareManager\download\tilemapfile">physical_path_tilemapfile</key>
 						<key template="[TomcatAppPath]\GeoShareManager\download\bundlemapfile">physical_path_bundlemapfile</key></file>
 					<file path="TileServices/WEB-INF/classes/services-monitor.xml">
-						<key template="[Tile_ip]">/services-monitor/localAddr</key>
-						<key template="[Tile_port]">/services-monitor/localPort</key></file>
+						<key template="[tile_ip]">/services-monitor/localAddr</key>
+						<key template="[tile_port]">/services-monitor/localPort</key></file>
 					<file path="TileServices/WEB-INF/classes/server.properties">
-						<key template="[Tile_ip]">com.esri.rest.HOST</key>
-						<key template="[Tile_ip]">com.esri.rest.DOMAIN</key></file>
+						<key template="[tile_ip]">com.esri.rest.HOST</key>
+						<key template="[tile_ip]">com.esri.rest.DOMAIN</key></file>
 				</main>
 			</TileServices>
 			<FileServices>
@@ -527,11 +527,11 @@
 				</db>
 				<main>
 					<file path="FileServices/WEB-INF/classes/services-monitor.xml">
-						<key template="[File_ip]">/services-monitor/localAddr</key>
-						<key template="[File_port]">/services-monitor/localPort</key></file>
+						<key template="[file_ip]">/services-monitor/localAddr</key>
+						<key template="[file_port]">/services-monitor/localPort</key></file>
 					<file path="FileServices/WEB-INF/classes/server.properties">
-						<key template="[File_ip]">com.esri.rest.HOST</key>
-						<key template="[File_ip]">com.esri.rest.DOMAIN</key></file>
+						<key template="[file_ip]">com.esri.rest.HOST</key>
+						<key template="[file_ip]">com.esri.rest.DOMAIN</key></file>
 				</main>
 				<token>
 					<file path="FileServices/WEB-INF/classes/security.xml">
@@ -601,8 +601,8 @@
 						<key template="[TomcatAppPath]\ServiceAggregatorServer\WEB-INF\classes\cache-conf.xml">cache-conf-path</key>
 					</file>
 					<file path="ServiceAggregatorServer/WEB-INF/classes/services-monitor.xml">
-						<key template="[Aggregator_ip]">/services-monitor/localAddr</key>
-						<key template="[Aggregator_port]">/services-monitor/localPort</key></file>
+						<key template="[aggregator_ip]">/services-monitor/localAddr</key>
+						<key template="[aggregator_port]">/services-monitor/localPort</key></file>
 				</main>
 			</ServiceAggregatorServer>
 			<ShareExchange>
