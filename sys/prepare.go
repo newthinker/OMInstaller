@@ -7,7 +7,7 @@
 #     WebSite: http://www.zone4cho.com
 #  CreateTime: 2012.11.06
 ===================================================================*/
-package onemap
+package sys
 
 import (
 	"errors"
