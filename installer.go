@@ -4,25 +4,27 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/newthinker/onemap-installer/onemap"
+	"github.com/newthinker/onemap-installer/sys"
+	"github.com/newthinker/onemap-installer/web"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 )
 
-var sm onemap.ServerMapping
-var si onemap.SysInfo
-var sc onemap.SysConfig
+var sm sys.ServerMapping
+var si sys.SysInfo
+var sc sys.SysConfig
 
 // open the config files
 func openconfigs(basedir string) error {
 	// check the base dir whether existed
-	if flag := onemap.Exists(basedir); flag != true {
+	if flag := sys.Exists(basedir); flag != true {
 		msg := "ERROR: The input directory(" + basedir + ") isn't existed!"
 		return errors.New(msg)
 	}
 
-	file, err := os.Open(basedir + "/conf/" + onemap.SERVER_MAPPING)
+	file, err := os.Open(basedir + "/conf/" + sys.SERVER_MAPPING)
 	if err != nil {
 		return err
 	}
@@ -34,7 +36,7 @@ func openconfigs(basedir string) error {
 		return err
 	}
 
-	file, err = os.Open(basedir + "/conf/" + onemap.SYS_INFO)
+	file, err = os.Open(basedir + "/conf/" + sys.SYS_INFO)
 	if err != nil {
 		return err
 	}
@@ -46,7 +48,7 @@ func openconfigs(basedir string) error {
 		return err
 	}
 
-	file, err = os.Open(basedir + "/conf/" + onemap.SYS_CONFIG)
+	file, err = os.Open(basedir + "/conf/" + sys.SYS_CONFIG)
 	if err != nil {
 		return err
 	}
@@ -62,13 +64,28 @@ func openconfigs(basedir string) error {
 }
 
 func main() {
+	////////////////////////////////////////////////////////////////
+	fmt.Println("web test")
+
+	http.Handle("/css/", http.FileServer(http.Dir("template")))
+	http.Handle("/js/", http.FileServer(http.Dir("template")))
+	http.Handle("/img/", http.FileServer(http.Dir("template")))
+
+	http.HandleFunc("/subplatform", web.SubHandler)
+    err := http.ListenAndServe("192.168.80.98:8888", nil)
+    if err!=nil {
+        fmt.Println("ListenAndServe: ", err)
+        return
+    }
+
+	////////////////////////////////////////////////////////////////
+
 	//	var curdir string // current working directory
 
 	/// start web service and get the input params into configs
 
 	// parse the configs
 	var basedir string
-	var err error
 	if basedir, err = filepath.Abs("./"); err != nil || basedir == "" {
 		fmt.Println("ERROR: Current directory is invalid!")
 		return
@@ -81,18 +98,18 @@ func main() {
 	}
 
 	// update the params except monitoragent module
-	if err = onemap.UpdateConfig(&si, &sc); err != nil {
+	if err = sys.UpdateConfig(&si, &sc); err != nil {
 		fmt.Println("ERROR: Update system config failed!")
 		return
 	}
 
 	// package the OneMap installer package
 	for i := 0; i < len(si.Machines); i++ {
-		var om onemap.OMPInfo
+		var om sys.OMPInfo
 		om.Basedir = basedir
 
 		// get the info of the current machine
-		var mi *(onemap.MachineInfo) = &(si.Machines[i])
+		var mi *(sys.MachineInfo) = &(si.Machines[i])
 		if err = om.OMGetInfo(mi, &sm); err != nil {
 			fmt.Printf("ERROR: Get the %d machine's info failed!", i+1)
 			return
@@ -100,28 +117,28 @@ func main() {
 
 		// package the onemap
 		// create the onemap directory first
-		dstdir := basedir + "/" + onemap.ONEMAP_NAME
-		if flag := onemap.Exists(dstdir); flag != true { // create the onemap directory first
+		dstdir := basedir + "/" + sys.ONEMAP_NAME
+		if flag := sys.Exists(dstdir); flag != true { // create the onemap directory first
 			fmt.Println("WARN: OneMap directory isn't existed!")
 			if err := os.Mkdir(dstdir, 0755); err != nil {
 				fmt.Println("ERROR: Make OneMap directory failed!")
 				return
 			}
 		}
-		srcdir := om.Basedir + "/" + onemap.ONEMAP_NAME + "_Linux_" + om.Version
+		srcdir := om.Basedir + "/" + sys.ONEMAP_NAME + "_Linux_" + om.Version
 		if err = om.OMCopy(srcdir, dstdir); err != nil {
 			fmt.Println("ERROR: Package onemap failed!")
 			return
 		}
 
 		// update the monitoragent module
-		if err = onemap.UpdateMdlAgent(mi, &sc); err != nil {
+		if err = sys.UpdateMdlAgent(mi, &sc); err != nil {
 			fmt.Printf("ERROR: Update the %d machine's monitoragent module failed!\n", i+1)
 			return
 		}
 
 		// remote copy OneMap package
-		srcdir = om.Basedir + "/" + onemap.ONEMAP_NAME
+		srcdir = om.Basedir + "/" + sys.ONEMAP_NAME
 		dstdir = om.OMHome
 		///////////////////test//////////////////////////
 		om.Ip = "192.168.80.60"

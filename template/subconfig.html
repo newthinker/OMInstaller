@@ -1,119 +1,124 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>OneMap SubPlatform Config Tool</title>
-<meta name="description" content="OneMap分平台配置工具."> 
-
-<script type="text/javascript" src="js/wtree.js"></script>
-
-<style type="text/css">
-<!--
-@import 'custom.css';
--->
-</style>
-
-</head>
-
-<body>
-<div id="om-wrapper"><div id="om-wrapper-inner">
-
-<h2 class="om-def">OneMap SubPlatform Config Tool</h2>
-
-<div class="om-layout" id="sptree">
-<div class="tree-container">
-<form name="subplatform" id="sub-platform">
-
-<div class="sp-info" >
-
-<script type="text/javascript">
-	function sel(){
-		var selids=d.getCheckedNodes();
-		var str="";
-		for(var n=0; n<selids.length; n++){
-			str+=selids[n]+";";
-		}
-		alert(str);
-	}
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>OneMap SubPlatform Config Tool</title>
+        <meta name="description" content="OneMap分平台配置工具.">
+        <script type="text/javascript" src="js/wtree.js">
+        </script>
+        <style type="text/css">
+        <!--@import 'custom.css';
+        -->
+        </style>
+        <script type="text/javascript">
+            function sel(){
+                var selids = d.getCheckedNodes();
+                var str = "";
+                for (var n = 0; n < selids.length; n++) {
+                    str += selids[n] + ";";
+                }
+                alert(str);
+            }
+            
+            var d;
+            window.onload = function(){
+                d = new dTree('d', 'img/menu/');
+                d.config.folderLinks = true;
+                d.config.useCookies = false;
+                d.config.check = true;
+                
+                d.add(0, -1, '分平台配置', "javascript:;", '提示');
+                
+                d.add(1, 0, '服务管理', "javascript:;", '');
+                d.add(8, 1, '本地服务发布', "javascript:;", '');
+                d.add(9, 1, '平台服务注册', "javascript:;", '');
+                d.add(12, 1, '服务使用审核', "javascript:;", '');
+                d.add(30, 1, '平台服务管理', "javascript:;", '');
+                d.add(82, 1, '元数据管理', "javascript:;", '');
+                d.add(326, 1, '注册服务审批', "javascript:;", '');
+                
+                d.add(2, 0, '安全管理', "javascript:;", '');
+                d.add(13, 2, '用户管理', "javascript:;", '');
+                d.add(42, 2, '角色管理', "javascript:;", '');
+                
+                d.add(4, 0, '系统监控', "javascript:;", '');
+                d.add(15, 4, '当前请求列表', "javascript:;", '');
+                d.add(16, 4, '黑名单', "javascript:;", '');
+                d.add(17, 4, '平台监控', "javascript:;", '');
+                d.add(18, 4, '异常报警', "javascript:;", '');
+                d.add(328, 4, '平台消息', "javascript:;", '');
+                
+                d.add(5, 0, '日志管理', "javascript:;", '');
+                d.add(19, 5, '平台监控日志', "javascript:;", '');
+                d.add(20, 5, '服务访问日志', "javascript:;", '');
+                d.add(21, 5, '运维监控日志', "javascript:;", '');
+                d.add(101, 5, '日志收割', "javascript:;", '');
+                
+                d.add(6, 0, '统计分析', "javascript:;", '');
+                d.add(24, 6, '服务流量统计', "javascript:;", '');
+                d.add(25, 6, '服务成功率统计', "javascript:;", '');
+                d.add(26, 6, '服务使用和等待时间统计', "javascript:;", '');
+                d.add(27, 6, '用户访问量统计', "javascript:;", '');
+                d.add(28, 6, '服务运行状态统计', "javascript:;", '');
+                d.add(29, 6, '运维系统操作统计', "javascript:;", '');
+                d.add(222, 6, '服务授权用户统计', "javascript:;", '');
+                d.add(223, 6, '用户授权服务统计', "javascript:;", '');
+                d.add(241, 6, '平台操作系统统计', "javascript:;", '');
+                d.add(261, 6, '平台应用服务器统计', "javascript:;", '');
+                d.add(281, 6, '平台数据库统计', "javascript:;", '');
+                
+                d.add(7, 0, '系统配置', "javascript:;", '');
+                d.add(31, 7, '服务器配置', "javascript:;", '');
+                d.add(32, 7, '安全管理配置', "javascript:;", '');
+                d.add(33, 7, '服务监控配置', "javascript:;", '');
+                d.add(35, 7, '代码管理', "javascript:;", '');
+                d.add(121, 7, '服务元数据配置', "javascript:;", '');
+                d.add(181, 7, '异常报警配置', "javascript:;", '');
+                d.add(201, 7, '平台监控配置', "javascript:;", '');
+                
+                d.add(202, 0, '资料管理', "javascript:;", '');
+                d.add(324, 202, '资源管理', "javascript:;", '');
+                d.add(325, 202, '资源审核', "javascript:;", '');
+                
+                d.add(321, 0, '信息管理', "javascript:;", '');
+                d.add(301, 321, '信息管理', "javascript:;", '');
+                
+                d.add(36, 0, '分平台管理', "javascript:;", '');
+                d.add(37, 36, '分平台管理', "javascript:;", '');
+                
+                document.getElementById('sptree').innerHTML = d;
+                var funcs = eval("(" + "{funcs:[{menudm:'0'},{menudm:'100'},{menudm:'790'},{menudm:'800'},{menudm:'810'}]}" + ")");
+                for (var n = 0; n < funcs.funcs.length; n++) {
+                    d.co(funcs.funcs[n].menudm).checked = true;
+                }
+            }
+			
+			function subMitHandler(){
+				var v =	d.getSelected();
+				document.getElementById('selectValues').value=v;
+				document.getElementById('sub-platform').submit();
+			}
+        </script>
+    </head>
 	
-	var d = new dTree('d','images/system/menu/');
-	d.config.folderLinks=true;
-	d.config.useCookies=false;
-	d.config.check=true;
-	
-	d.add(0,  -1,   '分平台配置', "javascript:;", '提示');
-	
-	d.add(1,   0,   '服务管理',     "javascript:;", '');
-	d.add(8,   1,   '本地服务发布', "javascript:;", '');
-	d.add(9,   1,   '平台服务注册', "javascript:;", '');
-	d.add(12,  1,   '服务使用审核', "javascript:;", '');
-	d.add(30,  1,   '平台服务管理', "javascript:;", '');
-	d.add(82,  1,   '元数据管理',   "javascript:;", '');
-	d.add(326, 1,   '注册服务审批', "javascript:;", '');
-	
-	d.add(2,   0,   '安全管理',     "javascript:;", '');
-	d.add(13,  2,   '用户管理',     "javascript:;", '');
-	d.add(42,  2,   '角色管理',     "javascript:;", '');
-	
-	d.add(4,   0,   '系统监控',     "javascript:;", '');
-	d.add(15,  4,   '当前请求列表', "javascript:;", '');
-	d.add(16,  4,   '黑名单',       "javascript:;", '');
-	d.add(17,  4,   '平台监控',     "javascript:;", '');
-	d.add(18,  4,   '异常报警',     "javascript:;", '');
-	d.add(328, 4,   '平台消息',     "javascript:;", '');
-	
-	d.add(5,   0,   '日志管理',     "javascript:;", '');
-	d.add(19,  5,   '平台监控日志', "javascript:;", '');
-	d.add(20,  5,   '服务访问日志', "javascript:;", '');
-	d.add(21,  5,   '运维监控日志', "javascript:;", '');
-	d.add(101, 5,   '日志收割',     "javascript:;", '');
-	
-	d.add(6,   0,   '统计分析', "javascript:;", '');
-	d.add(24,  6,   '服务流量统计', "javascript:;", '');
-	d.add(25,  6,   '服务成功率统计', "javascript:;", '');
-	d.add(26,  6,   '服务使用和等待时间统计', "javascript:;", '');
-	d.add(27,  6,   '用户访问量统计', "javascript:;", '');
-	d.add(28,  6,   '服务运行状态统计', "javascript:;", '');
-	d.add(29,  6,   '运维系统操作统计', "javascript:;", '');
-	d.add(222, 6,   '服务授权用户统计', "javascript:;", '');
-	d.add(223, 6,   '用户授权服务统计', "javascript:;", '');
-	d.add(241, 6,   '平台操作系统统计', "javascript:;", '');
-	d.add(261, 6,   '平台应用服务器统计', "javascript:;", '');
-	d.add(281, 6,   '平台数据库统计', "javascript:;", '');
-	
-	d.add(7,   0,   '系统配置', "javascript:;", '');
-	d.add(31,  7,   '服务器配置', "javascript:;", '');
-	d.add(32,  7,   '安全管理配置', "javascript:;", '');
-	d.add(33,  7,   '服务监控配置', "javascript:;", '');
-	d.add(35,  7,   '代码管理', "javascript:;", '');
-	d.add(121, 7,   '服务元数据配置', "javascript:;", '');
-	d.add(181, 7,   '异常报警配置', "javascript:;", '');
-	d.add(201, 7,   '平台监控配置', "javascript:;", '');
-	
-	d.add(202, 0,   '资料管理', "javascript:;", '');
-	d.add(324, 202, '资源管理', "javascript:;", '');
-	d.add(325, 202, '资源审核', "javascript:;", '');
-	
-	d.add(321, 0,   '信息管理', "javascript:;", '');
-	d.add(301, 321, '信息管理', "javascript:;", '');
-		
-	d.add(36,  0,   '分平台管理', "javascript:;", '');
-	d.add(37, 36,   '分平台管理', "javascript:;", '');
-	
-	document.getElementById('sptree').innerHTML = d;
-	var funcs = eval("("+"{funcs:[{menudm:'0'},{menudm:'100'},{menudm:'790'},{menudm:'800'},{menudm:'810'}]}"+")");
-	for(var n=0; n<funcs.funcs.length;n++){
-		d.co(funcs.funcs[n].menudm).checked=true;
-	}
-</script>
-
-</div>
-
-<!-- 自动保存到目录下的sql文件中 -->
-
-</form>
-</div></div>
-</div></div>
-</body>
+    <body>
+        <div id="om-wrapper">
+            <div id="om-wrapper-inner">
+                <h2 class="om-def">OneMap SubPlatform Config Tool</h2>
+				
+                <div class="om-layout" id="sptree"></div>
+				
+				<div class="tree-container">
+					<form name="subplatform" id="sub-platform" form action="subplatform" method="post">
+						<input type="hidden" id="selectValues">
+						<div class="sp-info">
+							<div class="sp-submit">
+								<input type="button" value="下一步" onclick="subMitHandler();">
+							</div>
+						</div>
+					</form>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
