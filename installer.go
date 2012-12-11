@@ -71,12 +71,12 @@ func main() {
 	http.Handle("/js/", http.FileServer(http.Dir("template")))
 	http.Handle("/img/", http.FileServer(http.Dir("template")))
 
-	http.HandleFunc("/subplatform", web.SubHandler)
-    err := http.ListenAndServe("192.168.80.98:8888", nil)
-    if err!=nil {
-        fmt.Println("ListenAndServe: ", err)
-        return
-    }
+	http.HandleFunc("/subconfig", web.SubHandler)
+	err := http.ListenAndServe("192.168.80.98:8888", nil)
+	if err != nil {
+		fmt.Println("ListenAndServe: ", err)
+		return
+	}
 
 	////////////////////////////////////////////////////////////////
 

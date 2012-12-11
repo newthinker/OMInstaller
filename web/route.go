@@ -3,10 +3,8 @@ package web
 import (
 	"fmt"
 	"net/http"
-	//    "strings"
-	//"reflect"
+	"reflect"
 	"html/template"
-	//"log"
 )
 
 // 分平台处理器
@@ -14,20 +12,39 @@ func SubHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("SubPlatform handler")
 	fmt.Println("method:", r.Method)
 
-	if r.Method == "GET" {
-		t, _ := template.ParseFiles("template/subconfig.html")
-		t.Execute(w, nil)
-	} else {
-		r.ParseForm() // 解析URL传递的参数
+    sub := &subController{}
+    controller := reflect.ValueOf(sub)
+    method := controller.MethodByName("SelectAction")
 
-		fmt.Println(r.Form)
-	}
+    if !method.IsValid()  {
+        /// default controller
+    }
+
+    requestValue := reflect.ValueOf(r)
+    responseValue := reflect.ValueOf(w)
+    method.Call([]reflect.Value{responseValue, requestValue})
 
 }
 
 // 参数配置处理器
 func SysconfHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("SysConfig handler")
+	fmt.Println("method:", r.Method)
 
+	if r.Method == "GET" {
+		t, _ := template.ParseFiles("template/sysconfig.html")
+		t.Execute(w, nil)
+	} else if r.Method == "POST" {
+		err := r.ParseForm() // 解析URL传递的参数
+
+		// 如果分平台参数解析有问题，报告错误并返回
+		if err != nil {
+			http.Redirect(w, r, "/sysconfig", http.StatusFound)
+		} else {
+			fmt.Println(r.Form[""])
+//			http.Redirect(w, r, "/sysconfig", http.StatusFound)
+		}
+	}
 }
 
 // 404页面处理器 
