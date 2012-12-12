@@ -2,27 +2,26 @@ package web
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"reflect"
-	"html/template"
 )
 
 // 分平台处理器
 func SubHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("SubPlatform handler")
-	fmt.Println("method:", r.Method)
 
-    sub := &subController{}
-    controller := reflect.ValueOf(sub)
-    method := controller.MethodByName("SelectAction")
+	sub := &subController{}
+	controller := reflect.ValueOf(sub)
+	method := controller.MethodByName("SelectAction")
 
-    if !method.IsValid()  {
-        /// default controller
-    }
+	if !method.IsValid() {
+		/// default controller
+	}
 
-    requestValue := reflect.ValueOf(r)
-    responseValue := reflect.ValueOf(w)
-    method.Call([]reflect.Value{responseValue, requestValue})
+	requestValue := reflect.ValueOf(r)
+	responseValue := reflect.ValueOf(w)
+	method.Call([]reflect.Value{responseValue, requestValue})
 
 }
 
@@ -42,7 +41,7 @@ func SysconfHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/sysconfig", http.StatusFound)
 		} else {
 			fmt.Println(r.Form[""])
-//			http.Redirect(w, r, "/sysconfig", http.StatusFound)
+			//			http.Redirect(w, r, "/sysconfig", http.StatusFound)
 		}
 	}
 }
