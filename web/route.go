@@ -28,7 +28,6 @@ func SubHandler(w http.ResponseWriter, r *http.Request) {
 // 参数配置处理器
 func SysconfHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("SysConfig handler")
-	fmt.Println("method:", r.Method)
 
 	if r.Method == "GET" {
 		t, _ := template.ParseFiles("template/sysconfig.html")
