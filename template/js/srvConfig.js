@@ -1,12 +1,12 @@
-<!-- ���÷����� -->
+<!-- 添加服务模块 -->
 function configServer() {
 	var cur_form=dom.getDom('sysconfig',tabContainer.selectedTab,"form")[0];
 	var chkboxes = dom.getDom('.check-value',cur_form,"input")
-	var count = 0;		// ȷ����checkbox����
-	var agent = 0;		// ��ش����������������
-	// ����checkboxes����ȡ����ȷ��checkboxes
+	var count = 0;		// 添加的服务模块个数，也即是选择的checkbox个数
+	var agent = 0;		// 代理模块是否安装标识(必安装模块)
+	// 遍历所有checkboxes，将选择的进行显示
 	for(var i=0,elm;elm=chkboxes[i];i++) {
-		var type = elm.value;		// ��ȡȷ������������
+		var type = elm.value;		// checkbox所对应的服务器名称
 		switch (type)
 		{
 		case "agent":
@@ -67,12 +67,43 @@ function configServer() {
 	}
 	
 	
-	if(count<=1) {		// û������
-		alert("�����÷�����!");
+	if(count<=1) {		// 没有选择安装任何服务器
+		alert("请选择安装的服务器!");
 		return;
-	} else if(agent!=1) {	// û�����ü�ش���ģ��
-		alert("�����ü�ش��������!");
+	} else if(agent!=1) {	// 没有安装代理服务器
+		alert("请选择必须安装的代理服务器模块!");
 		return;
 	} 
+	
+	// 将提交按钮设置为可提交状态
+	document.getElementById("sys_submit_bt").disabled="";
+}
+
+<!-- 系统配置页面参数整理提交 -->
+function sysSubmitHandler() {
+	var sysSrvConfig = {};			// 所有服务器参数
+	var num = 0;					// 服务器计数
+	
+	for (var cur_tab in tabContainer.getTabs()) {
+		num++;
+		
+		var cur_form=dom.getDom('sysconfig', cur_tab, "form")[0];
+		
+		var server = {};
+	
+		// 服务器基本信息
+		var base = {
+			os: 
+		};
+		
+		// 服务器安装模块信息
+		
+	}
+	
+	
+	
+	
+	
+	// 输出成json
 	
 }

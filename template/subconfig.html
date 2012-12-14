@@ -22,7 +22,7 @@
             
             var d;
             window.onload = function(){
-                d = new dTree('d', 'img/menu/');
+                d = new dTree('d', 'images/menu/');
                 d.config.folderLinks = true;
                 d.config.useCookies = false;
                 d.config.check = true;
@@ -87,15 +87,15 @@
                 d.add(37, 36, '分平台管理', "javascript:;", '');
                 
                 document.getElementById('sptree').innerHTML = d;
-//                var funcs = eval("(" + "{funcs:[{menudm:'0'},{menudm:'100'},{menudm:'790'},{menudm:'800'},{menudm:'810'}]}" + ")");
-//                for (var n = 0; n < funcs.funcs.length; n++) {
-//                    d.co(funcs.funcs[n].menudm).checked = true;
-//                }
+                var funcs = eval("(" + "{funcs:[{menudm:'0'},{menudm:'100'},{menudm:'790'},{menudm:'800'},{menudm:'810'}]}" + ")");
+                for (var n = 0; n < funcs.funcs.length; n++) {
+                    d.co(funcs.funcs[n].menudm).checked = true;
+                }
             }
 			
-			function subMitHandler(){
-				var v =	d.getCheckedNodes();
-				document.getElementById('selValues').value=v;
+			function subSubmitHandler(){
+				var v =	d.getSelected();
+				document.getElementById('selectValues').value=v;
 				document.getElementById('sub-platform').submit();
 			}
         </script>
@@ -109,11 +109,11 @@
                 <div class="om-layout" id="sptree"></div>
 				
 				<div class="tree-container">
-					<form name="subplatform" id="sub-platform" form action="subconfig" method="post">
-						<input type="hidden" id="selValues" name="selValues">
+					<form name="subplatform" id="sub-platform">
+						<input type="hidden" id="selectValues">
 						<div class="sp-info">
 							<div class="sp-submit">
-								<input type="button" value="下一步" onclick="subMitHandler();">
+								<input type="button" value="下一步" onclick="subSubmitHandler();">
 							</div>
 						</div>
 					</form>
