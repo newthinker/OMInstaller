@@ -11,7 +11,6 @@ import (
 )
 
 type subController struct {
-	SelectID []string // 用户选择的所有菜单
 }
 
 // 处理用户菜单选择操作
@@ -32,8 +31,6 @@ func (this *subController) SelectAction(w http.ResponseWriter, r *http.Request) 
 			log.Println(err)
 		} else { // 解析用户选择menu并进入下个页面
 			fmt.Println(r.Form["selValues"])
-
-			// this.SelectID = r.Form["selValues"]
 
 			// 进行分平台配置
 			var base string

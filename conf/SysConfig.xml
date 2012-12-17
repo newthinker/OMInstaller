@@ -19,24 +19,24 @@
 		<web>
 			<web_ip name="门户IP:">127.0.0.2</web_ip>
 			<web_port name="门户PORT:">8080</web_port>
-			<web_user name="门户默认用户名:">super</web_user>
-			<web_pwd name="门户默认用户名密码:">admin</web_pwd>
-			<flex_ip name="Flex发布服务器IP:">127.0.0.2</flex_ip>
-			<flex_port name="Flex发布服务器PORT:">8080</flex_port>
-			<sl_ip name="Silverlight发布服务器IP:">127.0.0.2</sl_ip>
-			<sl_port name="Silverlight发布服务器PORT:">80</sl_port>
-			<ria_ip name="快速搭建服务器IP:">127.0.0.2</ria_ip>
-			<ria_port name="快速发布服务器PORT:">8080</ria_port>
-			<iis_root name="silverlight文件生成路径:">c:\inetpub\wwwroot\</iis_root>
-			<web_csw name="是否启用CSW服务:">1</web_csw>
-		</web>
-		<gis>
-			<gis_ip name="GIS服务器IP:">127.0.0.2</gis_ip>
-			<gis_port name="GIS服务器PORT:">8080</gis_port>
-			<gis_ags_ip name="ArcGISServer服务器IP:">127.0.0.2</gis_ags_ip>
-			<gis_ags_user name="ArcGISServer服务器用户名:">arcgismanager</gis_ags_user>
-			<gis_ags_pwd name="ArcGISServer服务器密码:" encrypt="true">/2IWry6fWdsq9l5S69ER8Q==</gis_ags_pwd>
-			<gis_sharekey name="sharekey:" encrypt="true">9STRE5GPzs2UpCvzrlfktw==</gis_sharekey>
+        <web_user name="门户默认用户名:">super</web_user>
+        <web_pwd name="门户默认用户名密码:">admin</web_pwd>
+        <flex_ip name="Flex发布服务器IP:">127.0.0.2</flex_ip>
+        <flex_port name="Flex发布服务器PORT:">8080</flex_port>
+        <sl_ip name="Silverlight发布服务器IP:">127.0.0.2</sl_ip>
+        <sl_port name="Silverlight发布服务器PORT:">80</sl_port>
+        <ria_ip name="快速搭建服务器IP:">127.0.0.2</ria_ip>
+        <ria_port name="快速发布服务器PORT:">8080</ria_port>
+        <iis_root name="silverlight文件生成路径:">c:\inetpub\wwwroot\</iis_root>
+        <web_csw name="是否启用CSW服务:">1</web_csw>
+    </web>
+    <gis>
+        <gis_ip name="GIS服务器IP:">127.0.0.2</gis_ip>
+        <gis_port name="GIS服务器PORT:">8080</gis_port>
+        <gis_ags_ip name="ArcGISServer服务器IP:">127.0.0.2</gis_ags_ip>
+        <gis_ags_user name="ArcGISServer服务器用户名:">arcgismanager</gis_ags_user>
+        <gis_ags_pwd name="ArcGISServer服务器密码:" encrypt="true">/2IWry6fWdsq9l5S69ER8Q==</gis_ags_pwd>
+        <gis_sharekey name="sharekey:" encrypt="true">9STRE5GPzs2UpCvzrlfktw==</gis_sharekey>
 			<ags_log_path name="ArcGISServer日志本地存放目录:">C:\ArcGIS\Server10.0\server\user\log</ags_log_path>
 			<!--gis_base_map name="底图服务地址:">http://127.0.0.1:8099/arcgis/rest/services/world/MapServer</gis_base_map>
 			<gis_geo_map name="几何服务地址:">http://127.0.0.1:8099/arcgis/rest/services/Geometry/GeometryServer</gis_geo_map-->
@@ -53,8 +53,8 @@
 			<main_port name="运维服务器PORT:">8080</main_port>
 			<main_upload_level name="运维文件上传目录深度:">3</main_upload_level>
 			<main_upload_num name="运维文件上传最大值:">1</main_upload_num>
-			<geoCoding_ip name="GeoCoding系统的IP:">127.0.0.2</geoCoding_ip>
-			<geoCoding_port name="GeoCoding系统的PORT:">8080</geoCoding_port>
+			<geoconding_ip name="GeoCoding系统的IP:">127.0.0.2</geoconding_ip>
+			<geoconding_port name="GeoCoding系统的PORT:">8080</geoconding_port>
 			<geoportal_ip name="GeoPortal系统的IP:">127.0.0.2</geoportal_ip>
 			<geoportal_port name="GeoPortal系统的PORT:">8080</geoportal_port>
 			<sub_upload_num name="分平台文件上传最大值">10</sub_upload_num>
@@ -111,7 +111,7 @@
 				</db>
 				<main>
 					<file path="GeoCoding/WEB-INF/conf/wfs/wfs_configuration.xml">
-						<key template="http://[geoCoding_ip]:[geoCoding_port]/GeoCoding/WFSGServer" nsattribute="href">/wfs:WFS_Capabilities/deegree:deegreeParams/deegree:DefaultOnlineResource</key>
+						<key template="http://[geoconding_ip]:[geoconding_port]/GeoCoding/WFSGServer" nsattribute="href">/wfs:WFS_Capabilities/deegree:deegreeParams/deegree:DefaultOnlineResource</key>
 					</file>
 				</main>
 			</GeoCoding>

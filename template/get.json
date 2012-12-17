@@ -1,0 +1,315 @@
+[
+    {
+        "server_base": {
+            "os": "linux",
+            "arch": "amd64",
+            "ip": "127.0.0.1",
+            "user": "admin",
+            "pwd": "admin",
+            "omhome": "/opt/OneMap"
+        },
+        "server_params": [
+            {
+                "srvname": "db",
+                "params": [
+                    {
+                        "paramname": "db_ip",
+                        "paramvalue": "数据库服务器IP"
+                    },
+                    {
+                        "paramname": "db_port",
+                        "paramvalue": "数据库服务器PORT"
+                    },
+                    {
+                        "paramname": "db_sid",
+                        "paramvalue": "数据库服务器实例名"
+                    },
+                    {
+                        "paramname": "manager_user",
+                        "paramvalue": "GeoShareManager数据库用户名"
+                    },
+                    {
+                        "paramname": "manager_pwd",
+                        "paramvalue": "GeoShareManager数据库密码",
+                        "encrypt": "true"
+                    },
+                    {
+                        "paramname": "portal_user",
+                        "paramvalue": "GeoSharePortal数据库用户名"
+                    },
+                    {
+                        "paramname": "portal_pwd",
+                        "paramvalue": "GeoSharePortal数据库密码",
+                        "encrypt": "true"
+                    },
+                    {
+                        "paramname": "geocoding_user",
+                        "paramvalue": "GeoCoding数据库用户名"
+                    },
+                    {
+                        "paramname": "geocoding_pwd",
+                        "paramvalue": "GeoCoding数据库密码",
+                        "encrypt": "true"
+                    },
+                    {
+                        "paramname": "geoportal_user",
+                        "paramvalue": "GeoPortal数据库用户名"
+                    },
+                    {
+                        "paramname": "geoportal_pwd",
+                        "paramvalue": "GeoPortal数据库密码",
+                        "encrypt": "true"
+                    },
+                    {
+                        "paramname": "db_h2",
+                        "paramvalue": "内存数据库IP"
+                    },
+                    {
+                        "paramname": "sub_user",
+                        "paramvalue": "分平台数据库用户名"
+                    }
+                ]
+            },
+            {
+                "srvname": "gis",
+                "params": [
+                    {
+                        "paramname": "gis_ip",
+                        "paramvalue": "GIS服务器IP"
+                    },
+                    {
+                        "paramname": "gis_port",
+                        "paramvalue": "GIS服务器端口"
+                    },
+                    {
+                        "paramname": "gis_ags_ip",
+                        "paramvalue": "ArcGISServer服务器IP"
+                    },
+                    {
+                        "paramname": "gis_ags_user",
+                        "paramvalue": "ArcGISServer服务器用户名"
+                    },
+                    {
+                        "paramname": "gis_ags_pwd",
+                        "paramvalue": "ArcGISServer服务器密码",
+                        "encrypt": "true"
+                    },
+                    {
+                        "paramname": "gis_sharekey",
+                        "paramvalue": "sharekey",
+                        "encrypt": "true"
+                    },
+                    {
+                        "paramname": "ags_log_path",
+                        "paramvalue": "ArcGISServer日志路径"
+                    },
+                    {
+                        "paramname": "gis_basemap_type",
+                        "paramvalue": "底图服务类型"
+                    },
+                    {
+                        "paramname": "gis_services_port",
+                        "paramvalue": "RemoteServices系统的HTTPSPORT"
+                    },
+                    {
+                        "paramname": "wmts_ip",
+                        "paramvalue": "WMTS系统的IP"
+                    },
+                    {
+                        "paramname": "wmts_port",
+                        "paramvalue": "WMTS系统的PORT"
+                    },
+                    {
+                        "paramname": "sysrest_ip",
+                        "paramvalue": "SysRest服务IP"
+                    },
+                    {
+                        "paramname": "sysrest_port",
+                        "paramvalue": "SysRest服务PORT"
+                    }
+                ]
+            },
+            {
+                "srvname": "main",
+                "params": [
+                    {
+                        "paramname": "main_ip",
+                        "paramvalue": "运维服务器IP"
+                    },
+                    {
+                        "paramname": "main_port",
+                        "paramvalue": "运维服务器端口"
+                    },
+                    {
+                        "paramname": "main_upload_level",
+                        "paramvalue": "运维文件上传目录深度"
+                    },
+                    {
+                        "paramname": "main_upload_num",
+                        "paramvalue": "运维文件上传最大值"
+                    },
+                    {
+                        "paramname": "geocoding_ip",
+                        "paramvalue": "GeoCoding系统IP"
+                    },
+                    {
+                        "paramname": "geocoding_port",
+                        "paramvalue": "GeoCoding系统PORT"
+                    },
+                    {
+                        "paramname": "geoportal_ip",
+                        "paramvalue": "GeoPortal系统IP"
+                    },
+                    {
+                        "paramname": "geoportal_portal",
+                        "paramvalue": "GeoPortal系统PORT"
+                    },
+                    {
+                        "paramname": "sub_upload_num",
+                        "paramvalue": "分平台文件上传最大值"
+                    },
+                    {
+                        "paramname": "sub_syn_code",
+                        "paramvalue": "分平台同步模式",
+                        "select": [
+                            {
+                                "option": "0",
+                                "selected": "主平台与分平台之间同步"
+                            },
+                            {
+                                "option": "1",
+                                "selected": "主平台与主平台之间同步"
+                            }
+                        ]
+                    },
+                    {
+                        "paramname": "file_ip",
+                        "paramvalue": "FileServices系统IP"
+                    },
+                    {
+                        "paramname": "file_port",
+                        "paramvalue": "FileServices系统的PORT"
+                    },
+                    {
+                        "paramname": "tile_ip",
+                        "paramvalue": "TileServices系统IP"
+                    },
+                    {
+                        "paramname": "tile_port",
+                        "paramvalue": "TileServices系统PORT"
+                    },
+                    {
+                        "paramname": "aggregator_ip",
+                        "paramvalue": "Aggregator系统IP"
+                    },
+                    {
+                        "paramname": "aggregator_port",
+                        "paramvalue": "Aggregator系统PORT"
+                    }
+                ]
+            },
+            {
+                "srvname": "agent",
+                "params": [
+                    {
+                        "paramname": "agent_ip",
+                        "paramvalue": "监控代理服务器IP"
+                    },
+                    {
+                        "paramname": "agent_port",
+                        "paramvalue": "监控代理服务器PORT"
+                    }
+                ]
+            },
+            {
+                "srvname": "msg",
+                "params": [
+                    {
+                        "paramname": "jms_ip",
+                        "paramvalue": "JMS服务器IP"
+                    },
+                    {
+                        "paramname": "jms_port",
+                        "paramvalue": "JSM服务器PORT"
+                    }
+                ]
+            },
+            {
+                "srvname": "token",
+                "params": [
+                    {
+                        "paramname": "token_ip",
+                        "paramvalue": "Token服务器IP"
+                    },
+                    {
+                        "paramname": "token_port",
+                        "paramvalue": "Token服务器PORT"
+                    }
+                ]
+            },
+            {
+                "srvname": "web",
+                "params": [
+                    {
+                        "paramname": "web_ip",
+                        "paramvalue": "门户IP"
+                    },
+                    {
+                        "paramname": "web_port",
+                        "paramvalue": "门户PORT"
+                    },
+                    {
+                        "paramname": "web_user",
+                        "paramvalue": "门户默认用户名"
+                    },
+                    {
+                        "paramname": "web_pwd",
+                        "paramvalue": "门户默认用户名密码"
+                    },
+                    {
+                        "paramname": "flex_ip",
+                        "paramvalue": "Flex发布服务器IP"
+                    },
+                    {
+                        "paramname": "flex_port",
+                        "paramvalue": "Flex发布服务器PORT"
+                    },
+                    {
+                        "paramname": "sl_ip",
+                        "paramvalue": "Silverlight发布服务器IP"
+                    },
+                    {
+                        "paramname": "sl_port",
+                        "paramvalue": "Silverlight发布服务器PORT"
+                    },
+                    {
+                        "paramname": "ria_ip",
+                        "paramvalue": "快速搭建服务器IP"
+                    },
+                    {
+                        "paramname": "ria_port",
+                        "paramvalue": "快速搭建服务器PORT"
+                    },
+                    {
+                        "paramname": "iis_root",
+                        "paramvalue": "Silverlight文件生成路径"
+                    },
+                    {
+                        "paramname": "web_csw",
+                        "paramvalue": "是否启用csw服务",
+                        "select": [
+                            {
+                                "option": "0",
+                                "selected": "禁用"
+                            },
+                            {
+                                "option": "1",
+                                "selected": "开启"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

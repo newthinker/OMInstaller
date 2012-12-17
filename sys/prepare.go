@@ -40,7 +40,7 @@ type OMPInfo struct {
 	Basedir   string   // 当前安装包根目录
 	Apps      []string // OneMap应用模块
 	Services  []string // OneMap服务
-	Servers   []string // OneMap server types	
+	Servers   []string // OneMap server types
 }
 
 // 判断文件或者路径是否存在
