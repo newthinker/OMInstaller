@@ -1,0 +1,370 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>OneMap System Config Tool</title>
+        <meta name="description" content="OneMap分布式安装配置工具.">
+        <link rel="stylesheet" type="text/css" href="css/custom.css"/>
+        
+    </head>
+    <body>
+        <div class="om-layout"name="system-config">
+            <div id="tabs-container" >
+                <form name="sysconfig">
+                    <div class="base-info"name="base">
+                        <fieldset>
+                            <legend class="legend">
+                                服务器基本参数信息
+                            </legend>
+                            <div class="select-controls">
+                                <div class="select-control"name="base-select-os">
+                                    <label class="control-label">
+                                        OS:
+                                    </label>
+                                    <select class="select-value"name="base-os">
+                                        <option>Windows</option>
+                                        <option>Linux</option>
+                                    </select>
+                                </div>
+                                <div class="select-control"name="base-select-arch">
+                                    <label class="control-label">
+                                        ARCH:
+                                    </label>
+                                    <select class="select-value"name="base-arch">
+                                        <option>i386</option>
+                                        <option>amd64</option>
+                                    </select>
+                                </div>
+                                <div class="select-control"name="base-select-container">
+                                    <label class="control-label">
+                                        WEB容器类型:
+                                    </label>
+                                    <select class="select-value"name="base-container">
+                                        <option>Tomcat</option>
+                                        <option>Weblogic</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-controls">
+                                <div class="input-control">
+                                    <label class="control-label"for="base-label-ip">
+                                        IP:
+                                    </label>
+                                    <input type="text"placeholder="服务器IP地址"class="input-value"name="base-ip">
+                                    <p class="help-block">
+                                    </p>
+                                </div>
+                                <div class="input-control">
+                                    <label class="control-label"for="base-label-user">
+                                        USER:
+                                    </label>
+                                    <input type="text"placeholder="系统管理员帐户"class="input-value"name="base-user">
+                                    <p class="help-block">
+                                    </p>
+                                </div>
+                                <div class="input-control">
+                                    <label class="control-label"for="base-label-pwd">
+                                        PWD:
+                                    </label>
+                                    <input type="text"placeholder="用户密码"class="input-value"name="base-pwd">
+                                    <p class="help-block">
+                                    </p>
+                                </div>
+                                <div class="input-control">
+                                    <label class="control-label"for="base-label-omhome">
+                                        OMHome:
+                                    </label>
+                                    <input type="text"placeholder="OneMap安装目录"class="input-value"name="base-omhome">
+                                    <p class="help-block">
+                                    </p>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="config-info"name="config">
+                        <fieldset>
+                            <legend>
+                                服务器配置
+                            </legend>
+                            <div class="config-checks"name="config-check-servers">
+                                <fieldset>
+                                    <legend>
+                                        请选择安装服务器类型
+                                    </legend>
+                                    <div class="check-controls">
+                                        <div class="check-control">
+                                            <input type="checkbox"value="agent"checked="checked"class="check-value"name="config-check-agent">
+                                            <label class="control-label"for="config-label-agent">
+                                                AGENT
+                                            </label>
+                                        </div>
+                                        <div class="check-control">
+                                            <input type="checkbox"value="db"class="check-value"name="config-check-db">
+                                            <label class="control-label"for="config-label-db">
+                                                DB
+                                            </label>
+                                        </div>
+                                        <div class="check-control">
+                                            <input type="checkbox"value="gis"class="check-value"name="config-check-gis">
+                                            <label class="control-label"for="config-label-gis">
+                                                GIS
+                                            </label>
+                                        </div>
+                                        <div class="check-control">
+                                            <input type="checkbox"value="main"class="check-value"name="config-check-main">
+                                            <label class="control-label"for="config-label-main">
+                                                MAIN
+                                            </label>
+                                        </div>
+                                        <div class="check-control">
+                                            <input type="checkbox"value="msg"class="check-value"name="config-check-msg">
+                                            <label class="control-label"for="config-label-msg">
+                                                MSG
+                                            </label>
+                                        </div>
+                                        <div class="check-control">
+                                            <input type="checkbox"value="token"class="check-value"name="config-check-token">
+                                            <label class="control-label"for="config-label-token">
+                                                TOKEN
+                                            </label>
+                                        </div>
+                                        <div class="check-control">
+                                            <input type="checkbox"value="web"class="check-value"name="config-check-web">
+                                            <label class="control-label"for="config-label-web">
+                                                WEB
+                                            </label>
+                                        </div>
+                                        <div class="check-control">
+                                            <input type="button"value="添加"onclick="configServer()">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="config-servers"name="servers">
+                                <div class="config-server">
+                                    <fieldset name="server-db"style="">
+                                    	<legend class="twb">db服务器信息配置</legend>
+                                        <div type="hidden"class="input-control"name="input-db-port">
+                                            <label class="control-label"for="config-label">
+                                                数据库服务器PORT:
+                                            </label>
+                                            <input placeholder="数据库服务器PORT端口"class="input-value"name="db-port">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-db-sid">
+                                            <label class="control-label"for="config-label">
+                                                数据库服务器实例名:
+                                            </label>
+                                            <input type="text"placeholder="数据库服务器实例名"class="input-value"name="db-sid">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-manager-user">
+                                            <label class="control-label"for="config-label">
+                                                运维数据库用户名:
+                                            </label>
+                                            <input type="text"placeholder="GeoShareManager数据库用户名"class="input-value"name="manager-user">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-manager-pwd">
+                                            <label class="control-label"for="config-label">
+                                                运维数据库密码
+                                            </label>
+                                            <input type="text"placeholder="GeoShareManager数据库密码"class="input-value"name="manager-pwd"encrypt="true">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-portal-user">
+                                            <label class="control-label"for="config-label">
+                                                门户数据库用户名:
+                                            </label>
+                                            <input type="text"placeholder="GeoSharePortal数据库用户名"class="input-value"name="portal-user">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-portal-pwd">
+                                            <label class="control-label"for="config-label">
+                                                门户数据库密码
+                                            </label>
+                                            <input type="text"placeholder="GeoSharePortal数据库密码"class="input-value"name="portal-pwd"encrypt="true">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-geocoding-user">
+                                            <label class="control-label"for="config-label">
+                                                GeoCoding数据库用户名:
+                                            </label>
+                                            <input type="text"placeholder="GeoCoding数据库用户名"class="input-value"name="geocoding-user">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-manager-pwd">
+                                            <label class="control-label"for="config-label">
+                                                GeoSharePortal数据库密码
+                                            </label>
+                                            <input type="text"placeholder="GeoCoding数据库密码"class="input-value"name="geocoding-pwd"encrypt="true">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-geoportal-user">
+                                            <label class="control-label"for="config-label">
+                                                GeoPortal数据库用户名:
+                                            </label>
+                                            <input type="text"placeholder="GeoPortal数据库用户名"class="input-value"name="geoportal-user">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-manager-pwd">
+                                            <label class="control-label"for="config-label">
+                                                GeoPortal数据库密码
+                                            </label>
+                                            <input type="text"placeholder="GeoPortal数据库密码"class="input-value"name="geoportal-pwd"encrypt="true">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-sub-user">
+                                            <label class="control-label"for="config-label">
+                                                分平台数据库用户名:
+                                            </label>
+                                            <input type="text"placeholder="分平台数据库用户名"class="input-value"name="sub-user">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="config-server">
+                                    <fieldset name="server-gis"style="">
+                                        <div class="input-control"name="input-gis-ags-user">
+                                            <label class="control-label"for="config-label">
+                                                ArcGISServer服务器用户名:
+                                            </label>
+                                            <input type="text"placeholder="ArcGISServer Manager登录用户名"class="input-value"name="gis-ags-user">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-gis-ags-pwd">
+                                            <label class="control-label"for="config-label">
+                                                ArcGISServer服务器密码:
+                                            </label>
+                                            <input type="text"placeholder="ArcGISServer Manager登录密码"class="input-value"name="gis-ags-pwd"encrypt="true">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-gis-sharekey">
+                                            <label class="control-label"for="config-label">
+                                                sharekey:
+                                            </label>
+                                            <input type="text"placeholder="sharekey"class="input-value"name="gis-sharekey"encrypt="true">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-ags-log-path">
+                                            <label class="control-label"for="config-label">
+                                                ArcGISServer日志路径:
+                                            </label>
+                                            <input type="text"placeholder="ArcGISServer日志本地存放路径"class="input-value"name="ags-log-path">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-gis-basemap-type">
+                                            <label class="control-label"for="config-label">
+                                                底图服务类型:
+                                            </label>
+                                            <input type="text"placeholder="底图服务类型"class="input-value"name="gis-basemap-type">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-gis-services-port">
+                                            <label class="control-label"for="config-label">
+                                                RemoteRest系统网络端口:
+                                            </label>
+                                            <input type="text"placeholder="RemoteRest系统的HTTP PORT"class="input-value"name="gis-services-port">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-gis-basemap-type">
+                                            <label class="control-label"for="config-label">
+                                                底图服务类型:
+                                            </label>
+                                            <input type="text"placeholder="底图服务类型"class="input-value"name="gis-basemap-type">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="config-server">
+                                    <fieldset name="server-main"style="">
+                                        <div class="input-control"name="input-main-upload-level">
+                                            <label class="control-label"for="config-label">
+                                                运维文件上传目录深度:
+                                            </label>
+                                            <input type="text"placeholder="运维文件上传目录深度"class="input-value"name="main-upload-level">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-main-upload-num">
+                                            <label class="control-label"for="config-label">
+                                                运维文件上传最大值:
+                                            </label>
+                                            <input type="text"placeholder="运维文件上传最大值"class="input-value"name="main-upload-num">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="input-control"name="input-sub-upload-num">
+                                            <label class="control-label"for="config-label">
+                                                分平台文件上传最大值:
+                                            </label>
+                                            <input type="text"placeholder="分平台文件上传最大值"class="input-value"name="sub-upload-num">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                        <div class="select-control"name="select-sub-syn-code">
+                                            <label class="control-label">
+                                                分平台同步模式:
+                                            </label>
+                                            <select class="select-value"name="sub-syn-code">
+                                                <option>主平台与分平台之间同步</option>
+                                                <option>主平台与主平台之间同步</option>
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="config-server">
+                                    <fieldset name="server-msg"style="">
+                                        <div class="input-control"name="input-jms-port">
+                                            <label class="control-label"for="config-label">
+                                                JMS服务器PORT:
+                                            </label>
+                                            <input type="text"placeholder="JMS消息服务器端口"class="input-value"name="jms-port">
+                                            <p class="help-block">
+                                            </p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="config-server">
+                                    <fieldset name="server-token"style="">
+                                    </fieldset>
+                                </div>
+                                <div class="config-server">
+                                    <fieldset name="server-web"style="">
+                                        <div class="select-control"name="params-web-csw">
+                                            <label class="control-label">
+                                                是否启用csw服务:
+                                            </label>
+                                            <select class="select-value"name="web-csw">
+                                                <option>禁用</option>
+                                                <option>开启</option>
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </fieldset>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+                </body>
+            </html>

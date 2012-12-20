@@ -28,7 +28,7 @@
         <ria_ip name="快速搭建服务器IP:">127.0.0.2</ria_ip>
         <ria_port name="快速发布服务器PORT:">8080</ria_port>
         <iis_root name="silverlight文件生成路径:">c:\inetpub\wwwroot\</iis_root>
-        <web_csw name="是否启用CSW服务:">1</web_csw>
+        <web_csw name="是否启用CSW服务:" selects="0,禁用;1,开启">1</web_csw>
     </web>
     <gis>
         <gis_ip name="GIS服务器IP:">127.0.0.2</gis_ip>
@@ -58,7 +58,7 @@
 			<geoportal_ip name="GeoPortal系统的IP:">127.0.0.2</geoportal_ip>
 			<geoportal_port name="GeoPortal系统的PORT:">8080</geoportal_port>
 			<sub_upload_num name="分平台文件上传最大值">10</sub_upload_num>
-            <sub_syn_code name="分平台同步代码">0</sub_syn_code>    <!-- 0表示主分平台之间进行同步，!0表示主主平台之间进行同步 -->
+            <sub_syn_code name="分平台同步代码" selects="0,主分平台之间进行同步; 1,主主平台之间进行同步;">0</sub_syn_code>
 			<file_ip name="FileServices系统的IP:">127.0.0.2</file_ip>
 			<file_port name="FileServices系统的PORT号:">8080</file_port>			
 			<tile_ip name="TileServices系统的IP:">127.0.0.2</tile_ip>

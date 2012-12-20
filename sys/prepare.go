@@ -286,9 +286,9 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 				for k := 0; k < len(srv.ModuleList); k++ {
 					var mdl Module = srv.ModuleList[k]
 					if mdl.XMLName.Local == "app" {
-						om.Apps = append(om.Apps, mdl.ModuleName)
+						om.Apps = append(om.Apps, mdl.MdlName)
 					} else if mdl.XMLName.Local == "srv" {
-						om.Services = append(om.Services, mdl.ModuleName)
+						om.Services = append(om.Services, mdl.MdlName)
 					}
 				}
 

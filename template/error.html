@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+		<title>错误信息</title>
+		<style type="text/css">
+			body, h1, h2, h3, h4, h5, h6, table, tr th, td {
+				margin: 0;
+				padding: 0
+			}
+			body {
+				font-size: 12px;
+				color: #3F475A;
+				font-family: "宋体";
+			}
+			h1 {
+				text-align: center;
+				margin: 10px 0px;
+			}
+			.errtable {
+				border-collapse: collapse;
+				border-spacing: 0;
+				width: 600px;
+				line-height: 125%;
+				border: 1px solid #CCC;
+				margin: 10px auto;
+			}
+			.errtable thead {
+				background: #EEE;
+				font-size: 14px;
+				color: black;
+			}
+			.errtable th, td {
+				line-height: 18px;
+				padding: 5px 12px;
+				text-align: left;
+				vertical-align: top;
+				border: 1px solid #CCC;
+				word-break: break-all;
+				word-wrap: break-word;
+			}
+			.odd {
+				background: #F5F9FC;
+			}
+			.footinfo {
+				text-align: right;
+				color: #FF0000;
+			}
+		</style>
+		<script type="text/javascript">
+            window.onload = function() {
+                var op = window.opener;
+                if (op) {
+                    //fuck ie8 不能设置table tbody等的innerHTML
+                    //见 http://w3help.org/zh-cn/causes/BX9046
+                    //document.getElementById("errbody").innerHTML = op.checkInfo.info;
+                    var tablle = '<table class="errtable"><thead><tr><th style="width:100px;">服务器</th><th style="width:200px;">配置节点</th><th style="width:200px;">错误信息</th></tr></thead><tbody>' + op.checkInfo.info + '</tbody><tfoot><tr><td colspan="3"class="footinfo">注：请修改配置页面中红色边框配置节点信息！</td></tr></tfoot></table>';
+                    document.body.innerHTML += tablle;
+                }
+            }
+		</script>
+
+	</head>
+	<body>
+		<h1>OneMap System Config Tool存在以下错误</h1>
+		
+	</body>
+</html>
+

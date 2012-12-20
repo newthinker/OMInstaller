@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--服务器类型映射表-->
 <root>
-	<db>					<!--数据库服务器-->
-		<srv>H2CommonMemDB</srv>
+	<db desc="数据库服务器">					<!--数据库服务器-->
+		<srv desc="H2CommonMemDB模块">H2CommonMemDB</srv>
 	</db>				
-	<gis>					<!--gis服务器-->
-		<app>Remote</app>
-		<app>RemoteRest</app>
-		<app>RemoteServices</app>
-		<app>WMTS</app>
-		<app>LogServer</app>
-		<app>arcgis_js_api</app>
-		<app>SysRestServices</app>
+	<gis desc="GIS服务器">					<!--gis服务器-->
+		<app desc="Remote模块">Remote</app>
+		<app desc="RemoteRest模块">RemoteRest</app>
+		<app desc="RemoteServices模块">RemoteServices</app>
+		<app desc="WMTS模块">WMTS</app>
+		<app desc="LogServer模块">LogServer</app>
+		<app desc="arcgis_js_api模块">arcgis_js_api</app>
+		<app desc="SysRestServices模块">SysRestServices</app>
 	</gis>				
-	<main>				<!--运维服务器-->
-		<app>GeoShareManager</app>
-		<app>BufferAnalyst</app>
-		<app>GeoCoding</app>
-		<app>GeoPortal</app>
-		<app>FileServices</app>
-		<app>ServiceAggregatorServer</app>
-		<app>ShareExchange</app>
-		<app>TileServices</app>
-		<app>dojoweb</app>
+	<main desc="运维服务器">				<!--运维服务器-->
+		<app desc="GeoShareManager模块">GeoShareManager</app>
+		<app desc="BufferAnalyst模块">BufferAnalyst</app>
+		<app desc="GeoCoding模块">GeoCoding</app>
+		<app desc="GeoPortal模块">GeoPortal</app>
+		<app desc="FileServices模块">FileServices</app>
+		<app desc="ServiceAggregatorServer模块">ServiceAggregatorServer</app>
+		<app desc="ShareExchange模块">ShareExchange</app>
+		<app desc="TileServices模块">TileServices</app>
+		<app desc="dojoweb模块">dojoweb</app>
 	</main>			
-	<agent>			<!--监控代理服务器-->
-		<srv>GeoShareMonitorAgent</srv>
+	<agent desc="监控代理服务器">			<!--监控代理服务器-->
+		<srv desc="GeoShareMonitorAgent模块">GeoShareMonitorAgent</srv>
 	</agent>			
-	<msg>				<!--消息服务器-->
-		<srv>activemq5.4.1</srv>
+	<msg desc="消息服务器">				<!--消息服务器-->
+		<srv desc="activemq模块">activemq5.4.1</srv>
 	</msg>				
-	<token>				<!--token服务器-->
-		<app>RemoteTokenServer</app>
+	<token desc="TOKEN服务器">				<!--token服务器-->
+		<app desc="RemoteTokenServer模块">RemoteTokenServer</app>
 	</token>			
-	<web>				<!--web服务器-->
-		<app>Portal</app>
-		<app>arcgis_js_api</app>
-		<app>application</app>
-		<app>userfiles</app>
-		<app>dojoweb</app>
+	<web desc="WEB服务器">				<!--web服务器-->
+		<app desc="Portal模块">Portal</app>
+		<app desc="arcgis_js_api模块">arcgis_js_api</app>
+		<app desc="application模块">application</app>
+		<app desc="userfiles模块">userfiles</app>
+		<app desc="dojoweb模块">dojoweb</app>
 	</web>				
 </root>

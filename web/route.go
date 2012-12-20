@@ -1,6 +1,7 @@
 package web
 
 import (
+	//	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -25,23 +26,55 @@ func SubHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// SysConfig页面
+func SysConfig(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("SysHandler handler")
+
+	sys := &sysHandler{}
+	controller := reflect.ValueOf(sys)
+	method := controller.MethodByName("SelectAction")
+
+	if !method.IsValid() {
+		/// default controller
+	}
+
+	requestValue := reflect.ValueOf(r)
+	responseValue := reflect.ValueOf(w)
+	method.Call([]reflect.Value{responseValue, requestValue})
+
+}
+
 // 参数配置处理器
-func SysconfHandler(w http.ResponseWriter, r *http.Request) {
+func SysHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("SysConfig handler")
 
-	if r.Method == "GET" {
-		t, _ := template.ParseFiles("template/sysconfig.html")
-		t.Execute(w, nil)
-	} else if r.Method == "POST" {
-		err := r.ParseForm() // 解析URL传递的参数
+	sys := &sysController{}
+	if err := sys.Init(); err != nil {
+		fmt.Println("Init error!")
+		return
+	}
+	controller := reflect.ValueOf(sys)
+	method := controller.MethodByName("SysAction")
 
-		// 如果分平台参数解析有问题，报告错误并返回
+	if !method.IsValid() {
+		/// default controller
+	}
+
+	requestValue := reflect.ValueOf(r)
+	responseValue := reflect.ValueOf(w)
+	method.Call([]reflect.Value{responseValue, requestValue})
+
+}
+
+func ErrHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Error handler")
+
+	if r.Method == "GET" {
+		t, err := template.ParseFiles("template/error.html")
 		if err != nil {
-			http.Redirect(w, r, "/sysconfig", http.StatusFound)
-		} else {
-			fmt.Println(r.Form[""])
-			//			http.Redirect(w, r, "/sysconfig", http.StatusFound)
+			fmt.Println(err)
 		}
+		t.Execute(w, nil)
 	}
 }
 
