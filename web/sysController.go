@@ -91,48 +91,46 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 
 		OutputJson(w, 0, "", sysmap)
 	} else if r.Method == "POST" { // 将前端输入参数传入后台解析
-        err := r.ParseForm()
-        if err!=nil {
-            OutputJson(w, 1, "参数错误", nil)
-            return
-        }
+		err := r.ParseForm()
+		if err != nil {
+			OutputJson(w, 1, err.Error(), nil)
+			return
+		}
 
-        input := r.FormValue("data")
-        
-        // 获取json数据流
-        var jsonstr interface{}
-        err = json.Unmarshal([]byte(input), jsonstr)
-        if err!=nil {
-            OutputJson(w, 2, "解码JSON数据流失败", nil)
-            return
-        }
+		input := (r.Form["input"])[0]
+		//		fmt.Println(input)
 
-        ///////////////////////////////////////////////
-        fmt.Printf("POST JSON:%s\n", input)
-        //////////////////////////////////////////////
-        
-        // 获取系统运行路径
-        basepath, err1 := filepath.Abs("./")
-        if err1!=nil || basepath=="" {
-            OutputJson(w, 3, "获取当前路径失败", nil)
-            return
-        }
+		// 获取json数据流
+		jsonstr := make(map[string]interface{})
+		err = json.Unmarshal([]byte(input), &jsonstr)
+		if err != nil {
+			OutputJson(w, 2, err.Error(), nil)
+			return
+		}
 
-        err = sys.ParseSysSubmit(jsonstr, basepath)
-        if err!=nil {
-            OutputJson(w, 4, "解析JSON数据流失败", nil)
-            return
-        }
+		// 获取系统运行路径
+		var basepath string
+		basepath, err = filepath.Abs("./")
+		if err != nil || basepath == "" {
+			OutputJson(w, 3, err.Error(), nil)
+			return
+		}
 
-        /// 进行分布式安装 
-        err = sys.Distribute(basepath, &(this.sc), &(this.sm))
-        if err!=nil {
-            OutputJson(w, 5, "分布式安装失败", nil)
-            return
-        }
+		err = sys.ParseSysSubmit(jsonstr, basepath, &(this.sc), &(this.sm))
+		if err != nil {
+			OutputJson(w, 4, err.Error(), nil)
+			return
+		}
 
-        //////////////////////////////////////////////
-        OutputJson(w, 0, "分布式安装成功", nil)
+		/// 进行分布式安装 
+		//		err = sys.Distribute(basepath, &(this.sc), &(this.sm))
+		//		if err != nil {
+		//			OutputJson(w, 5, "分布式安装失败", nil)
+		//			return
+		//		}
+
+		//////////////////////////////////////////////
+		OutputJson(w, 0, "分布式安装成功", nil)
 	}
 }
 
@@ -180,5 +178,5 @@ func OutputJson(w http.ResponseWriter, ret int, reason string, i interface{}) {
 
 	w.Write(b)
 
-//	fmt.Printf("%s\n", b)
+	//	fmt.Printf("%s\n", b)
 }

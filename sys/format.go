@@ -1,10 +1,11 @@
 package sys
 
 import (
-	"encoding/xml"
+	//	"encoding/xml"
 	"errors"
 	"fmt"
-	"os"
+
+//	"os"
 )
 
 ///////////////////////////////
@@ -150,7 +151,7 @@ func FormatSysConfig(sc SysConfig) SrvsParam {
 }
 
 // 解析POST的JSON结构
-func ParseSysSubmit(jsonstr interface{}, basepath string) error {
+func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *ServerMapping) error {
 	postmap := jsonstr.(map[string]interface{})
 
 	for _, v := range postmap {
@@ -162,73 +163,108 @@ func ParseSysSubmit(jsonstr interface{}, basepath string) error {
 			}
 		case []interface{}:
 			/// 暂时输出到SysInfo.xml文件中
-			sysinfo := &SysInfo{}
+			si := &SysInfo{}
 
 			// 开始解析数据体部分
 			for i, s := range vv {
-				fmt.Printf("解析第%d个服务器参数：\n", i)
-				srvparams := s.(ServerParams)
+				fmt.Printf("解析第%d个服务器参数：\n", i+1)
+				fmt.Println(s)
+
+				srvparams := s.(map[string]interface{})
+				base := (srvparams["Server_base"]).(map[string]interface{})
+
+				//				srvparams := s.(ServerParams)
 
 				machine := &MachineInfo{}
-				machine.Os = srvparams.Server_base.Os
-				machine.Arch = srvparams.Server_base.Arch
-				machine.Ip = srvparams.Server_base.Ip
-				machine.User = srvparams.Server_base.User
-				machine.Pwd = srvparams.Server_base.Pwd
-				machine.Omhome = srvparams.Server_base.Omhome
-				machine.Web = srvparams.Server_base.Container
+				machine.Os = (base["Os"]).(string)
+				machine.Arch = (base["Arch"]).(string)
+				machine.Ip = (base["Ip"]).(string)
+				machine.User = (base["User"]).(string)
+				machine.Pwd = (base["Pwd"]).(string)
+				machine.Omhome = (base["Omhome"]).(string)
+				machine.Web = (base["Container"]).(string)
 
-				for _, sp := range srvparams.Server_params {
-					srvpost := sp //.(SrvPost)
-					server := &ServerInfo{}
-					server.XMLName.Local = srvpost.Srvname
+				switch arrsrv := (srvparams["Server_params"]).(type) {
+				case []interface{}:
+					for _, ss := range arrsrv {
+						sp := ss.(map[string]interface{})
 
-					for _, p := range sp.Params {
-						attr := &AttrInfo{}
-						attr.XMLName.Local = p.Paramname
-						attr.Value = p.Paramvalue
+						server := &ServerInfo{}
 
-						if p.Encrypt != "" {
-							attr.AttrEncrypt = p.Encrypt
+						//					srvpost := sp.(map[string]interface{})
+
+						server.XMLName.Local = (sp["Srvname"]).(string)
+
+						switch arrparams := (sp["Params"]).(type) {
+						case []interface{}:
+							for _, p := range arrparams {
+								param := p.(map[string]interface{})
+
+								attr := &AttrInfo{}
+								attr.XMLName.Local = (param["Paramname"]).(string)
+								attr.Value = (param["Paramvalue"]).(string)
+
+								encrypt := (param["Encrypt"]).(string)
+								if encrypt != "" {
+									attr.AttrEncrypt = encrypt
+								}
+								selects := (param["Selects"]).(string)
+								if selects != "" {
+									attr.AttrSelect = selects
+								}
+
+								server.Attrs = append(server.Attrs, *attr)
+							}
 						}
-						if p.Selects != "" {
-							attr.AttrSelect = p.Selects
-						}
 
-						server.Attrs = append(server.Attrs, *attr)
+						machine.Servers = append(machine.Servers, *server)
+
 					}
-
-					machine.Servers = append(machine.Servers, *server)
 				}
 
-				sysinfo.Machines = append(sysinfo.Machines, *machine)
+				si.Machines = append(si.Machines, *machine)
 			}
 
 			// 输出到SysInfo.xml文件中
-			output, err1 := xml.MarshalIndent(sysinfo, " ", "    ")
+			//			output, err1 := xml.Marshal(sysinfo)
+			//			fmt.Printf("sysinfo:%s", sysinfo)
+			//			os.Stdout.Write([]byte(output))
 
-			if err1 != nil {
-				return err1
-			}
+			//			if err1 != nil {
+			//				return err1
+			//			}
 
-			sysconfig := basepath + "/conf/" + SYS_INFO
+			//			sysconfig := basepath + "/conf/" + SYS_INFO
+			//			fmt.Println(sysconfig)
 
 			// 如果配置文件已存在，先将其删除
-			if Exists(sysconfig) == true {
-				if err4 := os.Remove(sysconfig); err4 != nil {
-					return err4
-				}
-			}
+			//			if Exists(sysconfig) == true {
+			//				if err4 := os.Remove(sysconfig); err4 != nil {
+			//					return err4
+			//				}
+			//			}
 			// 将输出字符流写入文件中
-			file, err2 := os.Open(sysconfig)
-			defer file.Close()
-			if err2 != nil {
-				return err2
-			}
+			//			file, err2 := os.Create(sysconfig)
+			//			defer file.Close()
+			//			if err2 != nil {
+			//				fmt.Println(err2)
+			//				return err2
+			//			}
 
-			_, err3 := file.Write(output)
-			if err3 != nil {
-				return err3
+			//			_, err3 := file.Write([]byte(xml.Header))
+			//			if err3 != nil {
+			//				return err3
+			//			}
+			//			_, err4 := file.Write(output)
+			//			if err4 != nil {
+			//				return err4
+			//			}
+
+			/// 
+			err := Distribute(basepath, si, sc, sm)
+			if err != nil {
+				fmt.Println("分布式安装失败")
+				return err
 			}
 		}
 	}

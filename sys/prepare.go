@@ -194,6 +194,27 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 				msg := "ERROR: Copy OneMap service (" + om.Services[i] + ") failed!"
 				return errors.New(msg)
 			}
+
+            // 如果包含H2MemDB模块，且在临时目录中包含分平台数据更新文件，还需要更新分平台数据文件
+            if om.Services[i]=="H2CommonMemDB" {
+                // 首先拷贝db目录
+                if err:=Copy(src+"/db", dst); err!=nil {
+                    msg := "ERROR: 拷贝OneMap数据库目录失败!"
+                    return errors.New(msg)
+                }
+                // 更新数据库文件
+                srcfile := om.Basedir+"/temp/Manager_Table_Data.sql"
+                dstfile := dst+"/db/GeoShareManager/Manager_Table_Data.sql"
+                if Exists(om.Basedir+"/temp/Manager_Table_Data.sql")==true {
+                    if err:=Copy(srcfile, dstfile); err!=nil {
+                        msg := "WARN: 更新分平台数据库文件失败!"
+                        return errors.New(msg)
+                    }
+
+                    // 删除临时目录
+                    os.RemoveAll(om.Basedir+"/temp")
+                }
+            }
 		}
 	}
 
@@ -246,7 +267,7 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 		return errors.New("ERROR: Get machine's input param(ip) is invalid!")
 	}
 	if mi.User != "" {
-		om.User = mi.Ip
+		om.User = mi.User
 	} else {
 		return errors.New("ERROR: Get machine's input param(user) is invalid!")
 	}
@@ -452,8 +473,12 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 	fi, _ := os.Stat(srcdir)
 	if fi.IsDir() {
 		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.User+"@"+om.Ip+":"+dstdir)
+
+		fmt.Printf("CMD: sshpass -p %s scp -r %s %s@%s:%s\n", om.Pwd, srcdir, om.User, om.Ip, dstdir)
 	} else {
 		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", srcdir, om.User+"@"+om.Ip+":"+dstdir)
+
+		fmt.Printf("CMD: sshpass -p %s scp %s %s@%s:%s\n", om.Pwd, srcdir, om.User, om.Ip, dstdir)
 	}
 	err = cmd.Run()
 	if err != nil {

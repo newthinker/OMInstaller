@@ -97,9 +97,9 @@ func (sm *ServerMapping) FormatSrvMapping() map[string]interface{} {
 ///////////////////////////////////////////////////////
 // SysInfo struct
 type SysInfo struct {
-	XMLName     xml.Name      `xml:"root"`
-	Machines    []MachineInfo `xml:",any"`
-	Description string        `xml:",innerxml"`
+	XMLName  xml.Name      `xml:"root"`
+	Machines []MachineInfo `xml:",any"`
+	//	Description string        `xml:",innerxml"`
 }
 
 type MachineInfo struct {
@@ -129,7 +129,7 @@ type AttrInfo struct {
 
 func (s *ServerInfo) AddAttrInfo(attrname string,
 	attrvalue string, desc string, encrypt string, selects string) {
-	newa := AttrInfo{Value: attrvalue, AttrName: desc, AttrEncrypt: encrypt, AttrSelect:selects}
+	newa := AttrInfo{Value: attrvalue, AttrName: desc, AttrEncrypt: encrypt, AttrSelect: selects}
 	newa.XMLName.Local = attrname
 	s.Attrs = append(s.Attrs, newa)
 }
@@ -298,14 +298,17 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 	var nomodules string
 	for key, value := range flag {
 		if value == false {
-			nomodules = nomodules + "," + key
+			if num > 0 {
+				nomodules = nomodules + ","
+			}
+			nomodules = nomodules + key
 			num++
 		}
 	}
 	if num > 0 && nomodules != "" {
 		msg := "WARN: There are " + strconv.Itoa(num) + " modules(" + nomodules + ") not updated!"
 		fmt.Println(msg)
-		return errors.New(msg)
+		//		return errors.New(msg)
 	}
 
 	return nil

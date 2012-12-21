@@ -70,10 +70,10 @@
 			<token_ip name="Token服务器ip:">127.0.0.2</token_ip>
 			<token_port name="Token服务器PORT:">8080</token_port>
 		</token>
-		<jms>
-			<jms_ip name="JMS服务器ip:">127.0.0.2</jms_ip>
-			<jms_port name="JMS服务器PORT:">61616</jms_port>
-		</jms>
+		<msg>
+			<msg_ip name="JMS服务器ip:">127.0.0.2</msg_ip>
+			<msg_port name="JMS服务器PORT:">61616</msg_port>
+		</msg>
 		<agent>
 			<agent_ip name="监控代理服务器IP:">127.0.0.2</agent_ip>
 			<agent_port name="监控代理服务器PORT:">8080</agent_port>
@@ -157,13 +157,13 @@
 						<key template="http://[gis_ip]:[gis_port]/arcgis/rest/services/regioncontrol/FeatureServer/0">featureservice</key>
 					</file>
 				</gis>
-				<jms>
+				<msg>
 					<file path="GeoShareManager/WEB-INF/classes/activemqconfig.properties">
-						<key template="failover:tcp://[jms_ip]:[jms_port]">brokerURL</key></file>
+						<key template="failover:tcp://[msg_ip]:[msg_port]">brokerURL</key></file>
 					<file path="GeoShareManager/WEB-INF/classes/config.properties">
-						<key template="[jms_ip]">jms_ip</key>
-						<key template="[jms_port]">jms_port</key></file>			
-				</jms>
+						<key template="[msg_ip]">msg_ip</key>
+						<key template="[msg_port]">msg_port</key></file>			
+				</msg>
 				<main>
 					<file path="GeoShareManager/WEB-INF/classes/LocalServiceFileConfig.properties">
 						<key template="[OneMapHome]\temp\ServiceUploadTemp">temppath</key>
@@ -271,12 +271,12 @@
 						<key template="http://[web_ip]:[web_port]/Portal/downloadcenterFile/">http_path</key>
 					</file>
 				</web>
-				<jms>
+				<msg>
 					<file path="Portal/WEB-INF/classes/jms.properties">
-						<key template="[jms_ip]">jms_ip</key>
-						<key template="[jms_port]">jms_port</key>
+						<key template="[msg_ip]">msg_ip</key>
+						<key template="[msg_port]">msg_port</key>
 					</file>
-				</jms>
+				</msg>
 			</Portal>
 			<Remote>
 				<db>
@@ -647,7 +647,7 @@
 		</tomcat>
 		<services path="services">
 			<activemq5.4.1>
-				<jms />
+				<msg />
 			</activemq5.4.1>
 			<GeoShareMonitorAgent>
 				<agent>

@@ -40,7 +40,7 @@ var exceeptionParam = {
     //传空值就行
     "iis_root" : "Silverlight文件生成路径"
 };
-
+var debug = location.href.indexOf("?debug");
 var tabContainer;
 var checkInfo;
 window.onload = function() {
@@ -52,7 +52,8 @@ window.onload = function() {
 }
 //获取服务器配置信息
 function getServerConfigDInfo() {
-    jx.load("syshandler", getServerConfigInfoHandler, "json", "get");
+
+    jx.load(debug != -1 ? "post.json" : "syshandler", getServerConfigInfoHandler, "json", "get");
 }
 
 function getServerConfigInfoHandler(data) {
@@ -301,7 +302,19 @@ function postAllSeverConfigInfos() {
     }
     var data = JSON.stringify(configInfo);
     console.log(data);
-    jx.load("syshandler?data="+data,function(){},"json","post");
+    debug != -1 ? "" : jx.load("syshandler?input=" + data, postConfigInfosHandler, "json", "post");
+}
+
+function postConfigInfosHandler(data) {
+    switch (data.Ret) {
+        case 0:
+            alert("服务器配置成功!");
+			window.location.reload();
+            break;
+        default:
+            alert(data.Reason);
+    }
+
 }
 
 //获取所有服务器配置信息
@@ -333,7 +346,8 @@ function getServerBaseInfo(tab) {
         checkConfigNodeValue(tab, cn);
         baseInfo[cn.name.replace("base_", "").toFirstCharUpperCase()] = cn.value;
     }
-
+    //基本信息不用传递端口号
+    delete baseInfo.Port;
     return baseInfo;
 
 }
