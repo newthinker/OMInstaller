@@ -66,3 +66,37 @@ func (this *subController) SelectAction(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 }
+
+// 查找GeoShareManager/Manager_Table_Data.sql
+func GetSqlFile(basedir string) error {
+    var base string
+
+    if flag := sys.Exists(basedir); flag!=true {
+        return errors.New("ERROR: 输入目录不存在")
+    }
+
+    subpath, err := getSubDir(basedir)
+    if err!=nil {
+        return errors.New("ERROR: 获取子目录失败")
+    }
+
+    for i:=range subpath {
+        filename := path.Base(subpath[i])
+        filename = strings.ToUpper(filename)
+        if strings.Index(filename, strings.ToUpper(sys.ONEMAP_NAME))<0 {
+            continue
+        }
+
+        if strings.Index(filename, "_") >0 {
+            base = subpath[i]
+            break
+        }
+    }
+
+    filename = base + "/db/GeoShareManager/Manager_Table_Data.sql"
+    if flag := sys.Exists(filename); flag!=true {
+        return errors.New("ERROR: SQL文件不存在")
+    }
+
+	return nil
+}

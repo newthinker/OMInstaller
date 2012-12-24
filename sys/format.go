@@ -162,7 +162,7 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 				return errors.New("前端返回码错误，请检查!")
 			}
 		case []interface{}:
-			/// 暂时输出到SysInfo.xml文件中
+			// 获取输入参数信息
 			si := &SysInfo{}
 
 			// 开始解析数据体部分
@@ -172,8 +172,6 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 
 				srvparams := s.(map[string]interface{})
 				base := (srvparams["Server_base"]).(map[string]interface{})
-
-				//				srvparams := s.(ServerParams)
 
 				machine := &MachineInfo{}
 				machine.Os = (base["Os"]).(string)
@@ -190,8 +188,6 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 						sp := ss.(map[string]interface{})
 
 						server := &ServerInfo{}
-
-						//					srvpost := sp.(map[string]interface{})
 
 						server.XMLName.Local = (sp["Srvname"]).(string)
 

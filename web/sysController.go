@@ -116,20 +116,13 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// 解析POST.json并进行分布式安装
 		err = sys.ParseSysSubmit(jsonstr, basepath, &(this.sc), &(this.sm))
 		if err != nil {
 			OutputJson(w, 4, err.Error(), nil)
 			return
 		}
 
-		/// 进行分布式安装 
-		//		err = sys.Distribute(basepath, &(this.sc), &(this.sm))
-		//		if err != nil {
-		//			OutputJson(w, 5, "分布式安装失败", nil)
-		//			return
-		//		}
-
-		//////////////////////////////////////////////
 		OutputJson(w, 0, "分布式安装成功", nil)
 	}
 }
@@ -177,6 +170,4 @@ func OutputJson(w http.ResponseWriter, ret int, reason string, i interface{}) {
 	}
 
 	w.Write(b)
-
-	//	fmt.Printf("%s\n", b)
 }

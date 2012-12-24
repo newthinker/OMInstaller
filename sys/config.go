@@ -306,7 +306,7 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 		}
 	}
 	if num > 0 && nomodules != "" {
-		msg := "WARN: There are " + strconv.Itoa(num) + " modules(" + nomodules + ") not updated!"
+		msg := "WARN: " + strconv.Itoa(num) + "个模块(" + nomodules + ") 没有更新"
 		fmt.Println(msg)
 		//		return errors.New(msg)
 	}
@@ -338,7 +338,7 @@ func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) error {
 	}
 
 	if !flag {
-		return errors.New("WARN: There's no MonitorAgent module in config files!")
+		return errors.New("WARN: 配置文件中没有监控代理模块参数信息")
 	}
 
 	return nil
@@ -350,7 +350,7 @@ func OpenSMConfig(basedir string) (ServerMapping, error) {
 
 	// check the base dir whether existed
 	if flag := Exists(basedir); flag != true {
-		msg := "ERROR: The input directory(" + basedir + ") isn't existed!"
+		msg := "ERROR: 安装目录(" + basedir + ")不存在"
 		return sm, errors.New(msg)
 	}
 
@@ -374,7 +374,7 @@ func OpenSIConfig(basedir string) (SysInfo, error) {
 
 	// check the base dir whether existed
 	if flag := Exists(basedir); flag != true {
-		msg := "ERROR: The input directory(" + basedir + ") isn't existed!"
+		msg := "ERROR: 输入目录(" + basedir + ")不存在"
 		return si, errors.New(msg)
 	}
 
@@ -398,7 +398,7 @@ func OpenSCConfig(basedir string) (SysConfig, error) {
 
 	// check the base dir whether existed
 	if flag := Exists(basedir); flag != true {
-		msg := "ERROR: The input directory(" + basedir + ") isn't existed!"
+		msg := "ERROR: 输入目录(" + basedir + ")不存在"
 		return sc, errors.New(msg)
 	}
 

@@ -50,11 +50,7 @@ func Distribute(basedir string, si *SysInfo, sc *SysConfig, sm *ServerMapping) e
 		// remote copy OneMap package
 		srcdir = om.Basedir + "/" + ONEMAP_NAME
 		dstdir = om.OMHome
-		///////////////////test//////////////////////////
-		//om.Ip = "192.168.80.60"
-		//om.User = "root"
-		//om.Pwd = "dasiyebushuo"
-		/////////////////////////////////////////////////
+
 		if err = om.OMRemoteCopy(srcdir, dstdir); err != nil {
 			fmt.Println("ERROR: Exec retmote copy failed!")
 			return err

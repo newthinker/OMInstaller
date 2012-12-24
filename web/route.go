@@ -1,7 +1,6 @@
 package web
 
 import (
-	//	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -17,7 +16,8 @@ func SubHandler(w http.ResponseWriter, r *http.Request) {
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
-		/// default controller
+        OutputJson(w, 1, "输入参数非法", nil);
+        return
 	}
 
 	requestValue := reflect.ValueOf(r)
@@ -35,7 +35,8 @@ func SysConfig(w http.ResponseWriter, r *http.Request) {
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
-		/// default controller
+        OutputJson(w, 1, "输入参数非法", nil);
+        return
 	}
 
 	requestValue := reflect.ValueOf(r)
@@ -50,14 +51,15 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 
 	sys := &sysController{}
 	if err := sys.Init(); err != nil {
-		fmt.Println("Init error!")
+		OutputJson(w, 2, "系统初始化错误!", nil)
 		return
 	}
 	controller := reflect.ValueOf(sys)
 	method := controller.MethodByName("SysAction")
 
 	if !method.IsValid() {
-		/// default controller
+        OutputJson(w, 1, "非法输入参数!", nil)
+        return
 	}
 
 	requestValue := reflect.ValueOf(r)
@@ -66,6 +68,7 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// sysconfig页面中参数检查错误提醒页面
 func ErrHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Error handler")
 
