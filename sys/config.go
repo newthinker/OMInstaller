@@ -417,6 +417,47 @@ func OpenSCConfig(basedir string) (SysConfig, error) {
 	return sc, nil
 }
 
+// 更新保存系统配置文件
+func RefreshSysConfig(sc *SysConfig, conffile string) error {
+    if sc==nil || conffile=="" {
+        return errors.New("输入的配置文件为空、文件路径为空")
+    }
+
+    if flag:=Exists(conffile);flag!=true {
+        return errors.New("配置文件路径不存在")
+    }
+
+    output, err := xml.MarshalIndent(sc, "  ", "   ")
+    os.Stdout.Write([]byte(output))
+    if err != nil {
+        return err
+    }
+
+    if Exists(conffile)==true {
+        if err = os.Remove(conffile); err!=nil {
+            return err
+        }
+    }
+
+    file, err1 := os.Create(conffile)
+    defer file.Close()
+    if err1!=nil {
+        return err1
+    }
+
+    _, err2 := file.Write([]byte(xml.Header))
+    if err2 != nil {
+        return err2
+    }
+
+    _, err3 := file.Write(output)
+    if err3 != nil {
+        return err3
+    }
+
+    return nil
+}
+
 /*///////////////////////////////////////////////////////
 func main() {
 	file, err := os.Open("../conf/SrvMapping.xml")

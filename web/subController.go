@@ -1,11 +1,14 @@
 package web
 
 import (
+	"errors"
 	"fmt"
 	"github.com/newthinker/onemap-installer/sys"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	//	"path"
 	"path/filepath"
 	"strings"
 )
@@ -28,36 +31,43 @@ func (this *subController) SelectAction(w http.ResponseWriter, r *http.Request) 
 
 		// 如果分平台参数解析有问题，报告错误并返回
 		if err != nil {
-			log.Println(err)
+			OutputJson(w, 1, err.Error(), nil)
 		} else { // 解析用户选择menu并进入下个页面
-			fmt.Println(r.Form["selValues"])
+			fmt.Println(r.Form["selectValues"])
 
 			// 进行分平台配置
 			var base string
-			base, err = filepath.Abs(".") // 获取系统当前路径
-			if err != nil {
-				log.Println(err)
+			base, err = filepath.Abs("./") // 获取系统当前路径
+			fmt.Println("base:" + base)
+			if err != nil || base == "" {
+				OutputJson(w, 2, err.Error(), nil)
 				return
 			}
 
-			sub := &sys.SubPlatform{SqlFile: base + "/OneMap/db/GeoShareManager/Manager_Table_Data.sql"}
+			var sqlfile string
+			sqlfile, err = GetSqlFile(base)
+			if err != nil || sqlfile == "" {
+				OutputJson(w, 3, err.Error(), nil)
+				return
+			}
+			sub := &sys.SubPlatform{SqlFile: sqlfile}
 			sub.MenuMap = make(map[string]string)
 			sub.RelMap = make(map[string]string)
 
-			base = (r.Form["selValues"])[0]
+			base = (r.Form["selectValues"])[0]
 			fmt.Println(base)
 			sub.SelID = strings.Split(base, ",")
 			fmt.Println(sub.SelID)
 
 			// 解析sql文件并初始化menuMap和relMap
 			if err := sub.SPParseSQLFile(); err != nil {
-				fmt.Println("ERROR: Parse sql file failed!")
+				OutputJson(w, 4, "ERROR: 解析SQL文件失败", nil)
 				return
 			}
 
 			// 更新sql文件
 			if err = sub.SPUpdateSql(); err != nil {
-				fmt.Println("ERROR: Update sql file failed!")
+				OutputJson(w, 5, "ERROR: 更新SQL文件失败", nil)
 				return
 			}
 
@@ -68,35 +78,48 @@ func (this *subController) SelectAction(w http.ResponseWriter, r *http.Request) 
 }
 
 // 查找GeoShareManager/Manager_Table_Data.sql
-func GetSqlFile(basedir string) error {
-    var base string
+func GetSqlFile(basedir string) (string, error) {
+	var filename string
+	var err error
 
-    if flag := sys.Exists(basedir); flag!=true {
-        return errors.New("ERROR: 输入目录不存在")
-    }
+	if flag := sys.Exists(basedir); flag != true {
+		return filename, errors.New("ERROR: 输入目录不存在")
+	}
 
-    subpath, err := getSubDir(basedir)
-    if err!=nil {
-        return errors.New("ERROR: 获取子目录失败")
-    }
+	//	subpath, err := sys.GetSubDir(basedir)
+	//	if err != nil || subpath==""{
+	//		return filename, errors.New("ERROR: 获取子目录失败")
+	//	}
 
-    for i:=range subpath {
-        filename := path.Base(subpath[i])
-        filename = strings.ToUpper(filename)
-        if strings.Index(filename, strings.ToUpper(sys.ONEMAP_NAME))<0 {
-            continue
-        }
+	//	for i := range subpath {
+	//		filename := path.Base(subpath[i])
+	//		filename = strings.ToUpper(filename)
+	//		if strings.Index(filename, strings.ToUpper(sys.ONEMAP_NAME)) < 0 {
+	//			continue
+	//		}
 
-        if strings.Index(filename, "_") >0 {
-            base = subpath[i]
-            break
-        }
-    }
+	//		if strings.Index(filename, "_V") > 0 {
+	//			filename = subpath[i]
+	//			break
+	//		}
+	//	}
 
-    filename = base + "/db/GeoShareManager/Manager_Table_Data.sql"
-    if flag := sys.Exists(filename); flag!=true {
-        return errors.New("ERROR: SQL文件不存在")
-    }
+	filename = basedir + "/OneMap_Linux_V2.0/db/GeoShareManager/Manager_Table_Data.sql"
+	fmt.Println("filename:" + filename)
+	if flag := sys.Exists(filename); flag != true {
+		return filename, errors.New("ERROR: SQL文件不存在")
+	}
 
-	return nil
+	// 生成一个临时文件夹
+	if err = os.Mkdir(basedir+"/temp", 0755); err != nil {
+		return filename, err
+	}
+
+	if err = sys.Copy(filename, basedir+"/temp"); err != nil {
+		return filename, err
+	}
+
+	filename = basedir + "/temp/Manager_Table_Data.sql"
+
+	return filename, nil
 }

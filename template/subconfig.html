@@ -84,15 +84,11 @@
                 d.add(37, 36, '分平台管理', "javascript:;", '');
                 
                 document.getElementById('sptree').innerHTML = d;
-                var funcs = eval("(" + "{funcs:[{menudm:'0'},{menudm:'100'},{menudm:'790'},{menudm:'800'},{menudm:'810'}]}" + ")");
-                for (var n = 0; n < funcs.funcs.length; n++) {
-                    d.co(funcs.funcs[n].menudm).checked = true;
-                }
             }
 			
 			function subSubmitHandler(){
-				var v =	d.getSelected();
-				document.getElementById('selectValues').value=v;
+				var v =	d.getCheckedNodes();
+				document.getElementById('selectValues').value=v.join(",");
 				document.getElementById('sub-platform').submit();
 			}
         </script>
@@ -106,8 +102,8 @@
                 <div class="om-layout" id="sptree"></div>
 				
 				<div class="tree-container">
-					<form name="subplatform" id="sub-platform">
-						<input type="hidden" id="selectValues">
+					<form name="subplatform" id="sub-platform" method="post">
+						<input type="hidden" id="selectValues" name="selectValues">
 						<div class="sp-info">
 							<div class="sp-submit">
 								<input type="button" value="下一步" onclick="subSubmitHandler();">

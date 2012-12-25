@@ -61,7 +61,7 @@ func Copy(srcfile string, dstfile string) error {
 	// first check the srcfile whether exist
 	fi, serr := os.Stat(srcfile)
 	if os.IsNotExist(serr) {
-		fmt.Printf("ERROR: 源文件(%s)不存在\n", srcfile)
+		//fmt.Printf("ERROR: Source file(%s) isn't existed!\n", srcfile)
 		return os.ErrNotExist
 	}
 
@@ -72,7 +72,7 @@ func Copy(srcfile string, dstfile string) error {
 		//fmt.Printf("WARN: Destination path(%s) isn't existed and then create it!\n", dstfile)
 
 		if serr = os.MkdirAll(dir, 0755); serr != nil {
-			fmt.Printf("ERROR: 生成目标文件夹失败(%s)\n", dir)
+			//fmt.Printf("ERROR: Make base directory(%s) failed!\n", dir)
 			return serr
 		}
 	}
@@ -87,7 +87,7 @@ func Copy(srcfile string, dstfile string) error {
 	}
 	// exec the copy comand
 	if serr != nil {
-		fmt.Println("ERROR: 拷贝失败")
+		//fmt.Println("ERROR: Exec the cmdline failed!")
 		return serr
 	}
 
@@ -100,28 +100,28 @@ func Copy(srcfile string, dstfile string) error {
 func (om *OMPInfo) OMCopy(src string, dst string) error {
 	// first check the src and dst directory
 	if src == "" || dst == "" {
-		return errors.New("ERROR: 输入/输出目录非法")
+		return errors.New("ERROR: Invalid source or destination directory!")
 	}
 
 	if (Exists(src)) != true {
-		msg := "ERROR: 输入目录(" + src + ")不存在"
+		msg := "ERROR: Source directory (" + src + ") isn't existed!"
 		return errors.New(msg)
 	}
 	if (Exists(dst)) != true {
 		if err := os.Mkdir(dst, 0755); err != nil {
-			msg := "ERROR: 目标文件夹(" + dst + ")不存在并且生成失败"
+			msg := "ERROR: Destination directory (" + dst + ") isn't existed and create failed!"
 			return errors.New(msg)
 		}
 	} else {
 		if (Exists(dst + "/services")) == true {
 			if err := os.RemoveAll(dst + "/services"); err != nil {
-				msg := "ERROR: 删除目录(" + dst + "/services)失败"
+				msg := "ERROR: Remove directory (" + dst + "/services) failed!"
 				return errors.New(msg)
 			}
 		}
 		if (Exists(dst + "/" + om.Container + "/webapps")) == true {
 			if err := os.RemoveAll(dst + "/" + om.Container + "/webapps"); err != nil {
-				msg := "ERROR: 删除目录(" + dst + "/" + om.Container + "/webapps)失败"
+				msg := "ERROR: Remove directory (" + dst + "/" + om.Container + "/webapps) failed!"
 				return errors.New(msg)
 			}
 		}
@@ -131,31 +131,31 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	//var cmdline string
 	if (Exists(dst + "/arcgis")) != true {
 		if err := Copy(src+"/arcgis", dst); err != nil {
-			msg := "ERROR: 拷贝目录(" + src + "/arcgis)失败"
+			msg := "ERROR: Copy directory (" + src + "/arcgis) failed!"
 			return errors.New(msg)
 		}
 	}
 	if (Exists(dst + "/bin")) != true {
 		if err := Copy(src+"/bin", dst); err != nil {
-			msg := "ERROR: 拷贝目录(" + src + "/bin)失败"
+			msg := "ERROR: Copy directory(" + src + "/bin) failed!"
 			return errors.New(msg)
 		}
 	}
 	if (Exists(dst + "/config")) != true {
 		if err := Copy(src+"/config", dst); err != nil {
-			msg := "ERROR: 拷贝目录(" + src + "/config)失败"
+			msg := "ERROR: Copy directory(" + src + "/config) failed!"
 			return errors.New(msg)
 		}
 	}
 	if (Exists(dst + "/java")) != true {
 		if err := Copy(src+"/java", dst); err != nil {
-			msg := "ERROR: 拷贝目录(" + src + "/java)失败"
+			msg := "ERROR: Copy directory(" + src + "/java) failed!"
 			return errors.New(msg)
 		}
 	}
 	if (Exists(dst + "/temp")) != true {
 		if err := Copy(src+"/temp", dst); err != nil {
-			msg := "ERROR: 拷贝目录(" + src + "/temp)失败"
+			msg := "ERROR: Copy directory(" + src + "/temp) failed!"
 			return errors.New(msg)
 		}
 	}
@@ -164,24 +164,24 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	if len(om.Apps) > 0 {
 		// copy web container
 		if err := Copy(src+"/"+om.Container, dst); err != nil {
-			msg := "ERROR: 拷贝OneMap服务器容器(" + om.Container + ")失败"
+			msg := "ERROR: Copy OneMap web container (" + om.Container + ") failed!"
 			return errors.New(msg)
 		}
 
 		for i := 0; i < len(om.Apps); i++ {
 			if err := Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
-				msg := "ERROR: 拷贝模块(" + om.Apps[i] + ")失败"
+				msg := "ERROR: Copy module (" + om.Apps[i] + ") failed!"
 				return errors.New(msg)
 			}
 
 			switch om.Apps[i] {
 			case "H2memDB":
 				if err := Copy(src+"/db", dst); err != nil {
-					return errors.New("ERROR: 拷贝数据库目录失败")
+					return errors.New("ERROR: Copy db directory failed!")
 				}
 			case "GeoShareManager":
 				if err := Copy(src+"/example_data", dst); err != nil {
-					return errors.New("ERROR: 拷贝示例数据失败")
+					return errors.New("ERROR: Copy example data directory failed!")
 				}
 			}
 		}
@@ -191,34 +191,34 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	if len(om.Services) > 0 {
 		for i := 0; i < len(om.Services); i++ {
 			if err := Copy(src+"/services/"+om.Services[i], dst+"/services/"+om.Services[i]); err != nil {
-				msg := "ERROR: 拷贝OneMap服务(" + om.Services[i] + ")失败"
+				msg := "ERROR: Copy OneMap service (" + om.Services[i] + ") failed!"
 				return errors.New(msg)
 			}
 
-            // 如果包含H2MemDB模块，且在临时目录中包含分平台数据更新文件，还需要更新分平台数据文件
-            if om.Services[i]=="H2CommonMemDB" {
-                // 首先拷贝db目录
-                if err:=Copy(src+"/db", dst); err!=nil {
-                    msg := "ERROR: 拷贝OneMap数据库目录失败!"
-                    return errors.New(msg)
-                }
-                // 更新数据库文件
-                srcfile := om.Basedir+"/temp/Manager_Table_Data.sql"
-                dstfile := dst+"/db/GeoShareManager/Manager_Table_Data.sql"
-                if Exists(om.Basedir+"/temp/Manager_Table_Data.sql")==true {
-                    if err:=Copy(srcfile, dstfile); err!=nil {
-                        msg := "WARN: 更新分平台数据库文件失败!"
-                        return errors.New(msg)
-                    }
+			// 如果包含H2MemDB模块，且在临时目录中包含分平台数据更新文件，还需要更新分平台数据文件
+			if om.Services[i] == "H2CommonMemDB" {
+				// 首先拷贝db目录
+				if err := Copy(src+"/db", dst); err != nil {
+					msg := "ERROR: 拷贝OneMap数据库目录失败!"
+					return errors.New(msg)
+				}
+				// 更新数据库文件
+				srcfile := om.Basedir + "/temp/Manager_Table_Data.sql"
+				dstfile := dst + "/db/GeoShareManager/Manager_Table_Data.sql"
+				if Exists(om.Basedir+"/temp/Manager_Table_Data.sql") == true {
+					if err := Copy(srcfile, dstfile); err != nil {
+						msg := "WARN: 更新分平台数据库文件失败!"
+						return errors.New(msg)
+					}
 
-                    // 删除临时目录
-                    os.RemoveAll(om.Basedir+"/temp")
-                }
-            }
+					// 删除临时目录
+					os.RemoveAll(om.Basedir + "/temp")
+				}
+			}
 		}
 	}
 
-	fmt.Println("MSG: 拷贝OneMap成功")
+	fmt.Println("MSG: Copy OneMap files successfully!")
 	return nil
 }
 
@@ -247,49 +247,49 @@ func (om *OMPInfo) OMPackage() int {
 // parse the current machine info
 func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 	if mi == nil || sm == nil {
-		return errors.New("ERROR: 输入参数为空")
+		return errors.New("ERROR: Input MachineInfo and SrvMapping object is nil!")
 	}
 
 	// get attributes
 	if mi.Os != "" {
 		om.Os = mi.Os
 	} else {
-		return errors.New("ERROR: 获取输入参数(os)非法")
+		return errors.New("ERROR: Get machine's input param(os) is invalid!")
 	}
 	if mi.Arch != "" {
 		om.Arch = mi.Arch
 	} else {
-		return errors.New("ERROR: 获取输入参数(arch)非法")
+		return errors.New("ERROR: Get machine's input param(arch) is invalid!")
 	}
 	if mi.Ip != "" {
 		om.Ip = mi.Ip
 	} else {
-		return errors.New("ERROR: 获取输入参数(ip)非法")
+		return errors.New("ERROR: Get machine's input param(ip) is invalid!")
 	}
 	if mi.User != "" {
 		om.User = mi.User
 	} else {
-		return errors.New("ERROR: 获取输入参数(user)非法")
+		return errors.New("ERROR: Get machine's input param(user) is invalid!")
 	}
 	if mi.Pwd != "" {
 		om.Pwd = mi.Pwd
 	} else {
-		return errors.New("ERROR: 获取输入参数(pwd)非法")
+		return errors.New("ERROR: Get machine's input param(pwd) is invalid!")
 	}
 	if mi.Omhome != "" {
 		om.OMHome = mi.Omhome
 	} else {
-		return errors.New("ERROR: 获取输入参数(pwd)非法")
+		return errors.New("ERROR: Get machine's intput param(pwd) is invalid!")
 	}
 
 	filename, err := om.OMGetVersion(om.Basedir)
 	if err != nil {
-		return errors.New("ERROR: 获取OneMap版本信息失败")
+		return errors.New("ERROR: Get OneMap version failed!")
 	}
 
 	// get the container
 	if err = om.OMGetContainer(om.Basedir, filename); err != nil {
-		return errors.New("ERROR: 获取OneMap容器信息失败")
+		return errors.New("ERROR: Get OneMap container failed!")
 	}
 
 	// Get the web app modules name and services name
@@ -323,7 +323,7 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 }
 
 // list files in the path recursion
-func getAllfiles(path string) {
+func GetAllfiles(path string) {
 	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
 			return err
@@ -341,19 +341,19 @@ func getAllfiles(path string) {
 }
 
 // list sub directory in current path
-func getSubDir(path string) ([]string, error) {
+func GetSubDir(path string) ([]string, error) {
 	pn := []string{}
 
 	f, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("ERROR: 打开输入路径(%s)失败\n", path)
+		fmt.Printf("ERROR: Open input path(%s) failed!\n", path)
 		return pn, err
 	}
 
 	list, err := f.Readdir(-1)
 	f.Close()
 	if err != nil {
-		fmt.Printf("ERROR: 获取输入路径(%s)信息失败\n", path)
+		fmt.Printf("ERROR: Read input path(%s) failed!\n", path)
 		return pn, err
 	}
 
@@ -376,14 +376,14 @@ func getSubDir(path string) ([]string, error) {
 func (om *OMPInfo) OMGetVersion(basedir string) (string, error) {
 	var base string // the onemap package directory
 	if flag := Exists(basedir); flag != true {
-		msg := "ERROR: 输入路径(" + basedir + ")不存在"
+		msg := "ERROR: Input directory(" + basedir + ") isn't existed!"
 		return base, errors.New(msg)
 	}
 
 	// get all sub directory name and search the onemap package directory
-	subpath, err := getSubDir(basedir)
+	subpath, err := GetSubDir(basedir)
 	if err != nil {
-		msg := "ERROR: 获取子目录失败"
+		msg := "ERROR: Get all the sub directory failed!"
 		return base, errors.New(msg)
 	}
 
@@ -402,16 +402,15 @@ func (om *OMPInfo) OMGetVersion(basedir string) (string, error) {
 
 	// get the file/path name
 	if base == "" {
-		msg := "WARN: OneMap安装包命名非法"
-		//return base, errors.New(msg)
-        fmt.Println(msg)
+		msg := "ERROR: Invalid OneMap package!"
+		return base, errors.New(msg)
 	}
 
 	// parse the path name and get the version
 	var arr = strings.Split(base, "_")
 	om.Version = arr[len(arr)-1]
 	if om.Version == "" {
-		msg := "ERROR: 获取OneMap版本信息失败"
+		msg := "ERROR: Invalid package name(" + base + ") and have no version information!"
 		return base, errors.New(msg)
 	}
 
@@ -421,14 +420,14 @@ func (om *OMPInfo) OMGetVersion(basedir string) (string, error) {
 // get web container's name
 func (om *OMPInfo) OMGetContainer(basedir string, subdirname string) error {
 	if flag := Exists(basedir + "/" + subdirname); flag != true {
-		msg := "ERROR: 输入目录(" + basedir + ")不存在"
+		msg := "ERROR: Input directory(" + basedir + ") isn't existed!"
 		return errors.New(msg)
 	}
 
 	// get all sub directory name and search the onemap package directory
-	subpath, err := getSubDir(basedir + "/" + subdirname)
+	subpath, err := GetSubDir(basedir + "/" + subdirname)
 	if err != nil {
-		msg := "ERROR: 获取所有子目录失败"
+		msg := "ERROR: Get all the sub directory failed!"
 		return errors.New(msg)
 	}
 
@@ -442,12 +441,12 @@ func (om *OMPInfo) OMGetContainer(basedir string, subdirname string) error {
 			continue
 		}
 
-		return errors.New("ERROR: 获取web容器路径失败")
+		return errors.New("ERROR: Get container's path failed!")
 	}
 
 	// get the file/path name
 	if base == "" {
-		return errors.New("ERROR: 非法OneMap安装包")
+		return errors.New("ERROR: Invalid OneMap package!")
 	}
 
 	// parse the path name and get the version
@@ -462,12 +461,12 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 	cmd := exec.Command("sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
-		return errors.New("ERROR: sshpass没有安装")
+		return errors.New("ERROR: sshpass isn't installed!")
 	}
 
 	// check srcdir is a file or directory
 	if flag := Exists(srcdir); flag != true {
-		msg := "ERROR: 源文件或目录(" + srcdir + ")不存在"
+		msg := "ERROR: Source file or directory " + srcdir + " isn't existed!"
 		return errors.New(msg)
 	}
 
@@ -483,7 +482,7 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 	}
 	err = cmd.Run()
 	if err != nil {
-		return errors.New("ERROR: 执行远程拷贝失败")
+		return errors.New("ERROR: Exec remote copy command failed!")
 	}
 
 	return nil
@@ -493,14 +492,14 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 func (om *OMPInfo) OMRemoteExec() error {
 	// parse the remote command line
 	if len(om.Servers) <= 0 {
-		return errors.New("ERROR: 没有需要安装的模块")
+		return errors.New("ERROR: No install modules!")
 	}
 
 	// check whether installed sshpass package
 	cmd := exec.Command("sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
-		return errors.New("ERROR: Sshpass没有安装")
+		return errors.New("ERROR: Sshpass isn't installed!")
 	}
 
 	// exec the remote command line
@@ -509,7 +508,7 @@ func (om *OMPInfo) OMRemoteExec() error {
 			"/bin/bash", om.OMHome+"/install.sh", om.Servers[i])
 		err = cmd.Run()
 		if err != nil {
-			msg := "ERROR: 安装" + om.Servers[i] + "服务模块失败"
+			msg := "ERROR: Install " + om.Servers[i] + " module failed!"
 			return errors.New(msg)
 		}
 	}
@@ -523,7 +522,7 @@ func (om *OMPInfo) OMInputParams(sc *SysConfig) []string {
 
 	// first check whether install any app or service
 	if len(om.Apps) < 1 && len(om.Services) < 1 {
-		fmt.Println("WARN: 没有需要安装的模块")
+		fmt.Println("WARN: No installed modules!")
 		return srvlist
 	}
 
