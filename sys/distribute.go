@@ -47,20 +47,20 @@ func Distribute(basedir string, si *SysInfo, sc *SysConfig, sm *ServerMapping) e
 			return err
 		}
 
-        // 将配置参数写入配置文件中
-        srcfile := om.Basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml"
-        if err = RefreshSysConfig(sc, srcfile); err!=nil {  
-            return err
-        }
+		// 将配置参数写入配置文件中
+		//        srcfile := om.Basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml"
+		//        if err = RefreshSysConfig(sc, srcfile); err!=nil {  
+		//            return err
+		//        }
 
 		// remote copy OneMap package
-		srcdir = om.Basedir + "/" + ONEMAP_NAME
-		dstdir = om.OMHome
+		//		srcdir = om.Basedir + "/" + ONEMAP_NAME
+		//		dstdir = om.OMHome
 
-		if err = om.OMRemoteCopy(srcdir, dstdir); err != nil {
-			fmt.Println("ERROR: Exec retmote copy failed!")
-			return err
-		}
+		//		if err = om.OMRemoteCopy(srcdir, dstdir); err != nil {
+		//			fmt.Println("ERROR: Exec retmote copy failed!")
+		//			return err
+		//		}
 
 		// remote exec the install bash script
 		if err = om.OMRemoteExec(); err != nil {

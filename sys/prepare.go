@@ -128,7 +128,12 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	}
 
 	// copy public
-	//var cmdline string
+	if (Exists(dst + "/install.sh")) != true {
+		if err := Copy(src+"/install.sh", dst); err != nil {
+			msg := "ERROR: Copy install bash script failed"
+			return errors.New(msg)
+		}
+	}
 	if (Exists(dst + "/arcgis")) != true {
 		if err := Copy(src+"/arcgis", dst); err != nil {
 			msg := "ERROR: Copy directory (" + src + "/arcgis) failed!"
@@ -506,6 +511,8 @@ func (om *OMPInfo) OMRemoteExec() error {
 	for i := 0; i < len(om.Servers); i++ {
 		cmd = exec.Command("sshpass", "-p", om.Pwd, "ssh", om.User+"@"+om.Ip,
 			"/bin/bash", om.OMHome+"/install.sh", om.Servers[i])
+		fmt.Println("sshpass -p " + om.Pwd + " ssh " + om.User + " @ " + om.Ip +
+			" /bin/bash " + om.OMHome + "/install.sh " + om.Servers[i])
 		err = cmd.Run()
 		if err != nil {
 			msg := "ERROR: Install " + om.Servers[i] + " module failed!"
