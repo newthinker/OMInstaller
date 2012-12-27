@@ -46,19 +46,6 @@ func (ss *ServerMapping) AddServer(srvname string, srvdesc string, mdltype []str
 	ss.Servers = append(ss.Servers, news)
 }
 
-/*
-func (s *Server) GetCurrentValue(mdlname string) (name string, e error) {
-  for _, v := range s.ModuleList {
-    if v.XMLName.Local == mdlname {
-      name = v.ModuleName
-      return
-    }
-  }
-  e = errors.New(fmt.Sprintf("%s not found", mdlname))
-  return
-}
-*/
-
 // 将SrvMapping整理输出到map中
 func (sm *ServerMapping) FormatSrvMapping() map[string]interface{} {
 	srvlist := list.New() // 服务器数组
@@ -111,22 +98,10 @@ type MachineInfo struct {
 	Pwd     string       `xml:"pwd,attr"`
 	Omhome  string       `xml:"omhome,attr"`
 	Web     string       `xml:"container,attr"`
-	Servers []ServerInfo `xml:",any"`
+	Servers []ServerInfo `xml:"server"`
 }
 
-type ServerInfo struct {
-	XMLName xml.Name   `xml:""`
-	Attrs   []AttrInfo `xml:",any"`
-}
-
-type AttrInfo struct {
-	XMLName     xml.Name `xml:""`
-	AttrName    string   `xml:"name,attr"`
-	AttrEncrypt string   `xml:"encrypt,attr"`
-	AttrSelect  string   `xml:"selects,attr"`
-	Value       string   `xml:",chardata"`
-}
-
+/*
 func (s *ServerInfo) AddAttrInfo(attrname string,
 	attrvalue string, desc string, encrypt string, selects string) {
 	newa := AttrInfo{Value: attrvalue, AttrName: desc, AttrEncrypt: encrypt, AttrSelect: selects}
@@ -149,42 +124,65 @@ func (sm *SysInfo) AddMachineInfo(os string,
 	newm.Servers = servers
 	sm.Machines = append(sm.Machines, newm)
 }
-
+*/
 ////////////////////////////////////////////////////////
 // SysConfig struct
 type SysConfig struct {
 	XMLName    xml.Name `xml:"root"`
 	OneMapHome string   `xml:"OneMapHome,attr"`
-	LayOut     Layout   `xml:""`
-	FileMap    Filemap  `xml:""`
+	LayOut     Layout   `xml:"layout"`
+	FileMap    Filemap  `xml:"filemapping"`
 }
 
 type Layout struct {
-	XMLName xml.Name     `xml:"Layout"`
-	Servers []ServerInfo `xml:",any"`
+	Servers []ServerInfo `xml:"server"`
+}
+
+type ServerInfo struct {
+	Name  string     `xml:"name,attr"`
+	Attrs []AttrInfo `xml:"attr"`
+}
+
+type AttrInfo struct {
+	Name    string `xml:"name,attr"`
+	Desc    string `xml:"desc,attr"`
+	Encrypt string `xml:"encrypt,attr"`
+	Select  string `xml:"selects,attr"`
+	Value   string `xml:"value,attr"`
 }
 
 type Filemap struct {
-	XMLName    xml.Name    `xml:"FileMapping"`
-	Containers []Container `xml:",any"`
+	Containers []Container `xml:"container"`
 }
 
 type Container struct {
-	XMLName xml.Name    `xml:""`
+	Name    string      `xml:"name,attr"`
 	Path    string      `xml:"path,attr"`
-	Modules []ModuleMap `xml:",any"`
+	Modules []ModuleMap `xml:"module"`
 }
 
 type ModuleMap struct {
-	XMLName    xml.Name    `xml:""`
-	ServersMap []ServerMap `xml:",any"`
+	Name       string      `xml:"name,attr"`
+	ServersMap []ServerMap `xml:"server"`
 }
 
-/// 目前只解析到服务器类型这一层 
 type ServerMap struct {
-	XMLName xml.Name `xml:""`
+	Name    string `xml:"name,attr"`
+	FileSet []File `xml:"file"`
 }
 
+type File struct {
+	Path   string `xml:"path,attr"`
+	KeySet []Key  `xml:"key"`
+}
+
+type Key struct {
+	Template  string `xml:"template,attr"`
+	Attribute string `xml:"attribute,attr"`
+	Value     string `xml:",chardata"`
+}
+
+/*
 func (lo *Layout) AddServerInfo(srvtype string, attrarray []AttrInfo) {
 	news := ServerInfo{}
 	news.XMLName.Local = srvtype
@@ -210,35 +208,35 @@ func (fm *Filemap) AddContainer(conname string, conpath string, arrmodule []Modu
 	newc.Modules = arrmodule
 	fm.Containers = append(fm.Containers, newc)
 }
-
+*/
 // 将SysConfig中的输入参数整理输出
 func (sc *SysConfig) FormatSysConfig() map[string]interface{} {
 	srvlist := list.New()
 
 	for i := 0; i < len(sc.LayOut.Servers); i++ {
 		srvinfo := &(sc.LayOut.Servers[i])
-
-		if srvinfo.XMLName.Local == "" {
+		// 通过name属性判断此节点是否存在
+		if srvinfo.Name == "" {
 			continue
 		}
 
 		srvmap := make(map[string]interface{})
 
-		srvmap["Srvname"] = srvinfo.XMLName.Local
+		srvmap["Srvname"] = srvinfo.Name
 
 		lstparams := list.New() // 属性列表
 
 		for j := 0; j < len(srvinfo.Attrs); j++ {
 			attr := &(srvinfo.Attrs[j])
 
-			if attr != nil && attr.XMLName.Local != "" && attr.AttrName != "" {
+			if attr != nil && attr.Name != "" {
 				attrmap := make(map[string]string)
 
-				attrmap["Paramname"] = attr.XMLName.Local
-				attrmap["Paramdesc"] = attr.AttrName
+				attrmap["Paramname"] = attr.Name
+				attrmap["Paramdesc"] = attr.Desc
 
 				// 判断是需要需要加密
-				if attr.AttrEncrypt != "" {
+				if attr.Encrypt != "" {
 					attrmap["Encrypt"] = "true"
 				}
 
@@ -264,14 +262,14 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 	// initialize
 	for i := 0; i < len(sc.LayOut.Servers); i++ {
 		var srvinfo *ServerInfo = &(sc.LayOut.Servers[i])
-		var srvtype string = srvinfo.XMLName.Local
+		var srvtype string = srvinfo.Name
 		flag[srvtype] = false
 	}
 
 	for i := 0; i < len(si.Machines); i++ {
 		for j := 0; j < len(si.Machines[i].Servers); j++ {
 			var si_srvinfo *ServerInfo = &(si.Machines[i].Servers[j])
-			var si_srvtype string = si_srvinfo.XMLName.Local // server type
+			var si_srvtype string = si_srvinfo.Name // server type
 
 			// don't set MonitorAgent server temperarily
 			if si_srvtype == "agent" {
@@ -281,7 +279,7 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 
 			for k := 0; k < len(sc.LayOut.Servers); k++ {
 				var sc_srvinfo *ServerInfo = &(sc.LayOut.Servers[k])
-				var sc_srvtype string = sc_srvinfo.XMLName.Local
+				var sc_srvtype string = sc_srvinfo.Name
 
 				// update the matching server info
 				if si_srvtype == sc_srvtype {
@@ -319,14 +317,14 @@ func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) error {
 	var flag bool = false
 	for i := 0; i < len(mi.Servers); i++ {
 		var mi_srvinfo *ServerInfo = &(mi.Servers[i])
-		var mi_srvtype string = mi_srvinfo.XMLName.Local
+		var mi_srvtype string = mi_srvinfo.Name
 
 		if mi_srvtype != "agent" {
 			continue
 		} else {
 			for j := 0; j < len(sc.LayOut.Servers); j++ {
 				var sc_srvinfo *ServerInfo = &(sc.LayOut.Servers[j])
-				var sc_srvtype string = sc_srvinfo.XMLName.Local
+				var sc_srvtype string = sc_srvinfo.Name
 
 				if sc_srvtype == mi_srvtype {
 					sc.LayOut.Servers[j] = *mi_srvinfo
@@ -428,8 +426,7 @@ func RefreshSysConfig(sc *SysConfig, conffile string) error {
 	}
 
 	output, err := xml.MarshalIndent(sc, "  ", "   ")
-	fmt.Println([]byte(output))
-	os.Stdout.Write([]byte(output))
+	//	os.Stdout.Write([]byte(output))
 	if err != nil {
 		return err
 	}

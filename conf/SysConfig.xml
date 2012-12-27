@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root OneMapHome="C:\20120915"> 
+<root OneMapHome="/opt/OneMap"> 
 	<layout>
 		<server name="db">
-			<attr name="db_ip" desc="数据库服务器IP:" value="127.0.0.2" />
-			<attr name="db_port" desc="数据库服务器PORT:" value="1521" />
+			<attr name="db_ip" desc="数据库服务器IP:" value="127.0.0.1" />
+			<attr name="db_port" desc="数据库服务器端口:" value="1521" />
 			<attr name="db_sid" desc="数据库服务器实例名:" value="orcl" />
+			<attr name="db_user" desc="数据库系统安装帐号:" value="oracle" />
+			<attr name="system_user" desc="数据库管理员用户名:" value="system" />
+			<attr name="system_pwd" desc="数据库管理员密码:" value="admin" />
 			<attr name="manager_user" desc="GeoShareManager数据库用户名:" value="geoshare_platform" />
 			<attr name="manager_pwd" desc="GeoShareManager数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
 			<attr name="portal_user" desc="GeoSharePortal数据库用户名:" value="geoshare_portal" />
@@ -13,70 +16,71 @@
 			<attr name="geocoding_pwd" desc="GeoCoding数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
 			<attr name="geoportal_user" desc="GeoPortal数据库用户名:" value="geo_portal" />
 			<attr name="geoportal_pwd" desc="GeoPortal数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
-			<attr name="db_h2" desc="内存数据库IP:" value="127.0.0.2" />
+			<attr name="db_h2" desc="内存数据库IP:" value="127.0.0.1" />
 			<attr name="sub_user" desc="分平台数据库用户名:" value="GEOSHARE_SUB_PLATFORM" />
+			<attr name="sub_pwd" desc="分平台数据库密码:" encrypt="true" value="Gzt3XR0PAto" />
 		</server>
 		<server name="web">
-			<attr name="web_ip" desc="门户IP:" value="127.0.0.2" />
-			<attr name="web_port" desc="门户PORT:" value="8080" />
+			<attr name="web_ip" desc="门户IP:" value="127.0.0.1" />
+			<attr name="web_port" desc="门户端口:" value="8080" />
 	        <attr name="web_user" desc="门户默认用户名:" value="super" />
 	        <attr name="web_pwd" desc="门户默认用户名密码:" value="admin" />
-	        <attr name="flex_ip" desc="Flex发布服务器IP:" value="127.0.0.2" />
-	        <attr name="flex_port" desc="Flex发布服务器PORT:" value="8080" />
-	        <attr name="sl_ip" desc="Silverlight发布服务器IP:" value="127.0.0.2" />
-	        <attr name="sl_port" desc="Silverlight发布服务器PORT:" value="80" />
-	        <attr name="ria_ip" desc="快速搭建服务器IP:" value="127.0.0.2" />
-	        <attr name="ria_port" desc="快速发布服务器PORT:" value="8080" />
+	        <attr name="flex_ip" desc="Flex发布服务器IP:" value="127.0.0.1" />
+	        <attr name="flex_port" desc="Flex发布服务器端口:" value="8080" />
+	        <attr name="sl_ip" desc="Silverlight发布服务器IP:" value="127.0.0.1" />
+	        <attr name="sl_port" desc="Silverlight发布服务器端口:" value="80" />
+	        <attr name="ria_ip" desc="快速搭建服务器IP:" value="127.0.0.1" />
+	        <attr name="ria_port" desc="快速发布服务器端口:" value="8080" />
 	        <attr name="iis_root" desc="silverlight文件生成路径:" value="c:\inetpub\wwwroot\" />
 	        <attr name="web_csw" desc="是否启用CSW服务:" selects="0,禁用;1,开启" value="1" />
     </server>
     <server name="gis">
-	        <attr name="gis_ip" desc="GIS服务器IP:" value="127.0.0.2" />
-	        <attr name="gis_port" desc="GIS服务器PORT:" value="8080" />
-	        <attr name="gis_ags_ip" desc="ArcGISServer服务器IP:" value="127.0.0.2" />
+	        <attr name="gis_ip" desc="GIS服务器IP:" value="127.0.0.1" />
+	        <attr name="gis_port" desc="GIS服务器端口:" value="8080" />
+	        <attr name="gis_ags_ip" desc="ArcGISServer服务器IP:" value="127.0.0.1" />
 	        <attr name="gis_ags_user" desc="ArcGISServer服务器用户名:" value="arcgismanager" />
 	        <attr name="gis_ags_pwd" desc="ArcGISServer服务器密码:" encrypt="true" value="/2IWry6fWdsq9l5S69ER8Q==" />
 	        <attr name="gis_sharekey" desc="sharekey:" encrypt="true" value="9STRE5GPzs2UpCvzrlfktw==" />
-			<attr name="ags_log_path" desc="ArcGISServer日志本地存放目录:" value="C:\ArcGIS\Server10.0\server\user\log" />
+            <attr name="ags_log_path" desc="ArcGISServer安装目录:" value="/opt/arcgis/server10.0" />
 			<!--gis_base_map desc="底图服务地址:" value="http://127.0.0.1:8099/arcgis/rest/services/world/MapServer" -->
-			<attr name="gis_geo_map" desc="几何服务地址:" value="http://127.0.0.1:8099/arcgis/rest/services/Geometry/GeometryServer" />
+			<!--attr name="gis_geo_map" desc="几何服务地址:" value="http://127.0.0.1:8099/arcgis/rest/services/Geometry/GeometryServer" /-->
 			<attr name="gis_basemap_type" desc="底图服务类型:" value="dynamic" />
-			<attr name="gis_services_port" desc="RemoteServices系统的HTTPSPORT:" value="8443" />
-			<attr name="wmts_ip" desc="WMTS系统的IP:" value="127.0.0.2" />
-			<attr name="wmts_port" desc="WMTS系统的PORT:" value="8080" />	
+			<attr name="gis_services_port" desc="RemoteServices系统的HTTPS端口:" value="8443" />
+			<attr name="wmts_ip" desc="WMTS系统的IP:" value="127.0.0.1" />
+			<attr name="wmts_port" desc="WMTS系统的端口:" value="8080" />	
 			<!--web_base_map desc="基础底图路径:" value="http://127.0.0.1:8080/RemoteRest/services/usa/MapServer" -->		
-			<attr name="sysrest_ip" desc="SysRest服务IP:" value="127.0.0.2" />
-			<attr name="sysrest_port" desc="SysRest服务PORT" value="8081" />
+			<attr name="sysrest_ip" desc="SysRest服务IP:" value="127.0.0.1" />
+			<attr name="sysrest_port" desc="SysRest服务端口" value="8081" />
 	</server>
 	<server name="main">
-			<attr name="main_ip" desc="运维服务器IP:" value="127.0.0.2" />
-			<attr name="main_port" desc="运维服务器PORT:" value="8080" />
+			<attr name="main_ip" desc="运维服务器IP:" value="127.0.0.1" />
+			<attr name="main_port" desc="运维服务器端口:" value="8080" />
 			<attr name="main_upload_level" desc="运维文件上传目录深度:" value="3" />
 			<attr name="main_upload_num" desc="运维文件上传最大值:" value="1" />
-			<attr name="geoconding_ip" desc="GeoCoding系统的IP:" value="127.0.0.2" />
-			<attr name="geoconding_port" desc="GeoCoding系统的PORT:" value="8080" />
-			<attr name="geoportal_ip" desc="GeoPortal系统的IP:" value="127.0.0.2" />
-			<attr name="geoportal_port" desc="GeoPortal系统的PORT:" value="8080" />
+			<attr name="geocoding_ip" desc="GeoCoding系统的IP:" value="127.0.0.1" />
+			<attr name="geocoding_port" desc="GeoCoding系统的端口:" value="8080" />
+			<attr name="geoportal_ip" desc="GeoPortal系统的IP:" value="127.0.0.1" />
+			<attr name="geoportal_port" desc="GeoPortal系统的端口:" value="8080" />
 			<attr name="sub_upload_num" desc="分平台文件上传最大值" value="10" />
             <attr name="sub_syn_code" desc="分平台同步代码" selects="0,主分平台之间进行同步; 1,主主平台之间进行同步;" value="0" />
-			<attr name="file_ip" desc="FileServices系统的IP:" value="127.0.0.2" />
-			<attr name="file_port" desc="FileServices系统的PORT号:" value="8080" />			
-			<attr name="tile_ip" desc="TileServices系统的IP:" value="127.0.0.2" />
-			<attr name="tile_port" desc="TileServices系统的PORT:" value="8080" />
-			<attr name="aggregator_ip" desc="Aggregator系统的IP:" value="127.0.0.2" />
-			<attr name="aggregator_port" desc="Aggregator系统的PORT:" value="8080" />			
+			<attr name="file_ip" desc="FileServices系统的IP:" value="127.0.0.1" />
+			<attr name="file_port" desc="FileServices系统的端口号:" value="8080" />			
+			<attr name="tile_ip" desc="TileServices系统的IP:" value="127.0.0.1" />
+			<attr name="tile_port" desc="TileServices系统的端口:" value="8080" />
+			<attr name="aggregator_ip" desc="Aggregator系统的IP:" value="127.0.0.1" />
+			<attr name="aggregator_port" desc="Aggregator系统的端口:" value="8080" />			
 		</server>
 		<server name="token">
-			<attr name="token_ip" desc="Token服务器ip:" value="127.0.0.2" />
-			<attr name="token_port" desc="Token服务器PORT:" value="8080" />
+			<attr name="token_ip" desc="Token服务器ip:" value="127.0.0.1" />
+			<attr name="token_port" desc="Token服务器端口:" value="8080" />
 		</server>
 		<server name="msg">
-			<attr name="msg_ip" desc="JMS服务器ip:" value="127.0.0.2" />
-			<attr name="msg_port" desc="JMS服务器PORT:" value="61616" />
+			<attr name="msg_ip" desc="JMS服务器ip:" value="127.0.0.1" />
+			<attr name="msg_port" desc="JMS服务器端口:" value="61616" />
 		</server>
 		<server name="agent">
-			<attr name="agent_ip" desc="监控代理服务器IP:" value="127.0.0.2" />
-			<attr name="agent_port" desc="监控代理服务器PORT:" value="8080" />
+			<attr name="agent_ip" desc="监控代理服务器IP:" value="127.0.0.1" />
+			<attr name="agent_port" desc="监控代理服务器端口:" value="8080" />
 		</server>
 	</layout>
 	<filemapping>
@@ -647,8 +651,8 @@
 		</container>
 		<container name="services" path="services">
 			<module name="activemq5.4.1">
-				<server name="msg"" />
-			</activemq5.4.1>
+				<server name="msg" />
+			</module>
 			<module name="GeoShareMonitorAgent">
 				<server name="agent">
 					<file path="GeoShareMonitorAgent/config.properties">

@@ -35,25 +35,32 @@ func Distribute(basedir string, si *SysInfo, sc *SysConfig, sm *ServerMapping) e
 				return err
 			}
 		}
-		srcdir := om.Basedir + "/" + ONEMAP_NAME + "_Linux_" + om.Version
-		if err = om.OMCopy(srcdir, dstdir); err != nil {
-			fmt.Println("ERROR: Package onemap failed!")
-			return err
-		}
+		//		srcdir := om.Basedir + "/" + ONEMAP_NAME + "_Linux_" + om.Version
+		//		if err = om.OMCopy(srcdir, dstdir); err != nil {
+		//			fmt.Println("ERROR: Package onemap failed!")
+		//			return err
+		//		}
 
-		// update the monitoragent module
-		if err = UpdateMdlAgent(mi, sc); err != nil {
-			fmt.Printf("ERROR: Update the %d machine's monitoragent module failed!\n", i+1)
-			return err
-		}
+		//		// update the monitoragent module
+		//		if err = UpdateMdlAgent(mi, sc); err != nil {
+		//			fmt.Printf("ERROR: Update the %d machine's monitoragent module failed!\n", i+1)
+		//			return err
+		//		}
 
-		// 将配置参数写入配置文件中
+		//		// 将配置参数写入配置文件中
 		//        srcfile := om.Basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml"
 		//        if err = RefreshSysConfig(sc, srcfile); err!=nil {  
 		//            return err
 		//        }
+        
+        // 更新脚本文件
+        srcfile := om.Basedir + "/" + ONEMAP_NAME + "/install.sh"
+        if err=UpdateScritp(&om, srcfile);err!=nil {
+            fmt.Println("ERROR: 更新单机安装脚本失败")
+            return err
+        }
 
-		// remote copy OneMap package
+		// 		// 远程拷贝OneMap package
 		//		srcdir = om.Basedir + "/" + ONEMAP_NAME
 		//		dstdir = om.OMHome
 

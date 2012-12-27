@@ -114,30 +114,30 @@ func FormatSysConfig(sc SysConfig) SrvsParam {
 	for i := 0; i < len(sc.LayOut.Servers); i++ {
 		srvinfo := &(sc.LayOut.Servers[i])
 
-		if srvinfo.XMLName.Local == "" {
+		if srvinfo.Name == "" {
 			continue
 		}
 
 		var srvmap SrvParam
-		srvmap.Srvname = srvinfo.XMLName.Local
+		srvmap.Srvname = srvinfo.Name
 
 		for j := 0; j < len(srvinfo.Attrs); j++ {
 			attr := &(srvinfo.Attrs[j])
 
-			if attr != nil && attr.XMLName.Local != "" && attr.AttrName != "" {
+			if attr != nil && attr.Name != "" {
 				var param ParamGet
 
-				param.Paramname = attr.XMLName.Local
-				param.Paramdesc = attr.AttrName
+				param.Paramname = attr.Name
+				param.Paramdesc = attr.Desc
 
 				// 判断是否需要加密
-				if attr.AttrEncrypt != "" {
+				if attr.Encrypt != "" {
 					param.Encrypt = "true"
 				}
 
 				// 判断是否是select框 
-				if attr.AttrSelect != "" {
-					param.Selects = attr.AttrSelect
+				if attr.Select != "" {
+					param.Selects = attr.Select
 				}
 
 				srvmap.Params = append(srvmap.Params, param)
@@ -189,7 +189,7 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 
 						server := &ServerInfo{}
 
-						server.XMLName.Local = (sp["Srvname"]).(string)
+						server.Name = (sp["Srvname"]).(string)
 
 						switch arrparams := (sp["Params"]).(type) {
 						case []interface{}:
@@ -197,16 +197,17 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 								param := p.(map[string]interface{})
 
 								attr := &AttrInfo{}
-								attr.XMLName.Local = (param["Paramname"]).(string)
+								attr.Name = (param["Paramname"]).(string)
 								attr.Value = (param["Paramvalue"]).(string)
 
 								encrypt := (param["Encrypt"]).(string)
 								if encrypt != "" {
-									attr.AttrEncrypt = encrypt
+									attr.Encrypt = encrypt
 								}
 								selects := (param["Selects"]).(string)
 								if selects != "" {
-									attr.AttrSelect = selects
+									//attr.Select = selects
+                                    attr.Value = selects
 								}
 
 								server.Attrs = append(server.Attrs, *attr)

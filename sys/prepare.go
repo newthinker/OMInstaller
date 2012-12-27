@@ -35,12 +35,23 @@ type OMPInfo struct {
 	Os        string   // 目标机器操作系统类型，[windos/linux]
 	Arch      string   // 目标机器系统架构，[386/amd64]
 	Ip        string   // 目标机器ip地址
-	User      string   // 目标机器系统登录用户名
+	Root      string   // 目标机器系统登录用户名
 	Pwd       string   // 目标机器系统登录密码
 	Basedir   string   // 当前安装包根目录
 	Apps      []string // OneMap应用模块
 	Services  []string // OneMap服务
 	Servers   []string // OneMap server types
+
+    OM_Group   string  // OneMap 组名
+    OM_User    string  // OneMap 系统用户
+    OM_PWD     string  // OneMap 系统密码
+
+    ORCL_User    string  // oracle系统帐号
+    ORCL_SID    string  // SID
+    DB_User   [6]string  // 数据库用户, 6个：system,geoshare_platform, geoshare_portal, geo_coding, geo_portal, geoshare_sub_platform
+    DB_PWD    [6]string  // 用户密码
+
+    AGS_Home   string  // AGS home目录
 }
 
 // 判断文件或者路径是否存在
@@ -272,7 +283,7 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 		return errors.New("ERROR: Get machine's input param(ip) is invalid!")
 	}
 	if mi.User != "" {
-		om.User = mi.User
+		om.Root = mi.User
 	} else {
 		return errors.New("ERROR: Get machine's input param(user) is invalid!")
 	}
@@ -300,7 +311,7 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 	// Get the web app modules name and services name
 	for i := 0; i < len(mi.Servers); i++ {
 		var srvinfo *ServerInfo = &(mi.Servers[i])
-		var srvtype string = srvinfo.XMLName.Local
+		var srvtype string = srvinfo.Name
 		if srvtype == "" {
 			continue
 		}
@@ -322,7 +333,56 @@ func (om *OMPInfo) OMGetInfo(mi *MachineInfo, sm *ServerMapping) error {
 				om.Servers = append(om.Servers, srvtype)
 			}
 		}
+
+        // 获取其它参数信息
+        if srvtype=="db" {
+            for _, attr := range srvinfo.Attrs {
+                if attr.Name=="db_sid" {
+                    om.ORCL_SID = attr.Value
+                } else if attr.Name=="db_user" {
+                    om.ORCL_User = attr.Value
+                } else if attr.Name=="system_user" {
+                    om.DB_User[0] = attr.Value
+                } else if attr.Name=="system_pwd" {
+                    om.DB_PWD[0] = attr.Value
+                } else if attr.Name=="manager_user" {
+                    om.DB_User[1] = attr.Value
+                } else if attr.Name=="manager_pwd" {
+                    om.DB_PWD[1] = attr.Value
+                } else if attr.Name=="portal_user" {
+                    om.DB_User[2] = attr.Value
+                } else if attr.Name=="portal_pwd" {
+                    om.DB_PWD[2] = attr.Value
+                } else if attr.Name=="geocoding_user" {
+                    om.DB_User[3] = attr.Value
+                } else if attr.Name=="geocoding_pwd" {
+                    om.DB_PWD[3] = attr.Value
+                } else if attr.Name=="geoportal_user" {
+                    om.DB_User[4] = attr.Value
+                } else if attr.Name=="geoportal_pwd" {
+                    om.DB_PWD[4] = attr.Value
+                } else if attr.Name=="sub_user" {
+                    om.DB_User[5] = attr.Value
+                } else if attr.Name=="sub_pwd" {
+                    om.DB_PWD[5] = attr.Value
+                }
+            }
+        } else if srvtype=="gis" {
+            for k:=0;k<len(srvinfo.Attrs);k++ {
+                attr := &(srvinfo.Attrs[k])
+                if attr.Name=="ags_log_path" {
+                    om.AGS_Home = attr.Value
+                    /// AGS default log path
+                    attr.Value += "/server/user/log"
+                }
+            }
+        }
 	}
+
+    /// default params
+    om.OM_Group = "esri"
+    om.OM_User = "esri"
+    om.OM_PWD = "esri1234"
 
 	return nil
 }
@@ -477,13 +537,13 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 
 	fi, _ := os.Stat(srcdir)
 	if fi.IsDir() {
-		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.User+"@"+om.Ip+":"+dstdir)
+		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
 
-		fmt.Printf("CMD: sshpass -p %s scp -r %s %s@%s:%s\n", om.Pwd, srcdir, om.User, om.Ip, dstdir)
+		fmt.Printf("CMD: sshpass -p %s scp -r %s %s@%s:%s\n", om.Pwd, srcdir, om.Root, om.Ip, dstdir)
 	} else {
-		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", srcdir, om.User+"@"+om.Ip+":"+dstdir)
+		cmd = exec.Command("sshpass", "-p", om.Pwd, "scp", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
 
-		fmt.Printf("CMD: sshpass -p %s scp %s %s@%s:%s\n", om.Pwd, srcdir, om.User, om.Ip, dstdir)
+		fmt.Printf("CMD: sshpass -p %s scp %s %s@%s:%s\n", om.Pwd, srcdir, om.Root, om.Ip, dstdir)
 	}
 	err = cmd.Run()
 	if err != nil {
@@ -509,15 +569,15 @@ func (om *OMPInfo) OMRemoteExec() error {
 
 	// exec the remote command line
 	for i := 0; i < len(om.Servers); i++ {
-		cmd = exec.Command("sshpass", "-p", om.Pwd, "ssh", om.User+"@"+om.Ip,
+		cmd = exec.Command("sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 			"/bin/bash", om.OMHome+"/install.sh", om.Servers[i])
-		fmt.Println("sshpass -p " + om.Pwd + " ssh " + om.User + " @ " + om.Ip +
+		fmt.Println("sshpass -p " + om.Pwd + " ssh " + om.Root+ "@" + om.Ip +
 			" /bin/bash " + om.OMHome + "/install.sh " + om.Servers[i])
-		err = cmd.Run()
-		if err != nil {
-			msg := "ERROR: Install " + om.Servers[i] + " module failed!"
-			return errors.New(msg)
-		}
+		//		err = cmd.Run()
+		//		if err != nil {
+		//			msg := "ERROR: Install " + om.Servers[i] + " module failed!"
+		//			return errors.New(msg)
+		//		}
 	}
 
 	return nil
@@ -540,14 +600,14 @@ func (om *OMPInfo) OMInputParams(sc *SysConfig) []string {
 
 		for j := range sc.FileMap.Containers {
 			var container *Container = &(sc.FileMap.Containers[j])
-			conname := strings.ToUpper(container.XMLName.Local)
+			conname := strings.ToUpper(container.Name)
 			if conname == strings.ToUpper(TOMCAT) || conname == strings.ToUpper(WEBLOGIC) {
 				for k := range container.Modules {
 					var module *ModuleMap = &(container.Modules[k])
 
-					if mdlname == module.XMLName.Local {
+					if mdlname == module.Name {
 						for l := range module.ServersMap {
-							var srvname = module.ServersMap[l].XMLName.Local
+							var srvname = module.ServersMap[l].Name
 
 							var flag bool = true
 
@@ -573,14 +633,14 @@ func (om *OMPInfo) OMInputParams(sc *SysConfig) []string {
 
 		for j := range sc.FileMap.Containers {
 			var container *Container = &(sc.FileMap.Containers[j])
-			conname := strings.ToUpper(container.XMLName.Local)
+			conname := strings.ToUpper(container.Name)
 			if conname == strings.ToUpper("SERVICES") {
 				for k := range container.Modules {
 					var module *ModuleMap = &(container.Modules[k])
 
-					if srvname == module.XMLName.Local {
+					if srvname == module.Name {
 						for l := range module.ServersMap {
-							var srvname = module.ServersMap[l].XMLName.Local
+							var srvname = module.ServersMap[l].Name
 
 							var flag bool = true
 
