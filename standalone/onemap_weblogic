@@ -1,0 +1,168 @@
+#!/bin/bash
+#
+# chkconfig: 345 88 12
+# description: auto launched service script of OneMap.
+#
+### BEGIN INIT INFO
+# Provider: M.C 2011/11/16
+### END INIT INFO
+
+# Source function library
+. /etc/init.d/functions
+. /etc/profile
+
+SRV_HOME=/opt/OneMap
+SRV_PIDFILE="/var/run/onemap.pid"
+SRV_NAME=onemap
+SRV_OWNER=esri
+PROCESS_NAME=weblogic
+START_SCRIPT=${SRV_HOME}/WLS1035/onemap/onemap/bin/startWebLogic.sh
+STOP_SCRIPT=${SRV_HOME}/WLS1035/onemap/onemap/bin/stopWebLogic.sh
+ONEMAP_LOG=${SRV_HOME}/logs
+
+current_account=`id | cut -f2 -d\( | cut -f1 -d\)`
+
+# Get the output file's full name
+
+# @RET : No ret
+getLogName(){
+	curDate=`date +%Y%m%d`
+	ONEMAP_LOG=${ONEMAP_LOG}/onemap_${curDate}.out
+
+	if [ -f $ONEMAP_LOG ];then
+		touch $ONEMAP_LOG
+	fi
+
+	echo "INFO: The output file's name: $ONEMAP_LOG"
+}
+
+# Check if server is running
+#
+# @RET : 0 => server is running
+#        1 => process id in $SRV_PIDFILE does not exist
+#        2 => something is wrong with the pid file
+checkRunning(){
+        if [ -f "$SRV_PIDFILE" ]; then
+                if  [ -z "$(cat $SRV_PIDFILE)" ];then
+                        echo "ERROR: Pidfile '$SRV_PIDFILE' exists but contains no pid"
+                        echo "INFO: delete the pidfile"
+                        rm -f $SRV_PIDFILE
+                        return 2
+                fi
+                if (ps -p $(cat $SRV_PIDFILE) >/dev/null);then
+                        echo "INFO: Server $SRV_NAME is running(PID: '$(cat $SRV_PIDFILE)')"
+                    return 0;
+                else
+                        return 1;
+                fi
+        else
+            return 1;
+        fi
+}
+
+# Check the server's status
+#
+# @RET : 0 => the server process is running
+#        1 => the server process is not running
+status() {
+        if ( checkRunning ); then
+                echo "INFO: Server $SRV_NAME is running (pid '$(cat $SRV_PIDFILE)')"
+                exit 0
+        fi
+	
+        echo "INFO: Server $SRV_NAME not running"
+
+        exit 1
+}
+
+# Start the server
+#
+# @RET : 0 => start successfully
+#	 !0 => something went wrong
+start(){
+	echo "INFO: Starting $SRV_NAME Server..."
+	if ( checkRunning ); then
+		echo "INFO: Server with PID '$(cat $SRV_PIDFILE)' is already running"
+		exit 0
+	fi
+
+	# get the output file's name
+	getLogName
+	if [ "$SRV_OWNER" != "$current_accoutn" ];then
+		if [ "$current_account" != "root" ]; then
+		echo "INFO: Enter password for $SRV_OWNER"
+		fi
+		su - $SRV_OWNER -c "/bin/sh -c \"${START_SCRIPT} >>${ONEMAP_LOG}\"" & 
+	else
+		/bin/sh -c "${START_SCRIPT} >>${ONEMAP_LOG}" &
+	fi
+
+	
+	sleep 3s
+
+	PID=`ps -ef | grep java | grep $SRV_OWNER| grep $PROCESS_NAME | awk '{print $2}'`
+
+	if [ -z "$PID" ];then
+		echo "ERROR: Start Server $SRV_NAME failed"
+		
+		if [ -f $SRV_PIDFILE ];then
+			rm $SRV_PIDFILE
+		fi
+	fi
+
+	echo $PID > $SRV_PIDFILE
+	echo "INFO: Start Server(PID:$PID) successfully"
+	return $RET  
+}
+
+# Stop Server $SRV_NAME
+#
+# @RET : 0 => stop server successfully
+#	 !0 => stop failed
+stop(){
+	echo "INFO: Stopping $SRV_NAME Server..."
+	if( checkRunning );then
+		getLogName
+		if [ "$SRV_OWNER" != "$current_accoutn" ];then
+			if [ "$current_account" != "root" ]; then
+			echo "INFO: Enter password for $SRV_OWNER"
+			fi
+			su - $SRV_OWNER -c "/bin/sh -c \"${STOP_SCRIPT} >>${ONEMAP_LOG}\"" &
+		else
+			/bin/sh -c "${STOP_SCRIPT} >>${ONEMAP_LOG}" &
+		fi
+	fi
+
+	# check 	
+	PID=`ps -ef | grep java | grep $SRV_OWNER | grep $PROCESS_NAME | awk '{print $2}'`
+        if (ps -p $PID >/dev/null);then
+		kill -9 $PID
+	fi
+	
+	if [ -f $SRV_PIDFILE ];then
+		rm -f $SRV_PIDFILE
+	fi
+
+	exit 0
+}
+
+case "$1" in
+start)
+	start
+	status
+	;;
+stop)
+	stop
+	status
+	;;
+restart|reload)
+	stop
+	sleep 3s
+	start
+	;;
+status)
+	status
+	;;
+*)
+	echo $"Usage: $0 { start|stop|restart|status }"
+esac

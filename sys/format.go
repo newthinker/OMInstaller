@@ -167,8 +167,7 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 
 			// 开始解析数据体部分
 			for i, s := range vv {
-				fmt.Printf("解析第%d个服务器参数：\n", i+1)
-				fmt.Println(s)
+                fmt.Printf("MSG: Parse the %dth machine's params\n", i+1)
 
 				srvparams := s.(map[string]interface{})
 				base := (srvparams["Server_base"]).(map[string]interface{})
