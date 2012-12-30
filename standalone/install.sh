@@ -81,42 +81,42 @@ function regEnv(){
 	return 0
 }
 
-# @Discription: registration a server
-# @Arguments: regServer SERVER_NAME
-# @RET: 0 => registration server successfully
+# @Discription: registration a system service
+# @Arguments: regService SERVICE_NAME
+# @RET: 0 => registration service successfully
 #       !0 => registration failed
-function regServer(){
+function regService(){
 	if [ $# -eq 0 ];then
-		echo "ERROR: Please input the registration server name"
+		echo "ERROR: Please input the registration service name"
 		return 1
 	elif [ $# -ne 1 ];then
-		echo "ERROR: Please input only one server name per time"
+		echo "ERROR: Please input only one service name per time"
 		return 1
 	fi
 
 	srvName=$1
 	cp ${ONEMAP_HOME}/bin/service/$srvName /etc/init.d/
 	
-	# registration the server
+	# registration the service
 	chmod +x /etc/init.d/$srvName
 	chkconfig --add $srvName
 	RET=$?
 	if ( ! [ $RET -eq 0 ] );then
-		echo "ERROR: Registration server $srvName failed"
+		echo "ERROR: Registration service $srvName failed"
 		return 2
 	fi
 	# set the status
 	chkconfig $srvName on
 	RET=$?
 	if ( ! [ $RET -eq 0 ] );then
-		echo "ERROR: Set the status of server $srvName failed"
+		echo "ERROR: Set the status of service $srvName failed"
 		return 2
 	fi
 	# start the server
 	#service $srvName start
 #    /etc/init.d/${srvName} start &
 #	if ( ! [ $RET -eq 0 ] );then
-#		echo "ERROR: Start server $srvName failed"
+#		echo "ERROR: Start service $srvName failed"
 #		return 2
 #	fi
 }
@@ -373,7 +373,7 @@ function instSrvMonitor(){
     fi
 
 	# registration the service
-	regServer "$MA"
+	regService "$MA"
 	RET=$?
 	if [ $RET -ne 0 ];then
 		echo "ERROR: Failed to install MonitorAgent Server"
@@ -484,7 +484,7 @@ function instSrvGIS(){
 
 		# cp -r OneMap/webapps/arcgis*  OneMap/webapps/LogServer  OneMap/webapps/Remote*  OneMap/webapps/ROOT $ONEMAP_HOME/WLS1035/onemap/onemap/webapps	
 			
-		regServer "$ONEMAP"
+		regService "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -524,7 +524,7 @@ function instSrvMain(){
 	if test $RET -eq 2 
 	then
 		# cp -r OneMap/services/H2CommonMemDB $ONEMAP_HOME/services/
-		regServer "$H2"
+		regService "$H2"
 		RET=$?
 		if test $RET -ne 0
 		then
@@ -556,7 +556,7 @@ function instSrvMain(){
 		
 		# cp -r OneMap/webapps/GeoShareManager  OneMap/webapps/BufferAnalyst	OneMap/webapps/ROOT ${ONEMAP_HOME}/WLS1035/onemap/onemap/webapps
 		
-		regServer "$ONEMAP"
+		regService "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -601,7 +601,7 @@ function instSrvWEB(){
 		
 		# cp -r OneMap/webapps/Portal  OneMap/webapps/RIA_APP_WIZARD OneMap/webapps/arcgis_js_api ${ONEMAP_HOME}/WLS1035/onemap/onemap/webapps
 		
-		regServer "$ONEMAP"
+		regService "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -646,7 +646,7 @@ function instSrvToken(){
 		
 		# cp -r OneMap/webapps/RemoteTokenServer  ${ONEMAP_HOME}/WLS1035/onemap/onemap/webapps
 		
-		regServer "$ONEMAP"
+		regService "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -679,7 +679,7 @@ function instSrvMsg(){
 	# cp -r OneMap/services/activemq5.4.1 $ONEMAP_HOME/services/
 	
 	# registration the service
-	regServer "$MQ"
+	regService "$MQ"
 	RET=$?
 	if [ $RET -ne 0 ];then
 		echo "ERROR: Failed to install ActiveMQ Server"
