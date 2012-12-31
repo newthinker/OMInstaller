@@ -570,7 +570,13 @@ func (om *OMPInfo) OMRemoteExec() error {
 		return errors.New("ERROR: Sshpass isn't installed!")
 	}
 
-	// exec the remote command line
+    // service flag
+    flag_ma := true     // monitoragent service
+    flag_h2 := false    // h2memdb service
+    flag_mq := false    // activemq service
+    flag_om := false    // onemap service
+
+	// exec the remote command line to install the OneMap
 	for i := 0; i < len(om.Servers); i++ {
 		cmd = exec.Command("sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 			"/bin/bash", om.OMHome+"/install.sh", om.Servers[i])
@@ -581,6 +587,50 @@ func (om *OMPInfo) OMRemoteExec() error {
 			msg := "ERROR: Install " + om.Servers[i] + " module failed!"
 			return errors.New(msg)
 		}
+
+        if (flag_ma==false)&&((om.Servers[i]=="gis")||(om.Servers[i]=="web")||(om.Servers[i]=="token")) {
+            flag_om = true
+        }
+        if (flag_h2==false)&&(om.Servers[i]=="main") {
+            flag_h2 = true
+            flag_om = true
+        }
+        if (flag_mq==false)&&(om.Servers[i]=="msg") {
+            flag_mq = true
+        }
+
+        if flag_ma==true {
+            cmd = exec.Command("nohup", "sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+		            "/etc/init.d/monitoragent", "start", ">/dev/null", "2>&1", "&")
+            err = cmd.Run()
+            if err != nil {
+                fmt.Println("ERROR: Start up service monitoragent failed")
+            }
+        }
+        if flag_h2==true {
+            cmd = exec.Command("nohup", "sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+		            "/etc/init.d/h2memdb", "start", ">/dev/null", "2>&1", "&")
+            err = cmd.Run()
+            if err != nil {
+                fmt.Println("ERROR: Start up service h2memdb failed")
+            }
+        }
+        if flag_mq==true {
+            cmd = exec.Command("nohup", "sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+		            "/etc/init.d/activemq", "start", ">/dev/null", "2>&1", "&")
+            err = cmd.Run()
+            if err != nil {
+                fmt.Println("ERROR: Start up service activemq failed")
+            }
+        }
+        if flag_om==true {
+            cmd = exec.Command("nohup", "sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+		            "/etc/init.d/onemap", "start", ">/dev/null", "2>&1", "&")
+            err = cmd.Run()
+            if err != nil {
+                fmt.Println("ERROR: Start up service onemap failed")
+            }
+        }
 	}
 
 	return nil
