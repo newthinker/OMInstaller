@@ -1,0 +1,162 @@
+/**
+ * reset
+ * */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
+	margin: 0;
+	padding: 0
+}
+
+body {
+	font-size: 12px;
+	font-family: sans-serif, '宋体';
+	color: #000;
+	background: #DDD;
+}
+.dib {
+	display: inline-block;
+}
+.dn {
+	display: none;
+}
+.tac {
+	text-align: center;
+}
+.tr {
+	text-align: right;
+}
+.fl {
+	float: left;
+}
+.pr {
+	position: relative;
+}
+.pa {
+	position: absolute;
+}
+.ml2 {
+	margin-left: 2px;
+}
+.twb {
+	font-weight: bold;
+}
+
+/*
+ *reset over
+ * */
+.tabContainer {
+	width: 100%;
+	height: auto;
+	margin: 40px auto;
+}
+.tabMenus {
+	width: 100%;
+	height: auto;
+	min-height: 40px;
+	color: #385C5B;
+	font-size: 16px;
+}
+.tabMenus-ul {
+	list-style: none;
+}
+.tabMenus-li {
+	width: 198px;
+	height: 40px;
+	padding-right: 2px;
+}
+.normalTabSize {
+	width: 198px;
+	height: 40px;
+	line-height: 40px;
+}
+.tabMenus-li, .addTab-li {
+	display: inline-block;
+	margin-bottom: -5px;
+}
+.addTab-li {
+	width: 40px;
+	height: 40px;
+}
+.addTabSize {
+	width: 40px;
+	height: 30px;
+}
+.tab {
+	cursor: default;
+	background-color: #4E8C8A;
+	border-radius: 3px 3px 0 0;
+	/*box-shadow: 2px 0 2px rgba(0, 0, 0, 0.1), -2px 0 2px rgba(0, 0, 0, 0.1);*/
+	box-shadow: 2px 0 2px rgba(66, 44, 44, 0.69), -2px 0 2px rgba(109, 146, 134, 0.1);
+}
+.tab:hover {
+	background-color: #5BA4A4;
+}
+.tabCur {
+	background-color: #fff !important;
+}
+.tab-closeBtn {
+	font-size: 20px;
+	cursor: pointer;
+	top: -7px;
+	right: 5px;
+	color: rgba(5, 0, 0, 0.34);
+}
+.tab-closeBtn:hover {
+	color: red;
+}
+.addTab {
+	top: 10px;
+	width: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-size: 30px;
+}
+.tabContents {
+	width: 100%;
+	height: auto;
+	min-height: 400px;
+	background: white;
+	border-radius: 0 3px 3px 3px;
+}
+.content {
+	padding: 10px 20px;
+	display: none;
+}
+.contentCur {
+	display: block;
+}
+.tabdemo, .submitWraper {
+	width: 1000px;
+	margin: 0px auto;
+}
+.tabdemo {
+	height: auto;
+}
+/*
+ * 服务器配置信息样式
+ */
+.control-label {
+	width: 200px;
+	display: inline-block;
+}
+.input-value {
+	display: inline-block;
+	width: 200px;
+	border-color: #eee;
+}
+.pd10{
+	padding: 10px;
+}
+.mgt10{
+	margin-top: 10px;
+}
+.check-value{
+	margin-right: 10px;
+}
+.sys_submit_bt{
+	width: 70px;
+height: 30px;
+}
+p{
+	margin-bottom: 5px;
+}
+

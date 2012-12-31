@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# chkconfig: 345 88 12
+# description: h2memdb is a server of OneMap.
+#
+### BEGIN INIT INFO
+# Provider: M.C 2011/11/14 
+### END INIT INFO
+
+# Source function library
+. /etc/init.d/functions
+. /etc/profile
+
+export H2MEMDB_HOME=/opt/OneMap/services/H2CommonMemDB
+SCRIPT_NAME=H2MemDB.sh
+
+status() {
+	$H2MEMDB_HOME/$SCRIPT_NAME status
+}
+
+start() {
+	echo $"Starting H2MemDB"
+	$H2MEMDB_HOME/$SCRIPT_NAME start
+}
+
+stop() {
+	echo $"Shutting down H2MemDB"
+	$H2MEMDB_HOME/$SCRIPT_NAME stop
+}
+
+restart() {
+	echo $"Restart H2MemDB"
+	$H2MEMDB_HOME/$SCRIPT_NAME restart
+}
+
+case "$1" in
+start)
+	start
+	;;
+stop)
+	stop
+	;;
+restart|reload)
+	restart
+	;;
+status)
+	status
+	;;
+*)
+	echo $"Usage: $0 { start|stop|restart}"
+esac

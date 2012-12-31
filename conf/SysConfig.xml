@@ -1,82 +1,672 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root OneMapHome="C:\20120915">
-	<Layout>
-		<db>
-			<db_ip name="数据库服务器IP:">127.0.0.1</db_ip>
-			<db_port name="数据库服务器PORT:">1521</db_port>
-			<db_sid name="数据库服务器实例名:">orcl</db_sid>
-			<manager_user name="GeoShareManager数据库用户名:">geoshare_platform</manager_user>
-			<manager_pwd name="GeoShareManager数据库密码:" encrypt="true">Gzt3XR0PAto=</manager_pwd>
-			<portal_user name="GeoSharePortal数据库用户名:">geoshare_portal</portal_user>
-			<portal_pwd name="GeoSharePortal数据库密码:" encrypt="true">Gzt3XR0PAto=</portal_pwd>
-			<geocoding_user name="GeoCoding数据库用户名:">geo_coding</geocoding_user>
-			<geocoding_pwd name="GeoCoding数据库密码:" encrypt="true">Gzt3XR0PAto=</geocoding_pwd>
-			<geoportal_user name="GeoPortal数据库用户名:">geo_portal</geoportal_user>
-			<geoportal_pwd name="GeoPortal数据库密码:" encrypt="true">Gzt3XR0PAto=</geoportal_pwd>
-			<db_h2 name="内存数据库IP:">127.0.0.1</db_h2>
-			<sub_user name="分平台数据库用户名:">GEOSHARE_SUB_PLATFORM</sub_user>
-		</db>
-		<web>
-			<web_ip name="门户IP:">127.0.0.1</web_ip>
-			<web_port name="门户PORT:">8080</web_port>
-			<web_user name="门户默认用户名:">super</web_user>
-			<web_pwd name="门户默认用户名密码:">admin</web_pwd>
-			<flex_ip name="Flex发布服务器IP:">127.0.0.1</flex_ip>
-			<flex_port name="Flex发布服务器PORT:">8080</flex_port>
-			<sl_ip name="Silverlight发布服务器IP:">127.0.0.1</sl_ip>
-			<sl_port name="Silverlight发布服务器PORT:">80</sl_port>
-			<ria_ip name="快速搭建服务器IP:">127.0.0.1</ria_ip>
-			<ria_port name="快速发布服务器PORT:">8080</ria_port>
-			<iis_root name="silverlight文件生成路径:">c:\inetpub\wwwroot\</iis_root>
-			<web_csw name="是否启用CSW服务:">1</web_csw>
-		</web>
-		<gis>
-			<gis_ip name="GIS服务器IP:">127.0.0.1</gis_ip>
-			<gis_port name="GIS服务器PORT:">8080</gis_port>
-			<gis_ags_ip name="ArcGISServer服务器IP:">127.0.0.1</gis_ags_ip>
-			<gis_ags_user name="ArcGISServer服务器用户名:">arcgismanager</gis_ags_user>
-			<gis_ags_pwd name="ArcGISServer服务器密码:" encrypt="true">/2IWry6fWdsq9l5S69ER8Q==</gis_ags_pwd>
-			<gis_sharekey name="sharekey:" encrypt="true">9STRE5GPzs2UpCvzrlfktw==</gis_sharekey>
-			<ags_log_path name="ArcGISServer日志本地存放目录:">C:\ArcGIS\Server10.0\server\user\log</ags_log_path>
-			<!--gis_base_map name="底图服务地址:">http://127.0.0.1:8099/arcgis/rest/services/world/MapServer</gis_base_map>
-			<gis_geo_map name="几何服务地址:">http://127.0.0.1:8099/arcgis/rest/services/Geometry/GeometryServer</gis_geo_map-->
-			<gis_basemap_type name="底图服务类型:">dynamic</gis_basemap_type>
-			<gis_services_port name="RemoteServices系统的HTTPSPORT:">8443</gis_services_port>
-			<WMTS_ip name="WMTS系统的IP:">127.0.0.1</WMTS_ip>
-			<WMTS_port name="WMTS系统的PORT:">8080</WMTS_port>	
-			<!--web_base_map name="基础底图路径:">http://127.0.0.1:8080/RemoteRest/services/usa/MapServer</web_base_map-->		
-			<sysrest_ip name="SysRest服务IP:">127.0.0.1</sysrest_ip>
-			<sysrest_port name="SysRest服务PORT">8081</sysrest_port>
-		</gis>
-		<main>
-			<main_ip name="运维服务器IP:">127.0.0.1</main_ip>
-			<main_port name="运维服务器PORT:">8080</main_port>
-			<main_upload_level name="运维文件上传目录深度:">3</main_upload_level>
-			<main_upload_num name="运维文件上传最大值:">1</main_upload_num>
-			<geoCoding_ip name="GeoCoding系统的IP:">127.0.0.1</geoCoding_ip>
-			<geoCoding_port name="GeoCoding系统的PORT:">8080</geoCoding_port>
-			<geoportal_ip name="GeoPortal系统的IP:">127.0.0.1</geoportal_ip>
-			<geoportal_port name="GeoPortal系统的PORT:">8080</geoportal_port>
-			<sub_upload_num name="分平台文件上传最大值">10</sub_upload_num>
-			<sub_syn_code name="分平台同步代码">0</sub_syn_code>
-			<File_ip name="FileServices系统的IP:">127.0.0.1</File_ip>
-			<File_port name="FileServices系统的PORT号:">8080</File_port>			
-			<Tile_ip name="TileServices系统的IP:">127.0.0.1</Tile_ip>
-			<Tile_port name="TileServices系统的PORT:">8080</Tile_port>
-			<Aggregator_ip name="Aggregator系统的IP:">127.0.0.1</Aggregator_ip>
-			<Aggregator_port name="Aggregator系统的PORT:">8080</Aggregator_port>			
-		</main>
-		<token>
-			<token_ip name="Token服务器ip:">127.0.0.1</token_ip>
-			<token_port name="Token服务器PORT:">8080</token_port>
-		</token>
-		<jms>
-			<jms_ip name="JMS服务器ip:">127.0.0.1</jms_ip>
-			<jms_port name="JMS服务器PORT:">61616</jms_port>
-		</jms>
-		<agent>
-			<agent_ip name="监控代理服务器IP:">127.0.0.1</agent_ip>
-			<agent_port name="监控代理服务器PORT:">8080</agent_port>
-		</agent>
-	</Layout>
+<root OneMapHome="/opt/OneMap"> 
+	<layout>
+		<server name="db">
+			<attr name="db_ip" desc="数据库服务器IP:" value="127.0.0.1" />
+			<attr name="db_port" desc="数据库服务器端口:" value="1521" />
+			<attr name="db_sid" desc="数据库服务器实例名:" value="orcl" />
+			<attr name="db_user" desc="数据库系统安装帐号:" value="oracle" />
+			<attr name="system_user" desc="数据库管理员用户名:" value="system" />
+			<attr name="system_pwd" desc="数据库管理员密码:" value="admin" />
+			<attr name="manager_user" desc="GeoShareManager数据库用户名:" value="geoshare_platform" />
+			<attr name="manager_pwd" desc="GeoShareManager数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
+			<attr name="portal_user" desc="GeoSharePortal数据库用户名:" value="geoshare_portal" />
+			<attr name="portal_pwd" desc="GeoSharePortal数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
+			<attr name="geocoding_user" desc="GeoCoding数据库用户名:" value="geo_coding" />
+			<attr name="geocoding_pwd" desc="GeoCoding数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
+			<attr name="geoportal_user" desc="GeoPortal数据库用户名:" value="geo_portal" />
+			<attr name="geoportal_pwd" desc="GeoPortal数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
+			<attr name="db_h2" desc="内存数据库IP:" value="127.0.0.1" />
+			<attr name="sub_user" desc="分平台数据库用户名:" value="GEOSHARE_SUB_PLATFORM" />
+			<attr name="sub_pwd" desc="分平台数据库密码:" encrypt="true" value="Gzt3XR0PAto" />
+		</server>
+		<server name="web">
+			<attr name="web_ip" desc="门户IP:" value="127.0.0.1" />
+			<attr name="web_port" desc="门户端口:" value="8080" />
+	        <attr name="web_user" desc="门户默认用户名:" value="super" />
+	        <attr name="web_pwd" desc="门户默认用户名密码:" value="admin" />
+	        <attr name="flex_ip" desc="Flex发布服务器IP:" value="127.0.0.1" />
+	        <attr name="flex_port" desc="Flex发布服务器端口:" value="8080" />
+	        <attr name="sl_ip" desc="Silverlight发布服务器IP:" value="127.0.0.1" />
+	        <attr name="sl_port" desc="Silverlight发布服务器端口:" value="80" />
+	        <attr name="ria_ip" desc="快速搭建服务器IP:" value="127.0.0.1" />
+	        <attr name="ria_port" desc="快速发布服务器端口:" value="8080" />
+	        <attr name="iis_root" desc="silverlight文件生成路径:" value="c:\inetpub\wwwroot\" />
+	        <attr name="web_csw" desc="是否启用CSW服务:" selects="0,禁用;1,开启" value="1" />
+    </server>
+    <server name="gis">
+	        <attr name="gis_ip" desc="GIS服务器IP:" value="127.0.0.1" />
+	        <attr name="gis_port" desc="GIS服务器端口:" value="8080" />
+	        <attr name="gis_ags_ip" desc="ArcGISServer服务器IP:" value="127.0.0.1" />
+	        <attr name="gis_ags_user" desc="ArcGISServer服务器用户名:" value="arcgismanager" />
+	        <attr name="gis_ags_pwd" desc="ArcGISServer服务器密码:" encrypt="true" value="/2IWry6fWdsq9l5S69ER8Q==" />
+	        <attr name="gis_sharekey" desc="sharekey:" encrypt="true" value="9STRE5GPzs2UpCvzrlfktw==" />
+            <attr name="ags_log_path" desc="ArcGISServer安装目录:" value="/opt/arcgis/server10.0" />
+			<!--gis_base_map desc="底图服务地址:" value="http://127.0.0.1:8099/arcgis/rest/services/world/MapServer" -->
+			<!--attr name="gis_geo_map" desc="几何服务地址:" value="http://127.0.0.1:8099/arcgis/rest/services/Geometry/GeometryServer" /-->
+			<attr name="gis_basemap_type" desc="底图服务类型:" value="dynamic" />
+			<attr name="gis_services_port" desc="RemoteServices系统的HTTPS端口:" value="8443" />
+			<attr name="wmts_ip" desc="WMTS系统的IP:" value="127.0.0.1" />
+			<attr name="wmts_port" desc="WMTS系统的端口:" value="8080" />	
+			<!--web_base_map desc="基础底图路径:" value="http://127.0.0.1:8080/RemoteRest/services/usa/MapServer" -->		
+			<attr name="sysrest_ip" desc="SysRest服务IP:" value="127.0.0.1" />
+			<attr name="sysrest_port" desc="SysRest服务端口" value="8081" />
+	</server>
+	<server name="main">
+			<attr name="main_ip" desc="运维服务器IP:" value="127.0.0.1" />
+			<attr name="main_port" desc="运维服务器端口:" value="8080" />
+			<attr name="main_upload_level" desc="运维文件上传目录深度:" value="3" />
+			<attr name="main_upload_num" desc="运维文件上传最大值:" value="1" />
+			<attr name="geocoding_ip" desc="GeoCoding系统的IP:" value="127.0.0.1" />
+			<attr name="geocoding_port" desc="GeoCoding系统的端口:" value="8080" />
+			<attr name="geoportal_ip" desc="GeoPortal系统的IP:" value="127.0.0.1" />
+			<attr name="geoportal_port" desc="GeoPortal系统的端口:" value="8080" />
+			<attr name="sub_upload_num" desc="分平台文件上传最大值" value="10" />
+            <attr name="sub_syn_code" desc="分平台同步代码" selects="0,主分平台之间进行同步; 1,主主平台之间进行同步;" value="0" />
+			<attr name="file_ip" desc="FileServices系统的IP:" value="127.0.0.1" />
+			<attr name="file_port" desc="FileServices系统的端口号:" value="8080" />			
+			<attr name="tile_ip" desc="TileServices系统的IP:" value="127.0.0.1" />
+			<attr name="tile_port" desc="TileServices系统的端口:" value="8080" />
+			<attr name="aggregator_ip" desc="Aggregator系统的IP:" value="127.0.0.1" />
+			<attr name="aggregator_port" desc="Aggregator系统的端口:" value="8080" />			
+		</server>
+		<server name="token">
+			<attr name="token_ip" desc="Token服务器ip:" value="127.0.0.1" />
+			<attr name="token_port" desc="Token服务器端口:" value="8080" />
+		</server>
+		<server name="msg">
+			<attr name="msg_ip" desc="JMS服务器ip:" value="127.0.0.1" />
+			<attr name="msg_port" desc="JMS服务器端口:" value="61616" />
+		</server>
+		<server name="agent">
+			<attr name="agent_ip" desc="监控代理服务器IP:" value="127.0.0.1" />
+			<attr name="agent_port" desc="监控代理服务器端口:" value="8080" />
+		</server>
+	</layout>
+	<filemapping>
+		<container name="tomcat" path="Tomcat6.0.29\webapps">
+			<module name="arcgis_js_api">
+				<server name="gis" />
+			</module>
+			<module name="BufferAnalyst">
+				<server name="db">
+					<file path="BufferAnalyst/WEB-INF/config/proxool.xml">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">/something-else-entirely/proxool[1]/driver-url</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool[2]/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='password']</key>
+					</file>			
+				</server>
+				<server name="gis">
+					<file path="BufferAnalyst/WEB-INF/config/logback.xml">
+						<key template="[TomcatAppPath]/BufferAnalyst/WEB-INF/logs" attribute="value">/configuration/property</key>
+					</file>
+				</server>
+			</module>
+			<module name="GeoCoding">
+				<server name="db">
+					<file path="GeoCoding/WEB-INF/classes/data/db.properties">
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">url</key>
+						<key template="[geocoding_user]">username</key>
+						<key template="[geocoding_pwd]">password</key>	
+					</file>	
+					<file path="GeoCoding/WEB-INF/web.xml">
+						<key template="[OneMapHome]\arcgis\license">/default:web-app/default:servlet[1]/default:init-param/default:param-value</key></file>				
+				</server>
+				<server name="main">
+					<file path="GeoCoding/WEB-INF/conf/wfs/wfs_configuration.xml">
+						<key template="http://[geoconding_ip]:[geoconding_port]/GeoCoding/WFSGServer" nsattribute="href">/wfs:WFS_Capabilities/deegree:deegreeParams/deegree:DefaultOnlineResource</key>
+					</file>
+				</server>
+			</module>
+			<module name="GeoPortal">
+				<server name="db">
+					<file path="GeoPortal/WEB-INF/proxool.xml">
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool/driver-url</key>
+						<key template="[geoportal_user]" attribute="value">/something-else-entirely/proxool/driver-properties/property[@name='user']</key>
+						<key template="[geoportal_pwd]" attribute="value">/something-else-entirely/proxool/driver-properties/property[@name='password']</key>
+					</file>				
+					<file path="GeoPortal/WEB-INF/web.xml">
+						<key template="[OneMapHome]\arcgis\license">/default:web-app/default:servlet[1]/default:init-param/default:param-value</key></file>				
+				</server>
+				<server name="gis">
+					<file path="GeoPortal/WEB-INF/classes/gpt/config/gpt.xml">
+						<key template="http://[gis_ags_ip]:8099/arcgis/rest/services/world/MapServer" attribute="mapServiceUrl">/gptConfig/interactiveMap</key>
+						<key template="[gis_basemap_type]" attribute="mapServiceType">/gptConfig/interactiveMap</key>
+						<key template="http://[gis_ags_ip]:8099/arcgis/rest/services/Geometry/GeometryServer" attribute="geometryServiceUrl">/gptConfig/interactiveMap</key>						
+						<key template="http://[sysrest_ip]:[sysrest_port]/SysRestServices/rest/services/queryServiceByConditions" attribute="url">/gptConfig/onemap</key>
+					</file>
+				</server>
+			</module>
+			<module name="GeoShareManager">
+				<server name="db">
+					<file path="GeoShareManager/WEB-INF/classes/conf/hibernate.cfg.xml">
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/hibernate-configuration/session-factory/property[@name='connection.url']</key>		
+						<key template="[manager_user]">/hibernate-configuration/session-factory/property[@name='connection.username']</key>						
+						<key template="[manager_pwd]">/hibernate-configuration/session-factory/property[@name='connection.password']</key></file>
+					<file path="GeoShareManager/WEB-INF/classes/conf/system.properties">
+						<key template="[sub_user]">branch_platform_schema</key>
+					</file>
+					<file path="GeoShareManager/WEB-INF/web.xml">
+						<key template="[OneMapHome]\arcgis\license">/default:web-app/default:servlet[13]/default:init-param/default:param-value</key>
+					</file>				
+				</server>
+				<server name="gis">
+					<file path="GeoShareManager/WEB-INF/classes/token_config.properties">
+						<key template="[gis_sharekey]" encrypt="true">sharedkey</key></file>
+					<file path="GeoShareManager/WEB-INF/conf/logclient-config.xml">
+						<key template="[OneMapHome]/temp/download">/log-client/download-servers/download-path</key>
+						<key template="[OneMapHome]/temp/unzip">/log-client/unzip/unzip-path</key></file>
+					<file path="GeoShareManager/WEB-INF/classes/conf/system.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis/rest/services/regioncontrol/FeatureServer/0">featureservice</key>
+					</file>
+				</server>
+				<server name="msg">
+					<file path="GeoShareManager/WEB-INF/classes/activemqconfig.properties">
+						<key template="failover:tcp://[msg_ip]:[msg_port]">brokerURL</key></file>
+					<file path="GeoShareManager/WEB-INF/classes/config.properties">
+						<key template="[msg_ip]">msg_ip</key>
+						<key template="[msg_port]">msg_port</key></file>			
+				</server>
+				<server name="main">
+					<file path="GeoShareManager/WEB-INF/classes/LocalServiceFileConfig.properties">
+						<key template="[OneMapHome]\temp\ServiceUploadTemp">temppath</key>
+						<key template="[OneMapHome]\temp\ServiceUploaded">path</key>
+						<key template="[main_upload_level]">level</key>
+						<key template="[main_upload_num]">maxfilesize</key></file>	
+					<file path="GeoShareManager/WEB-INF/classes/config.properties">
+						<key template="[main_ip]">client_server_ip</key></file>		
+					<file path="GeoShareManager/WEB-INF/classes/conf/system.properties">
+						<key template="[TomcatAppPath]\GeoShareManager\download\commonfile">physical_path_commonfile</key>
+						<key template="[TomcatAppPath]\GeoShareManager\download\tilemapfile">physical_path_tilemapfile</key>
+						<key template="[TomcatAppPath]\GeoShareManager\download\bundlemapfile">physical_path_bundlemapfile</key>
+						<key template="http://[main_ip]:[main_port]/GeoShareManager/download/commonfile">net_path_commonfile</key>
+						<key template="http://[main_ip]:[main_port]/GeoShareManager/download/tilemapfile">net_path_tilemapfile</key>
+						<key template="http://[main_ip]:[main_port]/GeoShareManager/download/bundlemapfile">net_path_bundlemapfile</key>
+						<key template="http://[main_ip]:[main_port]/GeoShareManager/rest">rest_base_url</key>
+						<key template="[OneMapHome]/temp/branchplatform/upload/">branch_platform_uploadpath</key>
+						<key template="[OneMapHome]/temp/branchplatform/tmp/">branch_platform_uploadtmppath</key>
+						<key template="[sub_upload_num]">branch_platform_maxfilesize</key>
+						<key template="[sub_syn_code]">platform_syncmode</key></file>
+				</server>
+				<server name="token">
+					<file path="GeoShareManager/WEB-INF/classes/token_config.properties">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">token_url</key></file>				
+				</server>
+			</module>
+			<module name="LogServer">
+				<server name="gis">
+					<file path="LogServer/WEB-INF/config/log4j.properties">
+						<key template="[OneMapHome]/temp/ws-server">log4j.log.dir</key></file>
+					<file path="LogServer/WEB-INF/config/logserver-config.xml">
+						<key template="[OneMapHome]\temp\ws-server\srvmon\json">/LogServer/Resources/Resource[1]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\srvmon">/LogServer/Resources/Resource[1]/resZipPath</key>
+						<key template="[OneMapHome]\temp\ws-server\srvmon_out\json">/LogServer/Resources/Resource[2]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\srvmon_out">/LogServer/Resources/Resource[2]/resZipPath</key>
+						<key template="[ags_log_path]">/LogServer/Resources/Resource[3]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\agsrv">/LogServer/Resources/Resource[3]/resZipPath</key>		
+						<key template="[OneMapHome]\temp\ws-server\srvmon_soap\json">/LogServer/Resources/Resource[4]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\srvmon_soap">/LogServer/Resources/Resource[4]/resZipPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ServiceAggregatorServer\json">/LogServer/Resources/Resource[5]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\ServiceAggregatorServer">/LogServer/Resources/Resource[5]/resZipPath</key>
+						<key template="[OneMapHome]\temp\ws-server\TileServices\json">/LogServer/Resources/Resource[6]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\TileServices">/LogServer/Resources/Resource[6]/resZipPath</key>
+						<key template="[OneMapHome]\temp\ws-server\FileServices\json">/LogServer/Resources/Resource[7]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\FileServices">/LogServer/Resources/Resource[7]/resZipPath</key>
+						<key template="[OneMapHome]\temp\ws-server\branchplatform_data">/LogServer/Resources/Resource[8]/resPath</key>
+						<key template="[OneMapHome]\temp\ws-server\ziplogs\branchplatform_data">/LogServer/Resources/Resource[8]/resZipPath</key>						
+					</file>
+				</server>
+				<server name="main" />
+			</module>
+			<module name="Portal">
+				<server name="db">
+					<file path="Portal/WEB-INF/classes/proxool.xml">
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool/driver-url</key>
+						<key template="[portal_user]" attribute="value">/something-else-entirely/proxool/driver-properties/property[@name='user']</key>
+						<key template="[portal_pwd]" attribute="value">/something-else-entirely/proxool/driver-properties/property[@name='password']</key>					
+					</file>				
+					<!--file path="Portal/OneMapBuilder/proxool.xml">
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool/driver-properties/property[@name='password']</key>										
+					</file-->
+				</server>
+				<server name="gis">
+					<file path="Portal/WEB-INF/classes/service.properties">
+						<key template="http://[gis_ip]:[gis_port]/RemoteRest/services/usa/MapServer">baseMapService</key></file>			
+					<file path="Portal/WEB-INF/classes/systemconfig.properties">
+						<key template="http://[sysrest_ip]:[sysrest_port]/SysRestServices">path</key>				
+					</file>
+				</server>
+				<server name="main">
+					<file path="Portal/WEB-INF/classes/UploadConfig.properties">
+						<key template="[OneMapHome]\temp\ServiceUploadTemp">temppath</key>
+						<key template="[OneMapHome]\temp\ServiceUploaded\">path</key>
+						<key template="[main_upload_num]">maxfilesize</key></file>
+					<file path="Portal/WEB-INF/classes/systemconfig.properties">
+						<key template="http://[main_ip]:[main_port]/GeoShareManager">snappath</key>
+						<!--key template="http://[main_ip]:[main_port]/GeoShareManager/SnapManage">snapservlet</key-->
+						<key template="http://[geoportal_ip]:[geoportal_port]/GeoPortal/catalog/search/search.page">meta_catalog</key>
+						<key template="http://[geoportal_ip]:[geoportal_port]/GeoPortal/servlet/viewmetadata?mapserviceid=">meta_query</key>
+						<key template="[TomcatAppPath]\application\">appPath</key>
+						<key template="[OneMapHome]\temp\userspace">userspacePath</key>
+						<key template="[TomcatAppPath]\Portal\FlexTemplate">ria_flex_templatePath</key>
+						<key template="http://[main_ip]:[main_port]/ShareExchange/servlet/LoginServlet">ShareExchangeUrl</key>
+					</file>
+				</server>
+				<server name="token">
+					<file path="Portal/WEB-INF/classes/service.properties">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">tokenurl</key></file>			
+					<file path="Portal/FlexTemplate/TokenServer.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/configuration/url</key>
+					</file>
+				</server>
+				<server name="web">
+					<file path="Portal/WEB-INF/classes/systemconfig.properties">
+						<key template="[web_user]">userid</key>
+						<key template="[web_pwd]">password</key>
+						<key template="http://[web_ip]:[web_port]/Portal/preview">portal_snapservlet</key>
+						<key template="http://[web_ip]:[web_port]/application/">app_http_path</key>					
+						<key template="[web_csw]">meta_geoportal</key>						
+					</file>
+					<file path="Portal/WEB-INF/classes/downloadcenter.properties">
+						<key template="[TomcatAppPath]\Portal\downloadcenterFile/">physical_path</key>
+						<key template="http://[web_ip]:[web_port]/Portal/downloadcenterFile/">http_path</key>
+					</file>
+				</server>
+				<server name="msg">
+					<file path="Portal/WEB-INF/classes/jms.properties">
+						<key template="[msg_ip]">msg_ip</key>
+						<key template="[msg_port]">msg_port</key>
+					</file>
+				</server>
+			</module>
+			<module name="Remote">
+				<server name="db">
+					<file path="Remote/WEB-INF/classes/security.xml">
+						<key template="[manager_user]">/properties/entry[@key='DB_UserName']</key>
+						<key template="[manager_pwd]" encrypt="true">/properties/entry[@key='DB_UserPwd']</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/properties/entry[@key='DB_URL']</key></file>
+					<file path="Remote/WEB-INF/classes/proxool.xml">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">/something-else-entirely/proxool[1]/driver-url</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool[2]/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='password']</key>					
+					</file>
+					<file path="Remote/WEB-INF/web.xml">
+						<key template="[OneMapHome]\arcgis\license">/default:web-app/default:servlet[7]/default:init-param/default:param-value</key></file>
+				</server>
+				<server name="gis">
+					<file path="Remote/WEB-INF/classes/resources/rest-config.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/">jsapi.arcgis</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/sdk/help/jsapi_start.htm">jsapi.arcgis.sdk</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/js/dojo/dijit/themes/tundra/tundra.css">jsapi.arcgis.css</key>
+						<key template="http://[gis_ip]:8399/arcgis/sdk/rest">base.url</key></file>				
+					<file path="Remote/WEB-INF/classes/security.xml">
+						<key template="[gis_sharekey]" encrypt="true">/properties/entry[@key='SharedKey']</key></file>
+					<file path="Remote/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/ws-server/srvmon_out">log4j.log.dir</key></file>
+					<file path="Remote/WEB-INF/classes/services-monitor.xml">
+						<key template="[gis_ip]">/services-monitor/localAddr</key>
+						<key template="[gis_port]">/services-monitor/localPort</key></file>			
+					<file path="Remote/WEB-INF/classes/server.properties">
+						<key template="[gis_ip]">com.esri.rest.HOST</key>
+						<key template="[gis_ip]">com.esri.rest.DOMAIN</key>
+						<key template="[gis_ags_user]">com.esri.USER_NAME</key>
+						<key template="[gis_ags_pwd]" encrypt="true">com.esri.rest.PASSWORD</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteServices">com.esri.rest.SOAP_URL</key>
+						<key template="https://[gis_ip]:[gis_services_port]/RemoteServices">com.esri.rest.SOAP_HTTPS_URL</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteRest/login">onemap.server.security.login</key>
+					</file>
+				</server>
+				<server name="token">
+					<file path="Remote/WEB-INF/classes/security.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/properties/entry[@key='TokenServiceURL']</key></file>			
+				</server>
+			</module>
+			<module name="RemoteRest">
+				<server name="db">
+					<file path="RemoteRest/WEB-INF/classes/security.xml">
+						<key template="[manager_user]">/properties/entry[@key='DB_UserName']</key>
+						<key template="[manager_pwd]" encrypt="true">/properties/entry[@key='DB_UserPwd']</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/properties/entry[@key='DB_URL']</key></file>
+					<file path="RemoteRest/WEB-INF/classes/proxool.xml">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">/something-else-entirely/proxool[1]/driver-url</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool[2]/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='password']</key>					
+					</file>			
+					<file path="RemoteRest/WEB-INF/web.xml">
+						<key template="[OneMapHome]\arcgis\license">/default:web-app/default:servlet[24]/default:init-param/default:param-value</key></file>
+				</server>
+				<server name="gis">
+					<file path="RemoteRest/WEB-INF/classes/resources/rest-config.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/">jsapi.arcgis</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/sdk/help/jsapi_start.htm">jsapi.arcgis.sdk</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/js/dojo/dijit/themes/tundra/tundra.css">jsapi.arcgis.css</key>
+						<key template="http://[gis_ip]:8399/arcgis/sdk/rest">base.url</key></file>
+					<file path="RemoteRest/WEB-INF/classes/server.properties">
+						<key template="[gis_ags_ip]">com.esri.rest.HOST</key>
+						<key template="[gis_ags_ip]">com.esri.rest.DOMAIN</key>
+						<key template="[gis_ags_user]">com.esri.USER_NAME</key>
+						<key template="[gis_ags_pwd]" encrypt="true">com.esri.rest.PASSWORD</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteServices">com.esri.rest.SOAP_URL</key>
+						<key template="https://[gis_ip]:[gis_services_port]/RemoteServices">com.esri.rest.SOAP_HTTPS_URL</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteRest/login">onemap.server.security.login</key>
+					</file>
+					<file path="RemoteRest/WEB-INF/classes/security.xml">
+						<key template="[gis_sharekey]" encrypt="true">/properties/entry[@key='SharedKey']</key></file>
+					<file path="RemoteRest/WEB-INF/classes/services-monitor.xml">
+						<key template="[gis_ip]">/services-monitor/localAddr</key>
+						<key template="[gis_port]">/services-monitor/localPort</key></file>
+					<file path="RemoteRest/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/ws-server/srvmon">log4j.log.dir</key>
+					</file>					
+					<file path="RemoteRest/WEB-INF/classes/featureservice.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis/rest/services/regioncontrol/MapServer/export?bboxSR\=&amp;layers\=0&amp;imageSR\=&amp;format\=png&amp;transparent\=false&amp;dpi\=96&amp;time\=&amp;layerTimeOptions\=&amp;f\=image&amp;bbox\= featureservice=">mapservice</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis/rest/services/regioncontrol/FeatureServer/0/query?objectIds\=&amp;time\=&amp;geometry\=&amp;geometryType\=esriGeometryEnvelope&amp;inSR\=&amp;spatialRel\=esriSpatialRelIntersects&amp;relationParam\=&amp;outFields\=&amp;returnGeometry\=true&amp;returnCountOnly\=false&amp;returnIdsOnly\=false&amp;f\=json&amp;where\=REGIONID%3D">featureservice</key>
+					</file>
+				</server>
+				<server name="token">
+					<file path="RemoteRest/WEB-INF/classes/security.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/properties/entry[@key='TokenServiceURL']</key></file>				
+				</server>
+			</module>
+			<module name="RemoteServices">
+				<server name="db">
+					<file path="RemoteServices/WEB-INF/classes/security.xml">
+						<key template="[manager_user]">/properties/entry[@key='DB_UserName']</key>
+						<key template="[manager_pwd]" encrypt="true">/properties/entry[@key='DB_UserPwd']</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/properties/entry[@key='DB_URL']</key></file>	
+					<file path="RemoteServices/WEB-INF/classes/proxool.xml">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">/something-else-entirely/proxool[1]/driver-url</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool[2]/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='password']</key>						
+					</file>					
+				</server>
+				<server name="gis">
+					<file path="RemoteServices/WEB-INF/classes/resources/rest-config.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/">jsapi.arcgis</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/sdk/help/jsapi_start.htm">jsapi.arcgis.sdk</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/js/dojo/dijit/themes/tundra/tundra.css">jsapi.arcgis.css</key>
+						<key template="http://[gis_ip]:8399/arcgis/sdk/rest">base.url</key></file>				
+					<file path="RemoteServices/WEB-INF/classes/arcgis_wshandler.properties">
+						<key template="[gis_ags_ip]">arcgis.som.domain</key>
+						<key template="[gis_ags_ip]">arcgis.som.resource.hosts</key>
+						<key template="[gis_ags_user]">arcgis.som.username</key>
+						<key template="[gis_ags_pwd]" encrypt="true">arcgis.som.password</key></file>	
+					<file path="RemoteServices/WEB-INF/classes/security.xml">
+						<key template="[gis_sharekey]" encrypt="true">/properties/entry[@key='SharedKey']</key></file>
+					<file path="RemoteServices/WEB-INF/classes/server.properties">
+						<key template="[gis_ags_ip]">com.esri.rest.HOST</key>
+						<key template="[gis_ags_ip]">com.esri.rest.DOMAIN</key>
+						<key template="[gis_ags_user]">com.esri.USER_NAME</key>
+						<key template="[gis_ags_pwd]" encrypt="true">com.esri.rest.PASSWORD</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteServices">com.esri.rest.SOAP_URL</key>
+						<key template="https://[gis_ip]:[gis_services_port]/RemoteServices">com.esri.rest.SOAP_HTTPS_URL</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteRest/login">onemap.server.security.login</key>
+					</file>					
+					<file path="RemoteServices/WEB-INF/classes/services-monitor.xml">
+						<key template="[gis_ip]">/services-monitor/localAddr</key>
+						<key template="[gis_port]">/services-monitor/localPort</key></file>
+					<file path="RemoteServices/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/ws-server/srvmon_soap">log4j.log.dir</key></file>				
+				</server>
+				<server name="token">
+					<file path="RemoteServices/WEB-INF/classes/security.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/properties/entry[@key='TokenServiceURL']</key></file>				
+				</server>
+			</module>
+			<module name="RemoteTokenServer">
+				<server name="db">
+					<file path="RemoteTokenServer/WEB-INF/classes/security.xml">
+						<key template="[manager_user]">/properties/entry[@key='DB_UserName']</key>
+						<key template="[manager_pwd]" encrypt="true">/properties/entry[@key='DB_UserPwd']</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/properties/entry[@key='DB_URL']</key></file>						
+				</server>
+				<server name="gis">
+					<file path="RemoteTokenServer/WEB-INF/classes/security.xml">
+						<key template="[gis_sharekey]" encrypt="true">/properties/entry[@key='SharedKey']</key></file>				
+				</server>
+				<server name="token">
+					<file path="RemoteTokenServer/WEB-INF/classes/security.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/properties/entry[@key='TokenServiceURL']</key></file>				
+				</server>
+			</module>
+			<!--RIA_APP_WIZARD>
+				<main>
+					<file path="RIA_APP_WIZARD/WEB-INF/classes/manager_config.properties">
+						<key template="[main_ip]:[main_port]">manager_host</key></file>			
+				</main>
+				<token>
+					<file path="RIA_APP_WIZARD/TokenServerConfig.xml">
+						<key template="http://[token_ip]:[token_port]">/configuration/url</key></file>
+					<file path="RIA_APP_WIZARD/templates/FlexTemplate/Deploy/TokenServer.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/configuration/url</key></file>
+					<file path="RIA_APP_WIZARD/templates/SLTemplate/Deploy/SilverlightViewerDemo/TokenServer.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/configuration/url</key></file>			
+				</token>
+				<web>
+					<file path="RIA_APP_WIZARD/WEB-INF/classes/manager_config.properties">
+						<key template="[flex_ip]:[flex_port]">fl_hostname</key>
+						<key template="[sl_ip]:[sl_port]">sl_hostname</key>
+						<key template="[iis_root]">iis_root</key></file>	
+					<file path="RIA_APP_WIZARD/TemplatePathConfig.xml">
+						<key template="http://[ria_ip]:[ria_port]/RIA_APP_WIZARD/templated/">/configuration/srcurl</key></file>			
+				</web>
+			</RIA_APP_WIZARD-->
+			<module name="WMTS">
+				<server name="gis">
+					<file path="WMTS/WEB-INF/conf/log4j.properties">
+						<key template="[OneMapHome]/Tomcat6.0.29/webapps/WMTS/WEB-INF/logs">log4j.log.dir</key></file>	
+					<file path="WMTS/WEB-INF/conf/config.properties">
+						<key template="http://[wmts_ip]:[wmts_portt]">ARCGISSERVER_REST_URI_PORT</key>
+						<key template="http://[wmts_ip]:[wmts_port]">WMTS_URI_PORT</key></file>
+				</server>
+			</module>
+			<module name="TileServices">
+				<server name="db">
+					<file path="TileServices/WEB-INF/classes/security.xml">
+						<key template="[manager_user]">/properties/entry[@key='DB_UserName']</key>
+						<key template="[manager_pwd]" encrypt="true">/properties/entry[@key='DB_UserPwd']</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/properties/entry[@key='DB_URL']</key></file>
+					<file path="TileServices/WEB-INF/classes/proxool.xml">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">/something-else-entirely/proxool[1]/driver-url</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool[2]/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='password']</key>						
+					</file>
+				</server>
+				<server name="token">
+					<file path="TileServices/WEB-INF/classes/security.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/properties/entry[@key='TokenServiceURL']</key></file>			
+				</server>
+				<server name="gis">
+					<file path="TileServices/WEB-INF/classes/security.xml">
+						<key template="[gis_sharekey]" encrypt="true">/properties/entry[@key='SharedKey']</key></file>
+					<file path="TileServices/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/ws-server/TileServices">log4j.log.dir</key></file>
+					<file path="TileServices/WEB-INF/classes/server.properties">
+						<!--key template="[gis_ags_ip]">com.esri.rest.HOST</key>
+						<key template="[gis_ags_ip]">com.esri.rest.DOMAIN</key-->
+						<key template="[gis_ags_user]">com.esri.USER_NAME</key>
+						<key template="[gis_ags_pwd]" encrypt="true">com.esri.rest.PASSWORD</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteServices">com.esri.rest.SOAP_URL</key>
+						<key template="https://[gis_ip]:[gis_services_port]/RemoteServices">com.esri.rest.SOAP_HTTPS_URL</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteRest/login">onemap.server.security.login</key>
+					</file>
+					<file path="TileServices/WEB-INF/classes/resources/rest-config.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/">jsapi.arcgis</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/sdk/help/jsapi_start.htm">jsapi.arcgis.sdk</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/js/dojo/dijit/themes/tundra/tundra.css">jsapi.arcgis.css</key>
+						<key template="http://[gis_ip]:8399/arcgis/sdk/rest">base.url</key></file>
+				</server>
+				<server name="main">
+					<file path="TileServices/WEB-INF/classes/conf/system.properties">
+						<key template="[TomcatAppPath]\GeoShareManager\download\commonfile">physical_path_commonfile</key>
+						<key template="[TomcatAppPath]\GeoShareManager\download\tilemapfile">physical_path_tilemapfile</key>
+						<key template="[TomcatAppPath]\GeoShareManager\download\bundlemapfile">physical_path_bundlemapfile</key></file>
+					<file path="TileServices/WEB-INF/classes/services-monitor.xml">
+						<key template="[tile_ip]">/services-monitor/localAddr</key>
+						<key template="[tile_port]">/services-monitor/localPort</key></file>
+					<file path="TileServices/WEB-INF/classes/server.properties">
+						<key template="[tile_ip]">com.esri.rest.HOST</key>
+						<key template="[tile_ip]">com.esri.rest.DOMAIN</key></file>
+				</server>
+			</module>
+			<module name="FileServices">
+				<server name="db">
+					<file path="FileServices/WEB-INF/classes/security.xml">
+						<key template="[manager_user]">/properties/entry[@key='DB_UserName']</key>
+						<key template="[manager_pwd]" encrypt="true">/properties/entry[@key='DB_UserPwd']</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/properties/entry[@key='DB_URL']</key></file>
+					<file path="FileServices/WEB-INF/classes/proxool.xml">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">/something-else-entirely/proxool[1]/driver-url</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool[2]/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='password']</key>
+					</file>
+				</server>
+				<server name="main">
+					<file path="FileServices/WEB-INF/classes/services-monitor.xml">
+						<key template="[file_ip]">/services-monitor/localAddr</key>
+						<key template="[file_port]">/services-monitor/localPort</key></file>
+					<file path="FileServices/WEB-INF/classes/server.properties">
+						<key template="[file_ip]">com.esri.rest.HOST</key>
+						<key template="[file_ip]">com.esri.rest.DOMAIN</key></file>
+				</server>
+				<server name="token">
+					<file path="FileServices/WEB-INF/classes/security.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/properties/entry[@key='TokenServiceURL']</key></file>			
+				</server>
+				<server name="gis">
+					<file path="FileServices/WEB-INF/classes/security.xml">
+						<key template="[gis_sharekey]" encrypt="true">/properties/entry[@key='SharedKey']</key></file>
+					<file path="FileServices/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/ws-server/FileServices">log4j.log.dir</key></file>
+					<file path="FileServices/WEB-INF/classes/server.properties">
+						<!--key template="[gis_ags_ip]">com.esri.rest.HOST</key>
+						<key template="[gis_ags_ip]">com.esri.rest.DOMAIN</key-->
+						<key template="[gis_ags_user]">com.esri.USER_NAME</key>
+						<key template="[gis_ags_pwd]" encrypt="true">com.esri.rest.PASSWORD</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteServices">com.esri.rest.SOAP_URL</key>
+						<key template="https://[gis_ip]:[gis_services_port]/RemoteServices">com.esri.rest.SOAP_HTTPS_URL</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteRest/login">onemap.server.security.login</key>
+					</file>
+					<file path="FileServices/WEB-INF/classes/resources/rest-config.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/">jsapi.arcgis</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/sdk/help/jsapi_start.htm">jsapi.arcgis.sdk</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/js/dojo/dijit/themes/tundra/tundra.css">jsapi.arcgis.css</key>
+						<key template="http://[gis_ip]:8399/arcgis/sdk/rest">base.url</key></file>
+				</server>
+			</module>
+			<module name="ServiceAggregatorServer">
+				<server name="db">
+					<file path="ServiceAggregatorServer/WEB-INF/classes/security.xml">
+						<key template="[manager_user]">/properties/entry[@key='DB_UserName']</key>
+						<key template="[manager_pwd]" encrypt="true">/properties/entry[@key='DB_UserPwd']</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/properties/entry[@key='DB_URL']</key></file>
+					<file path="ServiceAggregatorServer/WEB-INF/classes/proxool.xml">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">/something-else-entirely/proxool[1]/driver-url</key>
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/something-else-entirely/proxool[2]/driver-url</key>
+						<key template="[manager_user]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='user']</key>
+						<key template="[manager_pwd]" attribute="value">/something-else-entirely/proxool[2]/driver-properties/property[@name='password']</key>
+					</file>
+				</server>
+				<server name="token">
+					<file path="ServiceAggregatorServer/WEB-INF/classes/security.xml">
+						<key template="http://[token_ip]:[token_port]/RemoteTokenServer">/properties/entry[@key='TokenServiceURL']</key></file>			
+				</server>
+				<server name="gis">
+					<file path="ServiceAggregatorServer/WEB-INF/classes/security.xml">
+						<key template="[gis_sharekey]" encrypt="true">/properties/entry[@key='SharedKey']</key></file>
+					<file path="ServiceAggregatorServer/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/ws-server/ServiceAggregatorServer">log4j.log.dir</key></file>
+					<file path="ServiceAggregatorServer/WEB-INF/classes/resources/rest-config.properties">
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/">jsapi.arcgis</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/sdk/help/jsapi_start.htm">jsapi.arcgis.sdk</key>
+						<key template="http://[gis_ip]:[gis_port]/arcgis_js_api/library/arcgis/js/dojo/dijit/themes/tundra/tundra.css">jsapi.arcgis.css</key>
+						<key template="http://[gis_ip]:8399/arcgis/sdk/rest">base.url</key></file>
+					<file path="ServiceAggregatorServer/WEB-INF/classes/server.properties">
+						<key template="[gis_ags_ip]">com.esri.rest.HOST</key>
+						<key template="[gis_ags_ip]">com.esri.rest.DOMAIN</key>
+						<key template="[gis_ags_user]">com.esri.USER_NAME</key>
+						<key template="[gis_ags_pwd]" encrypt="true">com.esri.rest.PASSWORD</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteServices">com.esri.rest.SOAP_URL</key>
+						<key template="https://[gis_ip]:[gis_services_port]/RemoteServices">com.esri.rest.SOAP_HTTPS_URL</key>
+						<key template="http://[gis_ip]:[gis_port]/RemoteRest/login">onemap.server.security.login</key>
+					</file>						
+				</server>
+				<server name="main">
+					<file path="ServiceAggregatorServer/WEB-INF/classes/serviceaggregators_zh_CN.properties">
+						<key template="[TomcatAppPath]\ServiceAggregatorServer\WEB-INF\classes\service-aggregators.xml">service-aggregator-path</key>
+						<key template="[TomcatAppPath]\ServiceAggregatorServer\WEB-INF\classes\cache-conf.xml">cache-conf-path</key>
+					</file>
+					<file path="ServiceAggregatorServer/WEB-INF/classes/services-monitor.xml">
+						<key template="[aggregator_ip]">/services-monitor/localAddr</key>
+						<key template="[aggregator_port]">/services-monitor/localPort</key></file>
+				</server>
+			</module>
+			<module name="ShareExchange">
+				<server name="db">
+					<file path="ShareExchange/WEB-INF/classes/conf/hibernate.cfg.xml">
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/hibernate-configuration/session-factory/property[@name='connection.url']</key>
+						<key template="[manager_user]">/hibernate-configuration/session-factory/property[@name='connection.username']</key>
+						<key template="[manager_pwd]">/hibernate-configuration/session-factory/property[@name='connection.password']</key>
+					</file>
+					<file path="ShareExchange/WEB-INF/web.xml">
+						<key template="[OneMapHome]\arcgis\license">/default:web-app/default:servlet[24]/default:init-param/default:param-value</key></file>				
+				</server>
+				<server name="main">
+					<file path="ShareExchange/WEB-INF/classes/LocalServiceFileConfig.properties">
+						<key template="[OneMapHome]/temp/ServiceUploadTemp">temppath</key>
+						<key template="[OneMapHome]/temp/ServiceUploaded/">path</key>
+					</file>
+					<file path="ShareExchange/WEB-INF/classes/LocalServiceFileConfig.properties">
+						<key template="[main_upload_level]">level</key>
+						<key template="[main_upload_num]">maxfilesize</key>
+					</file>
+					<file path="ShareExchange/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/shareexchange.log">log4j.appender.logfile.File</key>
+					</file>
+					<file path="ShareExchange/WEB-INF/classes/resinfoconfig.properties">
+						<key template="[OneMapHome]/temp/ServiceUploaded/">uploadpath</key>
+					</file>
+				</server>
+			</module>
+			<module name="SysRestServices">
+				<server name="db">
+					<file path="SysRestServices/WEB-INF/classes/conf/hibernate.cfg.xml">
+						<key template="jdbc:oracle:thin:@[db_ip]:[db_port]:[db_sid]">/hibernate-configuration/session-factory/property[@name='connection.url']</key>
+						<key template="[manager_user]">/hibernate-configuration/session-factory/property[@name='connection.username']</key>
+						<key template="[manager_pwd]">/hibernate-configuration/session-factory/property[@name='connection.password']</key>
+					</file>
+					<file path="SysRestServices/WEB-INF/classes/log4j.properties">
+						<key template="[OneMapHome]/temp/SysRestServices.log">log4j.appender.logfile.File</key>
+					</file>
+				</server>
+			</module>
+		</container>
+		<container name="services" path="services">
+			<module name="activemq5.4.1">
+				<server name="msg" />
+			</module>
+			<module name="GeoShareMonitorAgent">
+				<server name="agent">
+					<file path="GeoShareMonitorAgent/config.properties">
+						<key template="[agent_ip]">ip</key>
+						<key template="[agent_port]">port</key></file>			
+				</server>
+			</module>
+			<module name="H2CommonMemDB">
+				<server name="db">
+					<file path="H2CommonMemDB/memdb-config.properties">
+						<key template="jdbc:h2:tcp://[db_h2]/mem:geosharemdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false">memdb.url</key>
+					</file>			
+				</server>
+			</module>
+		</container>
+	</filemapping>
 </root>

@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# chkconfig: 345 88 12
+# description: monitoragent is a agent server of OneMap.
+#
+### BEGIN INIT INFO
+# Provider: M.C 2011/8/22 
+### END INIT INFO
+
+# Source function library
+. /etc/init.d/functions
+. /etc/profile
+
+export MONITORAGENT_HOME=/opt/OneMap/services/GeoShareMonitorAgent
+SCRIPT_NAME=MonitorAgent.sh
+
+status() {
+	$MONITORAGENT_HOME/$SCRIPT_NAME status
+}
+
+start() {
+	echo $"Starting MonitorAgent"
+	$MONITORAGENT_HOME/$SCRIPT_NAME start
+	status
+}
+
+stop() {
+	echo $"Shutting down MonitorAgent"
+	$MONITORAGENT_HOME/$SCRIPT_NAME stop 
+	status
+}
+
+restart() {
+	echo $"Restart MonitorAgent"
+	$MONITORAGENT_HOME/$SCRIPT_NAME restart
+	status
+}
+
+case "$1" in
+start)
+	start
+	;;
+stop)
+	stop
+	;;
+restart|reload)
+	restart
+	;;
+status)
+	status
+	;;
+*)
+	echo $"Usage: $0 { start|stop|restart|status }"
+esac

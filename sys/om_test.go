@@ -1,4 +1,4 @@
-package onemap
+package sys
 
 import (
 	"encoding/xml"

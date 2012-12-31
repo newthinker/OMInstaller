@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>OneMap System Config Tool</title>
+		<meta name="description" content="OneMap分布式安装配置工具.">
+		<link rel="stylesheet" type="text/css" href="css/custom.css"/>
+		<script type="text/javascript" src="js/jxs.js"></script>
+		<script type="text/javascript" src="js/json2.js"></script>
+		<script type="text/javascript" src="js/lang.js"></script>
+		<script type="text/javascript" src="js/dom.js"></script>
+		<script type="text/javascript" src="js/tabContainer.js"></script>
+		<script type="text/javascript" src="js/sysconfig.js"></script>
+	</head>
+	<body>
+		<h1 class="tac mgt10" >OneMap System Config Tool</h1>
+		<div id="tabdemo" class="tabdemo"></div>
+		<div class="submitWraper tr">
+			<button onclick="sysSubmitHandler();" class="sys_submit_bt" id="sys_submit_bt">
+				提&nbsp;交
+			</button>
+		</div>
+		<div id='customTabContent' class="dn" desc="default node for init all config info">
+			<form name="sysconfig">
+				<div class="base-info"name="base">
+					<fieldset class="pd10">
+						<legend class="legend twb">
+							服务器基本参数信息
+						</legend>
+						<div class="select-controls">
+							<p class="select-control"name="base-select-os">
+								<label class="control-label"> 操作系统类型: </label>
+								<select class="select-value"name="base_os">
+									<option value="Windows">Windows</option>
+									<option value="Linux">Linux</option>
+								</select>
+							</p >
+							<p  class="select-control"name="base-select-arch">
+								<label class="control-label"> 架构: </label>
+								<select class="select-value"name="base_arch">
+									<option value="i386">i386</option>
+									<option value="amd64">amd64</option>
+								</select>
+							</p >
+							<p  class="select-control"name="base-select-container">
+								<label class="control-label"> WEB容器类型: </label>
+								<select class="select-value"name="base_container" onchange="baseContainerValueChangeHandler(this);">
+									<option value="Tomcat">Tomcat</option>
+									<option value="Weblogic">Weblogic</option>
+								</select>
+							</p >
+						</div>
+						<div class="input-controls">
+							<p  class="input-control">
+								<label class="control-label"for="base-label-ip"> 服务器IP地址: </label>
+								<input type="text"placeholder="服务器IP地址"class="input-value"name="base_ip">
+
+							</p >
+							<p  class="input-control dn">
+								<label class="control-label"for="base-label-port"> WEB服务器端口: </label>
+								<input type="hidden" placeholder="服务器端口"class="input-value"name="base_port" value="8080">
+
+							</p >
+							<p  class="input-control">
+								<label class="control-label"for="base-label-user"> 系统管理员帐号: </label>
+								<input type="text"placeholder="系统管理员帐户"class="input-value"name="base_user">
+
+							</p >
+							<p  class="input-control">
+								<label class="control-label"for="base-label-pwd"> 系统管理员密码: </label>
+								<input type="text"placeholder="用户密码"class="input-value"name="base_pwd">
+
+							</p >
+							<p  class="input-control">
+								<label class="control-label"for="base-label-omhome"> OneMap安装路径: </label>
+								<input type="text"placeholder="OneMap安装目录"class="input-value"name="base_omhome">
+
+							</p >
+						</div>
+					</fieldset>
+				</div>
+				<div class="config-info"name="config"></div>
+			</form>
+		</div>
+	</body>
+</html>
