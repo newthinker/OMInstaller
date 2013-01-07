@@ -57,7 +57,7 @@ func (this *subController) SelectAction(w http.ResponseWriter, r *http.Request) 
 			base = (r.Form["selectValues"])[0]
 			fmt.Println(base)
 			sub.SelID = strings.Split(base, ",")
-			fmt.Println(sub.SelID)
+			//			fmt.Println(sub.SelID)
 
 			// 解析sql文件并初始化menuMap和relMap
 			if err := sub.SPParseSQLFile(); err != nil {
@@ -111,6 +111,13 @@ func GetSqlFile(basedir string) (string, error) {
 	}
 
 	// 生成一个临时文件夹
+	tempdir := basedir + "/temp"
+	if flag := sys.Exists(tempdir); flag == true {
+		err = os.RemoveAll(tempdir)
+		if err != nil {
+			return filename, errors.New("ERROR: 删除临时文件夹失败")
+		}
+	}
 	if err = os.Mkdir(basedir+"/temp", 0755); err != nil {
 		return filename, err
 	}

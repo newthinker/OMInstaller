@@ -66,7 +66,7 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 			id, parentid, name := sp.parseSqlState(sqlstate)
 
 			if id == "" || parentid == "" || name == "" {
-				fmt.Printf("WARN: Parse sql state(%s) failed!\n", str)
+				//				fmt.Printf("WARN: Parse sql state(%s) failed!\n", str)
 
 				sqlstate = ""
 				continue

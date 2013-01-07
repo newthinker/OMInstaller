@@ -16,8 +16,8 @@ func SubHandler(w http.ResponseWriter, r *http.Request) {
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
-        OutputJson(w, 1, "输入参数非法", nil);
-        return
+		OutputJson(w, 1, "输入参数非法", nil)
+		return
 	}
 
 	requestValue := reflect.ValueOf(r)
@@ -35,8 +35,8 @@ func SysConfig(w http.ResponseWriter, r *http.Request) {
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
-        OutputJson(w, 1, "输入参数非法", nil);
-        return
+		OutputJson(w, 1, "输入参数非法", nil)
+		return
 	}
 
 	requestValue := reflect.ValueOf(r)
@@ -58,8 +58,8 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 	method := controller.MethodByName("SysAction")
 
 	if !method.IsValid() {
-        OutputJson(w, 1, "非法输入参数!", nil)
-        return
+		OutputJson(w, 1, "非法输入参数!", nil)
+		return
 	}
 
 	requestValue := reflect.ValueOf(r)
