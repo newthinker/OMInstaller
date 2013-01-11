@@ -1,21 +1,32 @@
 package web
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"reflect"
+	"github.com/newthinker/onemap-installer/log"
+	"github.com/newthinker/onemap-installer/sys"
 )
+
+var (
+    l *(log.Logger)
+)
+
+func Init(logger *(log.Logger)) {
+    l = logger
+    sys.Init(l)
+}
 
 // 分平台处理器
 func SubHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("SubPlatform handler")
+    l.Message("SubPlatform handler")
 
 	sub := &subController{}
 	controller := reflect.ValueOf(sub)
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
+        l.Errorf("Invalid input params")
 		OutputJson(w, 1, "输入参数非法", nil)
 		return
 	}
@@ -23,18 +34,18 @@ func SubHandler(w http.ResponseWriter, r *http.Request) {
 	requestValue := reflect.ValueOf(r)
 	responseValue := reflect.ValueOf(w)
 	method.Call([]reflect.Value{responseValue, requestValue})
-
 }
 
 // SysConfig页面
 func SysConfig(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("SysHandler handler")
+	l.Message("SysHandler handler")
 
 	sys := &sysHandler{}
 	controller := reflect.ValueOf(sys)
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
+        l.Errorf("Invalid input params")
 		OutputJson(w, 1, "输入参数非法", nil)
 		return
 	}
@@ -42,15 +53,15 @@ func SysConfig(w http.ResponseWriter, r *http.Request) {
 	requestValue := reflect.ValueOf(r)
 	responseValue := reflect.ValueOf(w)
 	method.Call([]reflect.Value{responseValue, requestValue})
-
 }
 
 // 参数配置处理器
 func SysHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("SysConfig handler")
+	l.Message("SysConfig handler")
 
 	sys := &sysController{}
 	if err := sys.Init(); err != nil {
+        l.Errorf("Sys module init failed")
 		OutputJson(w, 2, "系统初始化错误!", nil)
 		return
 	}
@@ -58,6 +69,7 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 	method := controller.MethodByName("SysAction")
 
 	if !method.IsValid() {
+        l.Errorf("Invalid input params")
 		OutputJson(w, 1, "非法输入参数!", nil)
 		return
 	}
@@ -65,17 +77,16 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 	requestValue := reflect.ValueOf(r)
 	responseValue := reflect.ValueOf(w)
 	method.Call([]reflect.Value{responseValue, requestValue})
-
 }
 
 // sysconfig页面中参数检查错误提醒页面
 func ErrHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Error handler")
+	l.Message("Error handler")
 
 	if r.Method == "GET" {
 		t, err := template.ParseFiles("template/error.html")
 		if err != nil {
-			fmt.Println(err)
+			l.Error(err)
 		}
 		t.Execute(w, nil)
 	}
@@ -91,7 +102,7 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	// 如果访问路径不满足制定的路由，就读取显示404模板
 	t, err := template.ParseFiles("template/404.html")
 	if err != nil {
-		fmt.Println(err)
+		l.Error(err)
 	}
 
 	t.Execute(w, nil)

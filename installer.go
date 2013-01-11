@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/newthinker/onemap-installer/log"
 	"github.com/newthinker/onemap-installer/sys"
+	"github.com/newthinker/onemap-installer/utl"
 	"github.com/newthinker/onemap-installer/web"
 	"net/http"
 	"os/exec"
@@ -11,18 +13,35 @@ import (
 
 func main() {
 	////////////////////////////////////////////////////////////////
+    // init log
+    l, err := log.NewLog("inst.log", log.LogAll, log.DefaultBufSize)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    defer l.Close()
+	////////////////////////////////////////////////////////////////
+    // get local ip
+    ip, err := utl.GetNetIP()
+    if err != nil {
+        l.Errorf("Get local ip failed") 
+        return
+    }
+    l.Messagef("Get local ip: %s", ip)
+	////////////////////////////////////////////////////////////////
 	// install sshpass
+    l.Message("Install the sshpass")
 	base, err := filepath.Abs("./") // 获取系统当前路径
 	fmt.Println("base:" + base)
 	if err != nil || base == "" {
-		fmt.Println("ERROR: Get current directory failed")
+		l.Errorf("Get current directory failed")
 		return
 	}
 
 	// whether installed
 	if flag := sys.Exists(base + "/sshpass/bin/sshpass"); flag != true {
 		if flag = sys.Exists(base + "/sshpass/Install.sh"); flag != true {
-			fmt.Println("ERROR: No sshpass software package")
+			l.Errorf("No sshpass software package")
 			return
 		}
 
@@ -30,29 +49,29 @@ func main() {
 		cmd := exec.Command("/bin/sh", base+"/sshpass/Install.sh", base+"/sshpass")
 		err = cmd.Run()
 		if err != nil {
-			fmt.Println("ERROR: Complier sshpass failed")
-			fmt.Println(err)
+			l.Errorf("Complier sshpass failed")
 			return
 		}
 
 		// whether install successfully
 		if flag := sys.Exists(base + "/sshpass/bin/sshpass"); flag != true {
-			fmt.Println("ERROR: Install sshpass failed")
+			l.Errorf("Install sshpass failed")
 			return
 		}
 	} else {
-		fmt.Println("MSG: Sshpass is installed and go on")
+		l.Messagef("Sshpass is installed and go on")
 	}
 
 	cmd := exec.Command(base+"/sshpass/bin/sshpass", "-V")
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println("ERROR: Sshpass isn't installed")
+		l.Errorf("Sshpass isn't installed")
 		return
 	}
 
 	////////////////////////////////////////////////////////////////
-	fmt.Println("web test")
+	l.Message("Listen and serve")
+    web.Init(l)
 
 	http.Handle("/css/", http.FileServer(http.Dir("template")))
 	http.Handle("/js/", http.FileServer(http.Dir("template")))
@@ -63,9 +82,9 @@ func main() {
 	http.HandleFunc("/syshandler", web.SysHandler)
 	http.HandleFunc("/error", web.ErrHandler)
 
-	err = http.ListenAndServe("192.168.80.98:8888", nil)
+	err = http.ListenAndServe(ip+":8888", nil)
 	if err != nil {
-		fmt.Println("ListenAndServe: ", err)
+		l.Errorf("Listen and serve failed: %s", err)
 		return
 	}
 	///////////////////////////////////////////////////////////////	

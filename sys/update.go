@@ -62,13 +62,14 @@ func writeLines(om *OMPInfo, lines []string, path string) (err error) {
 		if ins := strings.Contains(item, flag); ins == true {
 			addons, err := formatAddon(om)
 			if err != nil {
+                l.Error(err)
 				return err
 			}
 
 			for _, addon := range addons {
 				_, err = file.WriteString(strings.TrimSpace(addon) + "\n")
 				if err != nil {
-					fmt.Println(err)
+					l.Error(err)
 					break
 				}
 			}
@@ -81,19 +82,19 @@ func writeLines(om *OMPInfo, lines []string, path string) (err error) {
 // prepare the addon parameters
 func formatAddon(om *OMPInfo) (addon []string, err error) {
 	if om == nil {
-		return addon, errors.New("ERROR: 输入参数为空")
+		return addon, errors.New("Input params is null")
 	}
 
 	// public part
 	if om.OMHome == "" {
-		return addon, errors.New("ERROR: OneMap安装目录不存在，请检查")
+		return addon, errors.New("OneMap install directory isn't existed and please check")
 	}
 	addon = append(addon, "########################################")
 	addon = append(addon, "###Input params###")
 	addon = append(addon, "ONEMAP_HOME=\""+om.OMHome+"\"")
 
 	if om.Container == "" {
-		return addon, errors.New("ERROR: 获取OneMap WEB容器失败")
+		return addon, errors.New("Get OneMap WEB container failed")
 	}
 	addon = append(addon, "CONTAINER_NAME=\""+om.Container+"\"")
 
@@ -144,7 +145,9 @@ func formatAddon(om *OMPInfo) (addon []string, err error) {
 func UpdateScritp(om *OMPInfo, scriptfile string) error {
 	// 检查脚本是否存在
 	if Exists(scriptfile) != true {
-		return errors.New("ERROR: 安装脚本不存在")
+        msg := "ERROR: 安装脚本不存在"
+        l.Errorf(msg)
+		return errors.New(msg)
 	}
 	// 读取脚本
 	lines, err := readLines(scriptfile)

@@ -4,7 +4,6 @@ import (
 	"container/list"
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -304,9 +303,8 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 		}
 	}
 	if num > 0 && nomodules != "" {
-		msg := "WARN: " + strconv.Itoa(num) + "个模块(" + nomodules + ") 没有更新"
-		fmt.Println(msg)
-		//		return errors.New(msg)
+//		msg := "WARN: " + strconv.Itoa(num) + "个模块(" + nomodules + ") 没有更新"
+        l.Warningf("%d modules(%s) didnot updated", strconv.Itoa(num), nomodules)
 	}
 
 	return nil

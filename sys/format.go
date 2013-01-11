@@ -1,11 +1,7 @@
 package sys
 
 import (
-	//	"encoding/xml"
 	"errors"
-	"fmt"
-
-//	"os"
 )
 
 ///////////////////////////////
@@ -159,7 +155,8 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 		case string:
 		case int:
 			if vv != 0 {
-				return errors.New("前端返回码错误，请检查!")
+                l.Errorf("Remote return code error, please check")
+				return errors.New("Remote return code error, please check")
 			}
 		case []interface{}:
 			// 获取输入参数信息
@@ -167,7 +164,7 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 
 			// 开始解析数据体部分
 			for i, s := range vv {
-				fmt.Printf("MSG: Parse the %dth machine's params\n", i+1)
+				l.Messagef("Parse the %dth machine's params", i+1)
 
 				srvparams := s.(map[string]interface{})
 				base := (srvparams["Server_base"]).(map[string]interface{})
@@ -259,7 +256,7 @@ func ParseSysSubmit(jsonstr interface{}, basepath string, sc *SysConfig, sm *Ser
 			/// 
 			err := Distribute(basepath, si, sc, sm)
 			if err != nil {
-				fmt.Println("分布式安装失败")
+				l.Errorf("Distribute installing failed")
 				return err
 			}
 		}

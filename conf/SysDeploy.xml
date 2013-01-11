@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<nodes>
+		<node name="node1">
+			<!-- 属性 -->
+			<attrs>
+				<!-- 操作系统类型 -->
+				<attr name="os"></attr>
+				<!-- 操作系统架构32/64 -->
+				<attr name="arch"></attr>
+				<!-- 机器名 -->
+				<attr name="macname"></attr>
+				<!-- 域名 -->
+				<attr name="domname"></attr>
+				<!-- ip地址 -->
+				<attr name="ip"></attr>
+				<!-- 系统帐号 -->
+				<attr name="user"></attr>
+				<!-- 帐号密码 -->
+				<attr name="pwd"></attr>
+				<!-- OneMap安装路径 -->
+				<attr name="omhome"></attr>
+				<!-- 部署情况 [0:部署成功/1:部署失败/2:进行部署/3:暂不部署] -->
+				<attr name="deploy"></attr>
+			</attrs>
+			<!-- 安装的服务器 -->
+			<srvs>
+				<srv name="db"/>
+				<srv name="gis" />
+				<srv name="main" />
+				<srv name="agent" />
+				<srv name="msg" />
+				<srv name="token" />
+				<srv name="web" />
+			</srvs>
+		</node>
+	</nodes>
+	<clustering>
+		<!-- 集群配置信息 -->
+		<cluster type="">	<!-- 集群类型 [db/gis/main/agent/msg/token/web] -->
+			<!-- 是否启用 [0:启用, 1:不启用] -->
+			<attr name="enabled"></attr>
+			<!-- 包含节点 [node1/node2...] -->
+			<attr name="nodes"></attr>
+		</cluster>
+	</clustering>
+</root> 
