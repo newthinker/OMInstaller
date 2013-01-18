@@ -1,0 +1,25 @@
+contents:
+1. Release Notes
+2. Installation
+--------------------------------------------------------
+1.Release Notes
+  2013.01.04
+    这是OneMap安装程序在Linux平台上发布的第一个正式版本；
+    目前只在RHEL5.x系列操作系统上进行了测试；
+    此安装程序采用golang进行开发，是B/S结构；
+    此安装程序支持在前端进行服务器集群的规划和配置；
+    需要配合OneMap的Linux软件包使用；
+    在运行此安装程序之前，需要先安装sshpass这款软件，详情请见下面Installation介绍；
+
+2.Installation
+  a.sshpass安装
+    在运行安装程序之前，需要安装一款开源软件sshpass，可以从
+        http://sourceforge.net/projects/sshpass/
+    下载、安装。
+    注意，记得把sshpass编译后的可执行文件所在目录加入系统环境变量$PATH中。
+  b.OneMap Linux Installer安装
+    首先将安装程序可执行文件和OneMap的Linux安装包一起拷贝到服务器某个地方，
+    然后在终端运行安装程序可执行文件，最后打开浏览器，在浏览器地址栏中输入
+        http://[安装服务器IP]:8888/onemap
+    即可开始配置安装。
+    

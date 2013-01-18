@@ -20,18 +20,19 @@ ONEMAP="onemap"								# Onemap service
 # @RET: 0  => unregistration service successfully
 #       !0 => unregistration failed
 function unregService(){
-	if [ $# -eq 0 ];then
-		echo "ERROR: Please input the unregistration service name"
-		return 1
-	elif [ $# -ne 1 ];then
-		echo "ERROR: Please input only one service name per time"
-		return 1
-	fi
+    if [ $# -eq 0 ];then
+	echo "ERROR: Please input the unregistration service name"
+	return 1
+    elif [ $# -ne 1 ];then
+	echo "ERROR: Please input only one service name per time"
+	return 1
+    fi
 
-	svcName=$1
+    svcName=$1
 	
     # first check the status of service 
-    local RET=chkService "$svcName"
+    chkService $svcName
+    local RET=$?
     if test $RET -eq 0  # the service is running
     then
         # shut down the service
@@ -39,7 +40,7 @@ function unregService(){
 
         sleep 5000
 
-        if -f /var/run/$svcName.pid
+        if test -f "/var/run/$svcName.pid"
         then
             PID=`cat /var/run/$svcName.pid`
             if test -n $PID
@@ -49,27 +50,21 @@ function unregService(){
 
             rm -f /var/run/$svcName*
         fi
-
-        RET=1   # clear
     fi
 
-    if test $RET -eq 1  # the service installed but not running
+    # clear the service
+    if test -f "/etc/init.d/$svcName"
     then
-        # clear the service
-        if -f /etc/init.d/$svcName
-        then
-            rm -f /etc/init.d/$svcName
-        fi
+        rm -f /etc/init.d/$svcName
     fi
 
-    if test $RET -eq 3
+    # delete the null pid file
+    if test -f "/var/run/${svcName}.pid"
     then
-        # delete the null pid file
-        if -f /var/run/${svcName}.pid
-        then
-            rm -f /var/run/${svcName}.pid
-        fi
+        rm -f /var/run/${svcName}.pid
     fi
+
+    return 0
 }
 
 # Discription: Check a service running or not
@@ -79,35 +74,34 @@ function unregService(){
 #		2 => the service isn't installed
 #		3 => others
 function chkService(){
-	svcName=$1
+    svcName=$1
 	
-	if test -f "/etc/init.d/$svcName"	
+    if test -f "/etc/init.d/$svcName"	
+    then
+        if test -f "/var/run/${svcName}.pid"
 	then
-		if test -f "/var/run/${svcName}.pid"
-		then
-			if test -z "$(cat /var/run/$svcName)"
-			then 
-				echo "INFO: The pid file of Service $svcName is null"
-				return 3
-			fi
+            if test -z "$(cat /var/run/$svcName)"
+	    then 
+		echo "INFO: The pid file of Service $svcName is null"
+		return 3
+	    fi
 			
-			if test ps -p $(cat /var/run/$svcName) >/dev/null
-			then
-				echo "INFO: Service $svcName(pid: cat /var/run/${svcName}.pid)"
-				return 0
-			else
-				echo "INFO: Service $svcName has terminated unexpectedly"
-				return 1
-			fi
-		else
-			echo "INFO: Service $svcName isn't running"
-			return 1
-		fi
-	else
-		echo "INFO: Service $svcName hasn't installed"
-		return 2
-	fi
-
+	    if test ps -p $(cat /var/run/$svcName) >/dev/null
+	    then
+		echo "INFO: Service $svcName(pid: cat /var/run/${svcName}.pid)"
+		return 0
+	    else
+		echo "INFO: Service $svcName has terminated unexpectedly"
+		return 1
+	    fi
+        else
+	    echo "INFO: Service $svcName isn't running"
+	    return 1
+    	fi
+    else
+	echo "INFO: Service $svcName hasn't installed"
+	return 2
+    fi
 }
 
 # Discription: Delete the db data
@@ -141,39 +135,45 @@ function delDB(){
         then
             su - ${ORCL_ACCOUNT} -c "rm -f ${ORACLE_DATA}/GEO*.dbf"
         fi
+    else
+	echo "ERROR: There isn\'t uninstall.sql file"
     fi
 
     return 0
 }
 
-
 #### MAIN
 # uninstall the services
-RET=unregService $MA
-if test $RET -eq 0
+unregService "$MA"
+RET=$?
+if test ${RET} -ne 0
 then
     echo "ERROR: Uninstall $MA service failed"
 fi
-RET=unregService $H2
-if test $RET -eq 0
+unregService "$H2"
+RET=$?
+if test ${RET} -ne 0
 then
     echo "ERROR: Uninstall $H2 service failed"
 fi
-unregService $MQ
-if test $RET -eq 0
+unregService "$MQ"
+RET=$?
+if test ${RET} -ne 0
 then
     echo "ERROR: Uninstall $MQ service failed"
 fi
-unregService $ONEMAP
-if test $RET -eq 0
+unregService "$ONEMAP"
+RET=$?
+if test ${RET} -ne 0
 then
     echo "ERROR: Uninstall $ONEMAP service failed"
     return 1
 fi
 
 # delete the db 
-RET=delDB
-if test $RET -eq 0
+delDB
+RET=$?
+if test ${RET} -ne 0
 then
     echo "ERROR: Uninstall db failed"
     return 2
@@ -181,7 +181,9 @@ fi
 
 # delete the OneMap package
 rm -rf ${ONEMAP_HOME}
-if test $? -eq 0
+RET=$?
+if test ${RET} -ne 0
+then
     echo "ERROR: Delete the OneMap package failed"
     return 3
 fi

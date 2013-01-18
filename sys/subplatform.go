@@ -3,17 +3,14 @@ package sys
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
+	"github.com/newthinker/onemap-installer/utl"
 )
 
 // 从sql文件中查找目标行的标识
 var ARR_FLAG = [...]string{"MAINTENACE_FRAMEWORK_MODULES", "insert", "values"}
-
-// 定义menu对应关系的嵌套结构
-//type    relMap    map[int]interface{}
 
 type SubPlatform struct {
 	SqlFile string            // sql文件保存路径 
@@ -26,17 +23,19 @@ type SubPlatform struct {
 func (sp *SubPlatform) SPParseSQLFile() error {
 	sqlfile := sp.SqlFile
 
-	fmt.Printf("Begin to parse the sql file:%s\n", sqlfile)
+	l.Messagef("Begin to parse the sql file:%s", sqlfile)
 	// 首先判断文件是否存在
-	if (Exists(sqlfile)) != true {
-		msg := "ERROR: File isn't existed!"
+	if (utl.Exists(sqlfile)) != true {
+		msg := "File isn't existed!"
+        l.Errorf(msg)
 		return errors.New(msg)
 	}
 
 	// 打开并解析sql文件
 	file, err := os.Open(sqlfile)
 	if err != nil {
-		msg := "ERROR: Open the sql file failed!"
+		msg := "Open the sql file failed!"
+        l.Errorf(msg)
 		return errors.New(msg)
 	}
 	defer file.Close()
@@ -47,15 +46,14 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 		var str string
 		str, err = reader.ReadString('\n')
 
-		//        fmt.Println(str)
-
 		if err == io.EOF {
 			sqlstate = ""
 			break
 		}
 
 		if err != nil {
-			msg := "ERROR: Read the sql file failed!"
+			msg := "Read the sql file failed!"
+            l.Errorf(msg)
 			return errors.New(msg)
 		}
 
@@ -66,8 +64,6 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 			id, parentid, name := sp.parseSqlState(sqlstate)
 
 			if id == "" || parentid == "" || name == "" {
-				fmt.Printf("WARN: Parse sql state(%s) failed!\n", str)
-
 				sqlstate = ""
 				continue
 			} else {
@@ -79,7 +75,7 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 		}
 	}
 
-	fmt.Println("End parsing the sql file!")
+	l.Message("End parsing the sql file")
 
 	return nil
 }
@@ -91,7 +87,7 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 	var name string
 
 	if strings.Index(sqlstate, ";") < 0 {
-		fmt.Println("WARN: Sql statement(" + sqlstate + ") is incomplete!")
+		l.Warningf("Sql statement(%s) is incomplete", sqlstate)
 		return id, parentid, name
 	}
 
@@ -105,7 +101,7 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 
 	arrValue := strings.Split(sqlstate, "values")
 	if len(arrValue) < 2 {
-		fmt.Println("WARN: Incompleted statement")
+		l.Warning("Incompleted statement")
 		return id, parentid, name
 	}
 
@@ -119,8 +115,6 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 	parentid = arrValue[1]
 	name = arrValue[2]
 
-	//fmt.Println("id:", id, ";Parentid:", parentid, ";name:", name)
-
 	return id, parentid, name
 }
 
@@ -128,15 +122,17 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 func (sp *SubPlatform) SPUpdateSql() error {
 	sqlfile := sp.SqlFile
 
-	if (Exists(sqlfile)) != true {
-		msg := "ERROR: File isn't existed!"
+	if (utl.Exists(sqlfile)) != true {
+		msg := "File isn't existed!"
+        l.Errorf(msg)
 		return errors.New(msg)
 	}
 
 	// 打开sql文件进行解析
 	infile, err := os.Open(sqlfile)
 	if err != nil {
-		msg := "ERROR: Open the sql file failed!"
+		msg := "Open the sql file failed!"
+        l.Errorf(msg)
 		return errors.New(msg)
 	}
 
@@ -144,7 +140,8 @@ func (sp *SubPlatform) SPUpdateSql() error {
 	bakfile := sqlfile + ".bak"
 	outfile, nerr := os.Create(bakfile)
 	if nerr != nil {
-		msg := "ERROR: Create new file failed!"
+		msg := "Create new file failed!"
+        l.Errorf(msg)
 		return errors.New(msg)
 	}
 
@@ -165,13 +162,13 @@ func (sp *SubPlatform) SPUpdateSql() error {
 		}
 
 		if err != nil {
-			msg := "ERROR: Read the sql file failed!"
+			msg := "Read the sql file failed!"
 			infile.Close()
 			outfile.Close()
+            l.Errorf(msg)
 			return errors.New(msg)
 		}
 
-		//		str = str[0 : len(str)-1] // 去掉换行符 
 		sqlstate = sqlstate + " " + str
 		// 如果获取到了一个完整的sql语句 
 		if strings.Index(str, ";") > 0 {
@@ -204,16 +201,18 @@ func (sp *SubPlatform) SPUpdateSql() error {
 	// 删除原文件
 	infile.Close()
 	if err = os.Remove(sqlfile); err != nil {
-		msg := "ERROR: Delete the file(" + sqlfile + ") failed!"
+		msg := "Delete the file(" + sqlfile + ") failed!"
 		outfile.Close()
+        l.Errorf(msg)
 		return errors.New(msg)
 	}
 
 	//更新sql文件
 	outfile.Close()
 	if err = os.Rename(bakfile, sqlfile); err != nil {
-		msg := "ERROR: Rename the file(" + bakfile + ") failed!"
+		msg := "Rename the file(" + bakfile + ") failed!"
 		outfile.Close()
+        l.Errorf(msg)
 		return errors.New(msg)
 	}
 
