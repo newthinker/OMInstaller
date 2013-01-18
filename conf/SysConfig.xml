@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--OneMap系统配置文件-->
 <root OneMapHome="/opt/OneMap"> 
 	<layout>
 		<server name="db">

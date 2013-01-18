@@ -68,7 +68,6 @@ type ServerParams struct {
 }
 
 ///////////////////////////////
-
 // 将SrvMapping整理输出到map中
 func FormatSrvMapping(sm ServerMapping) SrvsMdl {
 	var servers SrvsMdl // 服务器数组

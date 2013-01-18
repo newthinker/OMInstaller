@@ -22,26 +22,23 @@
 				<attr name="omhome"></attr>
 				<!-- 部署情况 [0:部署成功/1:部署失败/2:进行部署/3:暂不部署] -->
 				<attr name="deploy"></attr>
+		        <!-- 集群类型 [db/gis/main/agent/msg/token/web] -->
+                <attr name="cluster_type"></attr>
+			    <!-- 集群是否启用 [0:启用, 1:不启用] -->
+			    <attr name="cluster_enabled"></attr>
+			    <!-- 集群IP -->
+			    <attr name="cluster_ip"></attr>
 			</attrs>
 			<!-- 安装的服务器 -->
-			<srvs>
-				<srv name="db"/>
-				<srv name="gis" />
-				<srv name="main" />
-				<srv name="agent" />
-				<srv name="msg" />
-				<srv name="token" />
-				<srv name="web" />
-			</srvs>
+			<servers>
+				<server name="db"/>
+				<server name="gis" />
+				<server name="main" />
+				<server name="agent" />
+				<server name="msg" />
+				<server name="token" />
+				<server name="web" />
+			</servers>
 		</node>
 	</nodes>
-	<clustering>
-		<!-- 集群配置信息 -->
-		<cluster type="">	<!-- 集群类型 [db/gis/main/agent/msg/token/web] -->
-			<!-- 是否启用 [0:启用, 1:不启用] -->
-			<attr name="enabled"></attr>
-			<!-- 包含节点 [node1/node2...] -->
-			<attr name="nodes"></attr>
-		</cluster>
-	</clustering>
 </root> 

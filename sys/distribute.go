@@ -3,6 +3,7 @@ package sys
 import (
 	"os"
 	"github.com/newthinker/onemap-installer/log"
+	"github.com/newthinker/onemap-installer/utl"
 )
 
 var (
@@ -45,7 +46,7 @@ func Distribute(basedir string, si *SysInfo, sc *SysConfig, sm *ServerMapping) e
 		// 如果不存在就创建OneMap文件夹
 		dstdir := basedir + "/" + ONEMAP_NAME
 		l.Message("Make OneMap directory")
-		if flag := Exists(dstdir); flag == true {
+		if flag := utl.Exists(dstdir); flag == true {
 			// 首先删除原来的
 			if err = os.RemoveAll(dstdir); err != nil {
                 l.Errorf("Remove the old OneMap package failed")

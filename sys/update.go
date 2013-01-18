@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"github.com/newthinker/onemap-installer/utl"
 )
 
 // Read a whole file into the memory and store it as array of lines
@@ -144,7 +145,7 @@ func formatAddon(om *OMPInfo) (addon []string, err error) {
 // 更新单机安装脚本，插入需要参数
 func UpdateScritp(om *OMPInfo, scriptfile string) error {
 	// 检查脚本是否存在
-	if Exists(scriptfile) != true {
+	if utl.Exists(scriptfile) != true {
         msg := "ERROR: 安装脚本不存在"
         l.Errorf(msg)
 		return errors.New(msg)

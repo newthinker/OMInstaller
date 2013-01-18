@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"github.com/newthinker/onemap-installer/utl"
 )
 
 ///////////////////////////////////////////////////////
@@ -345,7 +346,7 @@ func OpenSMConfig(basedir string) (ServerMapping, error) {
 	var sm ServerMapping
 
 	// check the base dir whether existed
-	if flag := Exists(basedir); flag != true {
+	if flag := utl.Exists(basedir); flag != true {
 		msg := "ERROR: 安装目录(" + basedir + ")不存在"
 		return sm, errors.New(msg)
 	}
@@ -369,7 +370,7 @@ func OpenSIConfig(basedir string) (SysInfo, error) {
 	var si SysInfo
 
 	// check the base dir whether existed
-	if flag := Exists(basedir); flag != true {
+	if flag := utl.Exists(basedir); flag != true {
 		msg := "ERROR: 输入目录(" + basedir + ")不存在"
 		return si, errors.New(msg)
 	}
@@ -393,7 +394,7 @@ func OpenSCConfig(basedir string) (SysConfig, error) {
 	var sc SysConfig
 
 	// check the base dir whether existed
-	if flag := Exists(basedir); flag != true {
+	if flag := utl.Exists(basedir); flag != true {
 		msg := "ERROR: 输入目录(" + basedir + ")不存在"
 		return sc, errors.New(msg)
 	}
@@ -419,7 +420,7 @@ func RefreshSysConfig(sc *SysConfig, conffile string) error {
 		return errors.New("输入的配置文件为空、文件路径为空")
 	}
 
-	if flag := Exists(conffile); flag != true {
+	if flag := utl.Exists(conffile); flag != true {
 		return errors.New("配置文件路径不存在")
 	}
 
@@ -429,7 +430,7 @@ func RefreshSysConfig(sc *SysConfig, conffile string) error {
 		return err
 	}
 
-	if Exists(conffile) == true {
+	if utl.Exists(conffile) == true {
 		if err = os.Remove(conffile); err != nil {
 			return err
 		}

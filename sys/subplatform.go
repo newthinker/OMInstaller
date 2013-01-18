@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"github.com/newthinker/onemap-installer/utl"
 )
 
 // 从sql文件中查找目标行的标识
@@ -24,7 +25,7 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 
 	l.Messagef("Begin to parse the sql file:%s", sqlfile)
 	// 首先判断文件是否存在
-	if (Exists(sqlfile)) != true {
+	if (utl.Exists(sqlfile)) != true {
 		msg := "File isn't existed!"
         l.Errorf(msg)
 		return errors.New(msg)
@@ -121,7 +122,7 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 func (sp *SubPlatform) SPUpdateSql() error {
 	sqlfile := sp.SqlFile
 
-	if (Exists(sqlfile)) != true {
+	if (utl.Exists(sqlfile)) != true {
 		msg := "File isn't existed!"
         l.Errorf(msg)
 		return errors.New(msg)

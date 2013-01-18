@@ -3,6 +3,7 @@ package web
 import (
 	"errors"
 	"github.com/newthinker/onemap-installer/sys"
+	"github.com/newthinker/onemap-installer/utl"
 	"html/template"
 	"net/http"
 	"os"
@@ -84,7 +85,7 @@ func GetSqlFile(basedir string) (string, error) {
 	var filename string
 	var err error
 
-	if flag := sys.Exists(basedir); flag != true {
+	if flag := utl.Exists(basedir); flag != true {
 		return filename, errors.New("Input directory isn't existed")
 	}
 
@@ -108,13 +109,13 @@ func GetSqlFile(basedir string) (string, error) {
 
 	filename = basedir + "/OneMap_Linux_V2.0/db/GeoShareManager/Manager_Table_Data.sql"
 	l.Debugf("filename:%s", filename)
-	if flag := sys.Exists(filename); flag != true {
+	if flag := utl.Exists(filename); flag != true {
 		return filename, errors.New("SQL file isn't existed")
 	}
 
 	// 生成一个临时文件夹
 	tempdir := basedir + "/temp"
-	if flag := sys.Exists(tempdir); flag == true {
+	if flag := utl.Exists(tempdir); flag == true {
 		err = os.RemoveAll(tempdir)
 		if err != nil {
 			return filename, errors.New("Delete temp directory failed")
@@ -124,7 +125,7 @@ func GetSqlFile(basedir string) (string, error) {
 		return filename, err
 	}
 
-	if err = sys.Copy(filename, basedir+"/temp"); err != nil {
+	if err = utl.Copy(filename, basedir+"/temp"); err != nil {
 		return filename, err
 	}
 

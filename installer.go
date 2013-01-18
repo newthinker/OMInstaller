@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/newthinker/onemap-installer/log"
-	"github.com/newthinker/onemap-installer/sys"
 	"github.com/newthinker/onemap-installer/utl"
 	"github.com/newthinker/onemap-installer/web"
 	"net/http"
@@ -13,24 +12,24 @@ import (
 
 func main() {
 	////////////////////////////////////////////////////////////////
-    // init log
-    l, err := log.NewLog("inst.log", log.LogAll, log.DefaultBufSize)
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
-    defer l.Close()
+	// init log
+	l, err := log.NewLog("inst.log", log.LogAll, log.DefaultBufSize)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer l.Close()
 	////////////////////////////////////////////////////////////////
-    // get local ip
-    ip, err := utl.GetNetIP()
-    if err != nil {
-        l.Errorf("Get local ip failed") 
-        return
-    }
-    l.Messagef("Get local ip: %s", ip)
+	// get local ip
+	ip, err := utl.GetNetIP()
+	if err != nil {
+		l.Errorf("Get local ip failed")
+		return
+	}
+	l.Messagef("Get local ip: %s", ip)
 	////////////////////////////////////////////////////////////////
 	// install sshpass
-    l.Message("Install the sshpass")
+	l.Message("Install the sshpass")
 	base, err := filepath.Abs("./") // 获取系统当前路径
 	fmt.Println("base:" + base)
 	if err != nil || base == "" {
@@ -39,8 +38,8 @@ func main() {
 	}
 
 	// whether installed
-	if flag := sys.Exists(base + "/sshpass/bin/sshpass"); flag != true {
-		if flag = sys.Exists(base + "/sshpass/Install.sh"); flag != true {
+	if flag := utl.Exists(base + "/sshpass/bin/sshpass"); flag != true {
+		if flag = utl.Exists(base + "/sshpass/Install.sh"); flag != true {
 			l.Errorf("No sshpass software package")
 			return
 		}
@@ -54,7 +53,7 @@ func main() {
 		}
 
 		// whether install successfully
-		if flag := sys.Exists(base + "/sshpass/bin/sshpass"); flag != true {
+		if flag := utl.Exists(base + "/sshpass/bin/sshpass"); flag != true {
 			l.Errorf("Install sshpass failed")
 			return
 		}
@@ -71,7 +70,7 @@ func main() {
 
 	////////////////////////////////////////////////////////////////
 	l.Message("Listen and serve")
-    web.Init(l)
+	web.Init(l)
 
 	http.Handle("/css/", http.FileServer(http.Dir("template")))
 	http.Handle("/js/", http.FileServer(http.Dir("template")))
