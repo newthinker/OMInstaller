@@ -3,10 +3,10 @@ package sys
 import (
 	"bufio"
 	"errors"
+	"github.com/newthinker/onemap-installer/utl"
 	"io"
 	"os"
 	"strings"
-	"github.com/newthinker/onemap-installer/utl"
 )
 
 // 从sql文件中查找目标行的标识
@@ -27,7 +27,7 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 	// 首先判断文件是否存在
 	if (utl.Exists(sqlfile)) != true {
 		msg := "File isn't existed!"
-        l.Errorf(msg)
+		l.Errorf(msg)
 		return errors.New(msg)
 	}
 
@@ -35,7 +35,7 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 	file, err := os.Open(sqlfile)
 	if err != nil {
 		msg := "Open the sql file failed!"
-        l.Errorf(msg)
+		l.Errorf(msg)
 		return errors.New(msg)
 	}
 	defer file.Close()
@@ -53,7 +53,7 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 
 		if err != nil {
 			msg := "Read the sql file failed!"
-            l.Errorf(msg)
+			l.Errorf(msg)
 			return errors.New(msg)
 		}
 
@@ -124,7 +124,7 @@ func (sp *SubPlatform) SPUpdateSql() error {
 
 	if (utl.Exists(sqlfile)) != true {
 		msg := "File isn't existed!"
-        l.Errorf(msg)
+		l.Errorf(msg)
 		return errors.New(msg)
 	}
 
@@ -132,7 +132,7 @@ func (sp *SubPlatform) SPUpdateSql() error {
 	infile, err := os.Open(sqlfile)
 	if err != nil {
 		msg := "Open the sql file failed!"
-        l.Errorf(msg)
+		l.Errorf(msg)
 		return errors.New(msg)
 	}
 
@@ -141,7 +141,7 @@ func (sp *SubPlatform) SPUpdateSql() error {
 	outfile, nerr := os.Create(bakfile)
 	if nerr != nil {
 		msg := "Create new file failed!"
-        l.Errorf(msg)
+		l.Errorf(msg)
 		return errors.New(msg)
 	}
 
@@ -165,7 +165,7 @@ func (sp *SubPlatform) SPUpdateSql() error {
 			msg := "Read the sql file failed!"
 			infile.Close()
 			outfile.Close()
-            l.Errorf(msg)
+			l.Errorf(msg)
 			return errors.New(msg)
 		}
 
@@ -203,7 +203,7 @@ func (sp *SubPlatform) SPUpdateSql() error {
 	if err = os.Remove(sqlfile); err != nil {
 		msg := "Delete the file(" + sqlfile + ") failed!"
 		outfile.Close()
-        l.Errorf(msg)
+		l.Errorf(msg)
 		return errors.New(msg)
 	}
 
@@ -212,7 +212,7 @@ func (sp *SubPlatform) SPUpdateSql() error {
 	if err = os.Rename(bakfile, sqlfile); err != nil {
 		msg := "Rename the file(" + bakfile + ") failed!"
 		outfile.Close()
-        l.Errorf(msg)
+		l.Errorf(msg)
 		return errors.New(msg)
 	}
 

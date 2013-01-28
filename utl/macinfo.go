@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
-    "strings"
+	"strings"
 )
 
 func GetHostname() (string, error) {
@@ -36,17 +36,17 @@ func GetIPAddrs() ([]string, error) {
 }
 
 func GetNetIP() (ip string, err error) {
-    ips, err := GetIPAddrs()
-    if err != nil {
-        return 
-    }
+	ips, err := GetIPAddrs()
+	if err != nil {
+		return
+	}
 
-    for i := range ips {
-        if loc:=strings.Index(ips[i], "127.0.0."); loc<0 {
-            ip = ips[i]
-            break
-        }
-    }
+	for i := range ips {
+		if loc := strings.Index(ips[i], "127.0.0."); loc < 0 {
+			ip = ips[i]
+			break
+		}
+	}
 
-    return
+	return
 }

@@ -1,13 +1,11 @@
 package sys
 
 import (
-	"container/list"
 	"encoding/xml"
 	"errors"
+	"github.com/newthinker/onemap-installer/utl"
 	"io/ioutil"
 	"os"
-	"strconv"
-	"github.com/newthinker/onemap-installer/utl"
 )
 
 ///////////////////////////////////////////////////////
@@ -30,63 +28,11 @@ type Module struct {
 	MdlName string   `xml:",chardata"`
 }
 
-func (s *Server) AddModule(mdltype string, mdlname string, mdldesc string) {
-	newm := Module{MdlName: mdlname, MdlDesc: mdldesc}
-	newm.XMLName.Local = mdltype
-	s.ModuleList = append(s.ModuleList, newm)
-}
-
-func (ss *ServerMapping) AddServer(srvname string, srvdesc string, mdltype []string, mdlnames []string, mdldesc []string) {
-	news := Server{SrvDesc: srvdesc}
-	news.XMLName.Local = srvname
-	for v := range mdlnames {
-		news.AddModule(mdltype[v], mdlnames[v], mdldesc[v])
-	}
-
-	ss.Servers = append(ss.Servers, news)
-}
-
-// 将SrvMapping整理输出到map中
-func (sm *ServerMapping) FormatSrvMapping() map[string]interface{} {
-	srvlist := list.New() // 服务器数组
-
-	for i := 0; i < len(sm.Servers); i++ {
-		var srv *Server = &(sm.Servers[i])
-		if srv.XMLName.Local == "" {
-			continue
-		}
-
-		srvmap := make(map[string]interface{}) // 保存服务器信息
-		srvmap["Srvname"] = srv.XMLName.Local
-		srvmap["Srvdesc"] = srv.SrvDesc
-
-		for j := 0; j < len(srv.ModuleList); j++ {
-			mdlmap := make(map[string]string) // 保存模块信息
-
-			var mdl Module = srv.ModuleList[j]
-			if mdl.MdlName != "" {
-				mdlmap["Modname"] = mdl.MdlName
-				mdlmap["Moddesc"] = mdl.MdlDesc
-
-				srvmap["Modules"] = mdlmap
-			}
-		}
-
-		srvlist.PushBack(srvmap)
-	}
-
-	servers := make(map[string]interface{})
-	servers["Server_modules"] = srvlist
-
-	return servers
-}
-
 ///////////////////////////////////////////////////////
 // SysInfo struct
 type SysInfo struct {
 	XMLName  xml.Name      `xml:"root"`
 	Machines []MachineInfo `xml:",any"`
-	//	Description string        `xml:",innerxml"`
 }
 
 type MachineInfo struct {
@@ -101,30 +47,6 @@ type MachineInfo struct {
 	Servers []ServerInfo `xml:"server"`
 }
 
-/*
-func (s *ServerInfo) AddAttrInfo(attrname string,
-	attrvalue string, desc string, encrypt string, selects string) {
-	newa := AttrInfo{Value: attrvalue, AttrName: desc, AttrEncrypt: encrypt, AttrSelect: selects}
-	newa.XMLName.Local = attrname
-	s.Attrs = append(s.Attrs, newa)
-}
-
-func (ma *MachineInfo) AddServerInfo(srvtype string,
-	attrarray []AttrInfo) {
-	news := ServerInfo{}
-	news.XMLName.Local = srvtype
-	news.Attrs = attrarray
-	ma.Servers = append(ma.Servers, news)
-}
-
-func (sm *SysInfo) AddMachineInfo(os string,
-	arch string, ip string, user string, pwd string,
-	servers []ServerInfo, omhome string, container string) {
-	newm := MachineInfo{Os: os, Arch: arch, Ip: ip, User: user, Pwd: pwd, Omhome: omhome, Web: container}
-	newm.Servers = servers
-	sm.Machines = append(sm.Machines, newm)
-}
-*/
 ////////////////////////////////////////////////////////
 // SysConfig struct
 type SysConfig struct {
@@ -139,16 +61,17 @@ type Layout struct {
 }
 
 type ServerInfo struct {
-	Name  string     `xml:"name,attr"`
-	Attrs []AttrInfo `xml:"attr"`
+	Srvname string     `xml:"name,attr"`
+	Srvdesc string     `xml:"desc,attr"`
+	Attrs   []AttrInfo `xml:"attr"`
 }
 
 type AttrInfo struct {
-	Name    string `xml:"name,attr"`
-	Desc    string `xml:"desc,attr"`
-	Encrypt string `xml:"encrypt,attr"`
-	Select  string `xml:"selects,attr"`
-	Value   string `xml:"value,attr"`
+	Attrname string `xml:"name,attr"`
+	Attrdesc string `xml:"desc,attr"`
+	Encrypt  string `xml:"encrypt,attr"`
+	Select   string `xml:"selects,attr"`
+	Value    string `xml:"value,attr"`
 }
 
 type Filemap struct {
@@ -182,77 +105,26 @@ type Key struct {
 	Value     string `xml:",chardata"`
 }
 
-/*
-func (lo *Layout) AddServerInfo(srvtype string, attrarray []AttrInfo) {
-	news := ServerInfo{}
-	news.XMLName.Local = srvtype
-	news.Attrs = attrarray
-	lo.Servers = append(lo.Servers, news)
+////////////////////////////////////////////////////////
+// SysDeploy struct
+type SysDeploy struct {
+	XMLName xml.Name `xml:"root"`
+	Nodes   []node   `xml:"nodes->node"`
 }
 
-func (mm *ModuleMap) AddServerMap(srvname string) {
-	newm := ServerMap{}
-	newm.XMLName.Local = srvname
-	mm.ServersMap = append(mm.ServersMap, newm)
+type node struct {
+	Nodename string `xml:"name,attr"`
+	Attrs    []attr `xml:"attrs->attr"`
+	Srvs     []srv  `xml:"servers->server"`
 }
 
-func (c *Container) AddModuleMap(mdlname string, arrServers []ServerMap) {
-	newm := ModuleMap{}
-	newm.XMLName.Local = mdlname
-	c.Modules = append(c.Modules, newm)
+type attr struct {
+	Attrname  string `xml:"name,attr"`
+	Attrvalue string `xml:",chardata"`
 }
 
-func (fm *Filemap) AddContainer(conname string, conpath string, arrmodule []ModuleMap) {
-	newc := Container{Path: conpath}
-	newc.XMLName.Local = conname
-	newc.Modules = arrmodule
-	fm.Containers = append(fm.Containers, newc)
-}
-*/
-// 将SysConfig中的输入参数整理输出
-func (sc *SysConfig) FormatSysConfig() map[string]interface{} {
-	srvlist := list.New()
-
-	for i := 0; i < len(sc.LayOut.Servers); i++ {
-		srvinfo := &(sc.LayOut.Servers[i])
-		// 通过name属性判断此节点是否存在
-		if srvinfo.Name == "" {
-			continue
-		}
-
-		srvmap := make(map[string]interface{})
-
-		srvmap["Srvname"] = srvinfo.Name
-
-		lstparams := list.New() // 属性列表
-
-		for j := 0; j < len(srvinfo.Attrs); j++ {
-			attr := &(srvinfo.Attrs[j])
-
-			if attr != nil && attr.Name != "" {
-				attrmap := make(map[string]string)
-
-				attrmap["Paramname"] = attr.Name
-				attrmap["Paramdesc"] = attr.Desc
-
-				// 判断是需要需要加密
-				if attr.Encrypt != "" {
-					attrmap["Encrypt"] = "true"
-				}
-
-				lstparams.PushBack(attrmap)
-			}
-		}
-
-		srvmap["Params"] = lstparams
-
-		srvlist.PushBack(srvmap)
-	}
-
-	servers := make(map[string]interface{})
-	servers["Server_params"] = srvlist
-
-	return servers
+type srv struct {
+	Srvname string `xml:"name,attr"`
 }
 
 ////////////////////////////////////////////////////////
@@ -262,14 +134,14 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 	// initialize
 	for i := 0; i < len(sc.LayOut.Servers); i++ {
 		var srvinfo *ServerInfo = &(sc.LayOut.Servers[i])
-		var srvtype string = srvinfo.Name
+		var srvtype string = srvinfo.Srvname
 		flag[srvtype] = false
 	}
 
 	for i := 0; i < len(si.Machines); i++ {
 		for j := 0; j < len(si.Machines[i].Servers); j++ {
 			var si_srvinfo *ServerInfo = &(si.Machines[i].Servers[j])
-			var si_srvtype string = si_srvinfo.Name // server type
+			var si_srvtype string = si_srvinfo.Srvname // server type
 
 			// don't set MonitorAgent server temperarily
 			if si_srvtype == "agent" {
@@ -279,7 +151,7 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 
 			for k := 0; k < len(sc.LayOut.Servers); k++ {
 				var sc_srvinfo *ServerInfo = &(sc.LayOut.Servers[k])
-				var sc_srvtype string = sc_srvinfo.Name
+				var sc_srvtype string = sc_srvinfo.Srvname
 
 				// update the matching server info
 				if si_srvtype == sc_srvtype {
@@ -304,8 +176,7 @@ func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 		}
 	}
 	if num > 0 && nomodules != "" {
-//		msg := "WARN: " + strconv.Itoa(num) + "个模块(" + nomodules + ") 没有更新"
-        l.Warningf("%d modules(%s) didnot updated", strconv.Itoa(num), nomodules)
+		//        l.Warningf("%d modules(%s) didnot updated", strconv.Itoa(num), nomodules)
 	}
 
 	return nil
@@ -316,14 +187,14 @@ func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) error {
 	var flag bool = false
 	for i := 0; i < len(mi.Servers); i++ {
 		var mi_srvinfo *ServerInfo = &(mi.Servers[i])
-		var mi_srvtype string = mi_srvinfo.Name
+		var mi_srvtype string = mi_srvinfo.Srvname
 
 		if mi_srvtype != "agent" {
 			continue
 		} else {
 			for j := 0; j < len(sc.LayOut.Servers); j++ {
 				var sc_srvinfo *ServerInfo = &(sc.LayOut.Servers[j])
-				var sc_srvtype string = sc_srvinfo.Name
+				var sc_srvtype string = sc_srvinfo.Srvname
 
 				if sc_srvtype == mi_srvtype {
 					sc.LayOut.Servers[j] = *mi_srvinfo
@@ -345,21 +216,26 @@ func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) error {
 func OpenSMConfig(basedir string) (ServerMapping, error) {
 	var sm ServerMapping
 
-	// check the base dir whether existed
-	if flag := utl.Exists(basedir); flag != true {
-		msg := "ERROR: 安装目录(" + basedir + ")不存在"
-		return sm, errors.New(msg)
+	// check the config file whether existed
+	filename := basedir + "/conf/" + SERVER_MAPPING
+	if flag := utl.Exists(filename); flag != true {
+		err := errors.New("Config file(" + basedir + ") isn't existed")
+		l.Error(err)
+		return sm, err
 	}
 
-	file, err := os.Open(basedir + "/conf/" + SERVER_MAPPING)
+	file, err := os.Open(filename)
 	if err != nil {
+		l.Error(err)
 		return sm, err
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
+		l.Error(err)
 		return sm, err
 	}
 	if err := xml.Unmarshal([]byte(data), &sm); err != nil {
+		l.Error(err)
 		return sm, err
 	}
 
@@ -414,6 +290,30 @@ func OpenSCConfig(basedir string) (SysConfig, error) {
 	return sc, nil
 }
 
+func OpenSDConfig(basedir string) (SysDeploy, error) {
+	var sd SysDeploy
+
+	// check the base dir whether existed
+	if flag := utl.Exists(basedir); flag != true {
+		msg := "ERROR: 输入目录(" + basedir + ")不存在"
+		return sd, errors.New(msg)
+	}
+
+	file, err1 := os.Open(basedir + "/conf/" + SYS_DEPLOY)
+	if err1 != nil {
+		return sd, err1
+	}
+	data, err2 := ioutil.ReadAll(file)
+	if err2 != nil {
+		return sd, err2
+	}
+	if err3 := xml.Unmarshal([]byte(data), &sd); err3 != nil {
+		return sd, err3
+	}
+
+	return sd, nil
+}
+
 // 更新保存系统配置文件
 func RefreshSysConfig(sc *SysConfig, conffile string) error {
 	if sc == nil || conffile == "" {
@@ -425,7 +325,6 @@ func RefreshSysConfig(sc *SysConfig, conffile string) error {
 	}
 
 	output, err := xml.MarshalIndent(sc, "  ", "   ")
-	//	os.Stdout.Write([]byte(output))
 	if err != nil {
 		return err
 	}
@@ -434,6 +333,44 @@ func RefreshSysConfig(sc *SysConfig, conffile string) error {
 		if err = os.Remove(conffile); err != nil {
 			return err
 		}
+	}
+
+	file, err1 := os.Create(conffile)
+	defer file.Close()
+	if err1 != nil {
+		return err1
+	}
+
+	_, err2 := file.Write([]byte(xml.Header))
+	if err2 != nil {
+		return err2
+	}
+
+	_, err3 := file.Write(output)
+	if err3 != nil {
+		return err3
+	}
+
+	return nil
+}
+
+// Update or save SysDeploy.xml config file 
+func RefreshSysDeploy(sd *SysDeploy, conffile string) error {
+	if sd == nil || conffile == "" {
+		return errors.New("Config file is null or file path is null")
+	}
+
+	if utl.Exists(conffile) == true {
+		l.Warning("Config file is existed and delete it first")
+		if err := os.Remove(conffile); err != nil {
+			l.Errorf("Remove config file(%s) failed", conffile)
+			return err
+		}
+	}
+
+	output, err := xml.MarshalIndent(sd, "  ", "   ")
+	if err != nil {
+		return err
 	}
 
 	file, err1 := os.Create(conffile)

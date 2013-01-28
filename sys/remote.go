@@ -1,16 +1,16 @@
 package sys
 
 import (
-    "os"
-    "os/exec"
-    "errors"
+	"errors"
 	"github.com/newthinker/onemap-installer/utl"
+	"os"
+	"os/exec"
 )
 
 // remote copy the OneMap package
 func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 	// check whether installed sshpass package
-	cmd := exec.Command(om.Basedir+"/sshpass/bin/sshpass", "-V")
+	cmd := exec.Command(basedir+"/sshpass/bin/sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
 		return errors.New("sshpass isn't installed")
@@ -24,11 +24,11 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 
 	fi, _ := os.Stat(srcdir)
 	if fi.IsDir() {
-		cmd = exec.Command(om.Basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
+		cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
 
 		l.Debugf("sshpass -p %s scp -r %s %s@%s:%s", om.Pwd, srcdir, om.Root, om.Ip, dstdir)
 	} else {
-		cmd = exec.Command(om.Basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "scp", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
+		cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "scp", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
 
 		l.Debugf("sshpass -p %s scp %s %s@%s:%s", om.Pwd, srcdir, om.Root, om.Ip, dstdir)
 	}
@@ -44,15 +44,15 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 func (om *OMPInfo) OMRemoteExec() error {
 	// parse the remote command line
 	if len(om.Servers) <= 0 {
-        msg := "No install modules"
+		msg := "No install modules"
 		return errors.New(msg)
 	}
 
 	// check whether installed sshpass package
-	cmd := exec.Command(om.Basedir+"/sshpass/bin/sshpass", "-V")
+	cmd := exec.Command(basedir+"/sshpass/bin/sshpass", "-V")
 	err := cmd.Run()
 	if err != nil {
-        msg := "Sshpass isn't installed"
+		msg := "Sshpass isn't installed"
 		return errors.New(msg)
 	}
 
@@ -64,7 +64,7 @@ func (om *OMPInfo) OMRemoteExec() error {
 
 	// exec the remote command line to install the OneMap
 	for i := 0; i < len(om.Servers); i++ {
-		cmd = exec.Command(om.Basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+		cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 			"/bin/bash", om.OMHome+"/install.sh", om.Servers[i])
 		l.Debugf("sshpass -p %s ssh %s@%s /bin/bash %s/install.sh %s", om.Pwd, om.Root, om.Ip,
 			om.OMHome, om.Servers[i])
@@ -86,7 +86,7 @@ func (om *OMPInfo) OMRemoteExec() error {
 		}
 
 		if flag_ma == true {
-			cmd = exec.Command("nohup", om.Basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+			cmd = exec.Command("nohup", basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/monitoragent", "start", ">/dev/null", "2>&1", "&")
 			err = cmd.Run()
 			if err != nil {
@@ -96,7 +96,7 @@ func (om *OMPInfo) OMRemoteExec() error {
 			flag_ma = false // only run one time
 		}
 		if flag_h2 == true {
-			cmd = exec.Command("nohup", om.Basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+			cmd = exec.Command("nohup", basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/h2memdb", "start", ">/dev/null", "2>&1", "&")
 			err = cmd.Run()
 			if err != nil {
@@ -106,7 +106,7 @@ func (om *OMPInfo) OMRemoteExec() error {
 			flag_h2 = false
 		}
 		if flag_mq == true {
-			cmd = exec.Command(om.Basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+			cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/activemq", "start")
 			err = cmd.Run()
 			if err != nil {
@@ -116,7 +116,7 @@ func (om *OMPInfo) OMRemoteExec() error {
 			flag_mq = false
 		}
 		if flag_om == true {
-			cmd = exec.Command("nohup", om.Basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
+			cmd = exec.Command("nohup", basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/onemap", "start", ">/dev/null", "2>&1", "&")
 			err = cmd.Run()
 			if err != nil {

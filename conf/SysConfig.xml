@@ -2,7 +2,7 @@
 <!--OneMap系统配置文件-->
 <root OneMapHome="/opt/OneMap"> 
 	<layout>
-		<server name="db">
+		<server name="db" desc="数据库服务器">
 			<attr name="db_ip" desc="数据库服务器IP:" value="127.0.0.1" />
 			<attr name="db_port" desc="数据库服务器端口:" value="1521" />
 			<attr name="db_sid" desc="数据库服务器实例名:" value="orcl" />
@@ -21,7 +21,7 @@
 			<attr name="sub_user" desc="分平台数据库用户名:" value="GEOSHARE_SUB_PLATFORM" />
 			<attr name="sub_pwd" desc="分平台数据库密码:" encrypt="true" value="Gzt3XR0PAto" />
 		</server>
-		<server name="web">
+		<server name="web" desc="WEB服务器">
 			<attr name="web_ip" desc="门户IP:" value="127.0.0.1" />
 			<attr name="web_port" desc="门户端口:" value="8080" />
 	        <attr name="web_user" desc="门户默认用户名:" value="super" />
@@ -34,8 +34,8 @@
 	        <attr name="ria_port" desc="快速发布服务器端口:" value="8080" />
 	        <attr name="iis_root" desc="silverlight文件生成路径:" value="c:\inetpub\wwwroot\" />
 	        <attr name="web_csw" desc="是否启用CSW服务:" selects="0,禁用;1,开启" value="1" />
-    </server>
-    <server name="gis">
+		</server>
+		<server name="gis" desc="GIS服务器">
 	        <attr name="gis_ip" desc="GIS服务器IP:" value="127.0.0.1" />
 	        <attr name="gis_port" desc="GIS服务器端口:" value="8080" />
 	        <attr name="gis_ags_ip" desc="ArcGISServer服务器IP:" value="127.0.0.1" />
@@ -52,8 +52,8 @@
 			<!--web_base_map desc="基础底图路径:" value="http://127.0.0.1:8080/RemoteRest/services/usa/MapServer" -->		
 			<attr name="sysrest_ip" desc="SysRest服务IP:" value="127.0.0.1" />
 			<attr name="sysrest_port" desc="SysRest服务端口" value="8081" />
-	</server>
-	<server name="main">
+		</server>
+		<server name="main" desc="运维服务器">
 			<attr name="main_ip" desc="运维服务器IP:" value="127.0.0.1" />
 			<attr name="main_port" desc="运维服务器端口:" value="8080" />
 			<attr name="main_upload_level" desc="运维文件上传目录深度:" value="3" />
@@ -71,15 +71,15 @@
 			<attr name="aggregator_ip" desc="Aggregator系统的IP:" value="127.0.0.1" />
 			<attr name="aggregator_port" desc="Aggregator系统的端口:" value="8080" />			
 		</server>
-		<server name="token">
+		<server name="token" desc="TOKEN服务器">
 			<attr name="token_ip" desc="Token服务器ip:" value="127.0.0.1" />
 			<attr name="token_port" desc="Token服务器端口:" value="8080" />
 		</server>
-		<server name="msg">
+		<server name="msg" desc="消息服务器">
 			<attr name="msg_ip" desc="JMS服务器ip:" value="127.0.0.1" />
 			<attr name="msg_port" desc="JMS服务器端口:" value="61616" />
 		</server>
-		<server name="agent">
+		<server name="agent" desc="监控代理服务器">
 			<attr name="agent_ip" desc="监控代理服务器IP:" value="127.0.0.1" />
 			<attr name="agent_port" desc="监控代理服务器端口:" value="8080" />
 		</server>

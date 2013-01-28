@@ -1,32 +1,32 @@
 package web
 
 import (
+	"github.com/newthinker/onemap-installer/log"
+	"github.com/newthinker/onemap-installer/sys"
 	"html/template"
 	"net/http"
 	"reflect"
-	"github.com/newthinker/onemap-installer/log"
-	"github.com/newthinker/onemap-installer/sys"
 )
 
 var (
-    l *(log.Logger)
+	l *(log.Logger)
 )
 
 func Init(logger *(log.Logger)) {
-    l = logger
-    sys.Init(l)
+	l = logger
+	sys.Init(l)
 }
 
 // 分平台处理器
 func SubHandler(w http.ResponseWriter, r *http.Request) {
-    l.Message("SubPlatform handler")
+	l.Message("SubPlatform handler")
 
 	sub := &subController{}
 	controller := reflect.ValueOf(sub)
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
-        l.Errorf("Invalid input params")
+		l.Errorf("Invalid input params")
 		OutputJson(w, 1, "输入参数非法", nil)
 		return
 	}
@@ -45,7 +45,7 @@ func SysConfig(w http.ResponseWriter, r *http.Request) {
 	method := controller.MethodByName("SelectAction")
 
 	if !method.IsValid() {
-        l.Errorf("Invalid input params")
+		l.Errorf("Invalid input params")
 		OutputJson(w, 1, "输入参数非法", nil)
 		return
 	}
@@ -60,16 +60,17 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 	l.Message("SysConfig handler")
 
 	sys := &sysController{}
-	if err := sys.Init(); err != nil {
-        l.Errorf("Sys module init failed")
-		OutputJson(w, 2, "系统初始化错误!", nil)
-		return
-	}
+	/*	if err := sys.Init(); err != nil {
+			l.Errorf("Sys module init failed")
+			OutputJson(w, 2, "系统初始化错误!", nil)
+			return
+		}
+	*/
 	controller := reflect.ValueOf(sys)
 	method := controller.MethodByName("SysAction")
 
 	if !method.IsValid() {
-        l.Errorf("Invalid input params")
+		l.Errorf("Invalid input params")
 		OutputJson(w, 1, "非法输入参数!", nil)
 		return
 	}

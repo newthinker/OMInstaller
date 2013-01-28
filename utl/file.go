@@ -1,10 +1,10 @@
 package utl
 
 import (
-    "os"
-    "path/filepath"
-    "os/exec"
-    "fmt"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
 )
 
 // 判断文件或者路径是否存在
@@ -102,4 +102,14 @@ func GetSubDir(path string) ([]string, error) {
 	}
 
 	return pn, err
+}
+
+//Get local directory
+func GetLocalDir() (string, error) {
+	basedir, err := filepath.Abs("./")
+	if err != nil || basedir == "" {
+		return basedir, err
+	}
+
+	return basedir, nil
 }

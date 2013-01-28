@@ -9,8 +9,8 @@ import (
 )
 
 type sysController struct {
-	sm sys.ServerMapping
-	sc sys.SysConfig
+	//	sm sys.ServerMapping
+	//	sc sys.SysConfig
 }
 
 type Result struct {
@@ -21,24 +21,28 @@ type Result struct {
 
 // Init each variable
 func (this *sysController) Init() error {
-	// 解析本地的配置文件
-	basedir, err := filepath.Abs("./")
-	if err != nil || basedir == "" {
-        l.Error(err)
-		return err
-	}
-    l.Debugf("Current dir is: %s", basedir)
+	/*    if err:=sys.Init();err!=nil {
+	        l.Error(err)
+	        return err
+	    }
+		// 解析本地的配置文件
+		basedir, err := filepath.Abs("./")
+		if err != nil || basedir == "" {
+			l.Error(err)
+			return err
+		}
+		l.Debugf("Current dir is: %s", basedir)
 
-	sm, err1 := sys.OpenSMConfig(basedir)
-	sc, err2 := sys.OpenSCConfig(basedir)
-	if err1 != nil || err2 != nil {
-        l.Error(errors.New("Parse system config files failed"))
-		return errors.New("Parse system config files failed")
-	}
+		sm, err1 := sys.OpenSMConfig(basedir)
+		sc, err2 := sys.OpenSCConfig(basedir)
+		if err1 != nil || err2 != nil {
+			l.Error(errors.New("Parse system config files failed"))
+			return errors.New("Parse system config files failed")
+		}
 
-	this.sm = sm
-	this.sc = sc
-
+		this.sm = sm
+		this.sc = sc
+	*/
 	return nil
 }
 
@@ -52,9 +56,9 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 
 	// 将配置文件解析后传入前端显示
 	if r.Method == "GET" {
-		sysmap, err := this.SysFormat()
+		sysmap, err := sys.SysFormat(sys.INSTALL)
 		if err != nil {
-            l.Error(errors.New("Format system params failed"))
+			l.Error(errors.New("Format system params failed"))
 			OutputJson(w, 3, "格式化系统参数失败", nil)
 			return
 		}
@@ -92,20 +96,19 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == "POST" { // 将前端输入参数传入后台解析
 		err := r.ParseForm()
 		if err != nil {
-            l.Error(err)
+			l.Error(err)
 			OutputJson(w, 1, err.Error(), nil)
 			return
 		}
 
 		input := (r.Form["input"])[0]
-		//		fmt.Println(input)
-        l.Debugf("Input params:%s", input)
+		l.Debugf("Input params:%s", input)
 
 		// 获取json数据流
 		jsonstr := make(map[string]interface{})
 		err = json.Unmarshal([]byte(input), &jsonstr)
 		if err != nil {
-            l.Error(err)
+			l.Error(err)
 			OutputJson(w, 2, err.Error(), nil)
 			return
 		}
@@ -114,24 +117,25 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 		var basepath string
 		basepath, err = filepath.Abs("./")
 		if err != nil || basepath == "" {
-            l.Error(err)
+			l.Error(err)
 			OutputJson(w, 3, err.Error(), nil)
 			return
 		}
 
 		// 解析POST.json并进行分布式安装
-		err = sys.ParseSysSubmit(jsonstr, basepath, &(this.sc), &(this.sm))
-		if err != nil {
-            l.Error(err)
-			OutputJson(w, 4, err.Error(), nil)
-			return
-		}
-
-        l.Messagef("Distribute installing successfully")
+		/*		err = sys.ParseSysSubmit(jsonstr, basepath, sys.omsc, sys.omsm)
+				if err != nil {
+					l.Error(err)
+					OutputJson(w, 4, err.Error(), nil)
+					return
+				}
+		*/
+		l.Messagef("Distribute installing successfully")
 		OutputJson(w, 0, "分布式安装成功", nil)
 	}
 }
 
+/*
 // 组织上传json字符串
 func (this *sysController) SysFormat() (map[string]interface{}, error) {
 	//	if sm == nil || sc == nil {
@@ -143,14 +147,14 @@ func (this *sysController) SysFormat() (map[string]interface{}, error) {
 	//	map1 := this.sm.FormatSrvMapping()
 	//	map2 := this.sc.FormatSysConfig()
 
-	srvsmdl := sys.FormatSrvMapping(this.sm)
-	srvsparam := sys.FormatSysConfig(this.sc)
+	//	srvsmdl := sys.FormatSrvMapping(this.sm)
+	//	srvsparam := sys.FormatSysConfig(this.sc)
 
 	result := make(map[string]interface{})
 
-	if len(srvsmdl.Server_modules) > 0 && len(srvsparam.Server_params) > 0 {
-		result["Server_modules"] = srvsmdl.Server_modules
-		result["Server_params"] = srvsparam.Server_params
+	if len(this.sc.LayOut.Servers) > 0 {
+		//		result["Server_modules"] = srvsmdl.Server_modules
+		result["Servers"] = this.sc.LayOut.Servers
 	}
 
 	// fmt.Println(map1)
@@ -166,6 +170,7 @@ func (this *sysController) SysFormat() (map[string]interface{}, error) {
 
 	return result, nil
 }
+*/
 
 func OutputJson(w http.ResponseWriter, ret int, reason string, i interface{}) {
 	out := Result{ret, reason, i}
@@ -175,4 +180,5 @@ func OutputJson(w http.ResponseWriter, ret int, reason string, i interface{}) {
 	}
 
 	w.Write(b)
+	l.Debug(b)
 }
