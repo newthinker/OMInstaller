@@ -63,35 +63,6 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		//		for k1, v1 := range sysmap {
-		//			fmt.Println(k1)
-
-		//			//			lstmap := list.New()
-		//			lstmap := v1.(*list.List)
-		//			for e := lstmap.Front(); e != nil; e = e.Next() {
-		//				map2 := (e.Value).(map[string]interface{})
-		//				for k2, v2 := range map2 {
-		//					fmt.Println(k2)
-		//					fmt.Println(v2)
-		//				}
-		//			}
-
-		//			fmt.Println(v1)
-		//		}
-
-		//		sysmap := make(map[string]interface{})
-		//		sysmap["1"] = "a"
-		//		sysmap["2"] = "b"
-		//		lstmap := make([](map[string]string))
-		//		map1 := map[string]string{"5": "e"}
-		//		lstmap = append(lstmap, map1)
-		//		map2 := map[string]string{"6": "f"}
-		//		lsttest.Maps = append(lsttest.Maps, map2)
-		//		map3 := map[string]string{"7": "g"}
-		//		lsttest.Maps = append(lsttest.Maps, map3)
-
-		//		sysmap["3"] = lsttest
-
 		OutputJson(w, 0, "", sysmap)
 	} else if r.Method == "POST" { // 将前端输入参数传入后台解析
 		err := r.ParseForm()
@@ -122,55 +93,25 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// 解析POST.json并进行分布式安装
-		/*		err = sys.ParseSysSubmit(jsonstr, basepath, sys.omsc, sys.omsm)
-				if err != nil {
-					l.Error(err)
-					OutputJson(w, 4, err.Error(), nil)
-					return
-				}
-		*/
+		// 解析POST.json
+        sd, arr_lo, err := sys.ParseSysSubmit(jsonstr)
+		if err != nil {
+			l.Error(err)
+			OutputJson(w, 4, err.Error(), nil)
+			return
+		}
+
+        // 进行分布式安装
+        if err = sys.Process(sd, arr_lo); err!=nil {
+            l.Error(err)
+            OutputJson(w, 5, err.Error(), nil)
+            return
+        }
+
 		l.Messagef("Distribute installing successfully")
 		OutputJson(w, 0, "分布式安装成功", nil)
 	}
 }
-
-/*
-// 组织上传json字符串
-func (this *sysController) SysFormat() (map[string]interface{}, error) {
-	//	if sm == nil || sc == nil {
-	//		return nil, errors.New("Init error!")
-	//	}
-	//	fmt.Printf("SM:%s\n", this.sm)
-	//	fmt.Printf("SC:%s\n", this.sc)
-
-	//	map1 := this.sm.FormatSrvMapping()
-	//	map2 := this.sc.FormatSysConfig()
-
-	//	srvsmdl := sys.FormatSrvMapping(this.sm)
-	//	srvsparam := sys.FormatSysConfig(this.sc)
-
-	result := make(map[string]interface{})
-
-	if len(this.sc.LayOut.Servers) > 0 {
-		//		result["Server_modules"] = srvsmdl.Server_modules
-		result["Servers"] = this.sc.LayOut.Servers
-	}
-
-	// fmt.Println(map1)
-	//	fmt.Println(map2)
-
-	//	if len(map1) <= 0 || len(map2) <= 0 {
-	//		return nil, errors.New("没有输入配置参数")
-	//	}
-
-	//	for k, v := range map2 {
-	//		map1[k] = v
-	//	}
-
-	return result, nil
-}
-*/
 
 func OutputJson(w http.ResponseWriter, ret int, reason string, i interface{}) {
 	out := Result{ret, reason, i}

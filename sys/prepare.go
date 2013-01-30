@@ -20,7 +20,7 @@ import (
 
 const (
 	SERVER_MAPPING = "SrvMapping.xml" // 服务器类型映射文件名 
-	SYS_INFO       = "SysInfo.xml"    // 服务器参数配置文件
+//	SYS_INFO       = "SysInfo.xml"    // 服务器参数配置文件
 	SYS_CONFIG     = "SysConfig.xml"  // 配置工具配置文件名
 	SYS_DEPLOY     = "SysDeploy.xml"  // 系统部署配置文件
 	ONEMAP_NAME    = "OneMap"         // OneMap directory name
@@ -30,9 +30,10 @@ const (
 
 // 安装程序的三种状态
 const (
-	INSTALL = iota // INSTALL =0
-	UPDATE
-	UNINSTALL
+	MAINTAIN  = iota // 0, 当前节点维持现状不做任何修改
+	INSTALL          // 1, 当前节点需要进行安装操作
+	UPDATE           // 2, 当前节点需要进行更新操作
+	UNINSTALL        // 3, 当前节点需要进行卸载操作
 )
 
 // 服务器基本信息
@@ -59,9 +60,7 @@ type OMPInfo struct {
 
 	Cluster
 
-	Deploying int // 部署情况, [0:部署成功/1:部署失败/2:进行部署/3:暂不部署] 
-
-	//	Basedir string // 当前安装包根目录
+	Deploy    int // 部署情况, [0:维持现状/1:安装/2:更新/3:卸载] 
 
 	Version   string   // onemap版本号
 	OMHome    string   // OneMap安装目录
@@ -85,6 +84,7 @@ type OMPInfo struct {
 var (
 	omsc    *SysConfig
 	omsm    *ServerMapping
+    omsd    *SysDeploy
 	basedir string // 系统当前运行目录
 )
 
@@ -312,7 +312,7 @@ func (om *OMPInfo) OMGetInfo(mi *node, sm *ServerMapping, lo *Layout) error {
 		case "omhome":
 			om.OMHome = attvalue
 		case "deploy":
-			om.Deploying, _ = strconv.Atoi(attvalue)
+			om.Deploy, _ = strconv.Atoi(attvalue)
 		case "cluster_type":
 			om.Type = attvalue
 		case "cluster_enabled":
@@ -355,33 +355,33 @@ func (om *OMPInfo) OMGetInfo(mi *node, sm *ServerMapping, lo *Layout) error {
 				if srv.Srvname == srvtype {
 					for _, attr := range srv.Attrs {
 						if attr.Attrname == "db_sid" {
-							om.ORCL_SID = attr.Value
+							om.ORCL_SID = attr.Attrvalue
 						} else if attr.Attrname == "db_user" {
-							om.ORCL_User = attr.Value
+							om.ORCL_User = attr.Attrvalue
 						} else if attr.Attrname == "system_user" {
-							om.DB_User[0] = attr.Value
+							om.DB_User[0] = attr.Attrvalue
 						} else if attr.Attrname == "system_pwd" {
-							om.DB_PWD[0] = attr.Value
+							om.DB_PWD[0] = attr.Attrvalue
 						} else if attr.Attrname == "manager_user" {
-							om.DB_User[1] = attr.Value
+							om.DB_User[1] = attr.Attrvalue
 						} else if attr.Attrname == "manager_pwd" {
-							om.DB_PWD[1] = attr.Value
+							om.DB_PWD[1] = attr.Attrvalue
 						} else if attr.Attrname == "portal_user" {
-							om.DB_User[2] = attr.Value
+							om.DB_User[2] = attr.Attrvalue
 						} else if attr.Attrname == "portal_pwd" {
-							om.DB_PWD[2] = attr.Value
+							om.DB_PWD[2] = attr.Attrvalue
 						} else if attr.Attrname == "geocoding_user" {
-							om.DB_User[3] = attr.Value
+							om.DB_User[3] = attr.Attrvalue
 						} else if attr.Attrname == "geocoding_pwd" {
-							om.DB_PWD[3] = attr.Value
+							om.DB_PWD[3] = attr.Attrvalue
 						} else if attr.Attrname == "geoportal_user" {
-							om.DB_User[4] = attr.Value
+							om.DB_User[4] = attr.Attrvalue
 						} else if attr.Attrname == "geoportal_pwd" {
-							om.DB_PWD[4] = attr.Value
+							om.DB_PWD[4] = attr.Attrvalue
 						} else if attr.Attrname == "sub_user" {
-							om.DB_User[5] = attr.Value
+							om.DB_User[5] = attr.Attrvalue
 						} else if attr.Attrname == "sub_pwd" {
-							om.DB_PWD[5] = attr.Value
+							om.DB_PWD[5] = attr.Attrvalue
 						}
 					}
 				}
@@ -392,9 +392,9 @@ func (om *OMPInfo) OMGetInfo(mi *node, sm *ServerMapping, lo *Layout) error {
 				if srv.Srvname == srvtype {
 					for _, attr := range srv.Attrs {
 						if attr.Attrname == "ags_log_path" {
-							om.AGS_Home = attr.Value
+							om.AGS_Home = attr.Attrvalue
 							/// AGS default log path
-							attr.Value += "/server/user/log"
+							attr.Attrvalue += "/server/user/log"
 						}
 					}
 				}

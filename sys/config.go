@@ -6,6 +6,8 @@ import (
 	"github.com/newthinker/onemap-installer/utl"
 	"io/ioutil"
 	"os"
+    "fmt"
+    "strconv"
 )
 
 ///////////////////////////////////////////////////////
@@ -28,25 +30,6 @@ type Module struct {
 	MdlName string   `xml:",chardata"`
 }
 
-///////////////////////////////////////////////////////
-// SysInfo struct
-type SysInfo struct {
-	XMLName  xml.Name      `xml:"root"`
-	Machines []MachineInfo `xml:",any"`
-}
-
-type MachineInfo struct {
-	XMLName xml.Name     `xml:"machine"`
-	Os      string       `xml:"os,attr"`
-	Arch    string       `xml:"arch,attr"`
-	Ip      string       `xml:"ip,attr"`
-	User    string       `xml:"user,attr"`
-	Pwd     string       `xml:"pwd,attr"`
-	Omhome  string       `xml:"omhome,attr"`
-	Web     string       `xml:"container,attr"`
-	Servers []ServerInfo `xml:"server"`
-}
-
 ////////////////////////////////////////////////////////
 // SysConfig struct
 type SysConfig struct {
@@ -67,11 +50,11 @@ type ServerInfo struct {
 }
 
 type AttrInfo struct {
-	Attrname string `xml:"name,attr"`
-	Attrdesc string `xml:"desc,attr"`
-	Encrypt  string `xml:"encrypt,attr"`
-	Select   string `xml:"selects,attr"`
-	Value    string `xml:"value,attr"`
+	Attrname  string `xml:"name,attr"`
+	Attrdesc  string `xml:"desc,attr"`
+	Encrypt   string `xml:"encrypt,attr"`
+	Select    string `xml:"selects,attr"`
+	Attrvalue string `xml:"value,attr"`
 }
 
 type Filemap struct {
@@ -128,7 +111,7 @@ type srv struct {
 }
 
 ////////////////////////////////////////////////////////
-// update SysConfig.xml file except MonitorAgent module
+/*/ update SysConfig.xml file except MonitorAgent module
 func UpdateConfig(si *SysInfo, sc *SysConfig) error {
 	flag := make(map[string]bool) // flag of whether update
 	// initialize
@@ -210,16 +193,16 @@ func UpdateMdlAgent(mi *MachineInfo, sc *SysConfig) error {
 	}
 
 	return nil
-}
+}*/
 
 // open the config files
-func OpenSMConfig(basedir string) (ServerMapping, error) {
+func OpenSMConfig(filename string) (ServerMapping, error) {
 	var sm ServerMapping
 
 	// check the config file whether existed
-	filename := basedir + "/conf/" + SERVER_MAPPING
+	//	filename := basedir + "/conf/" + SERVER_MAPPING
 	if flag := utl.Exists(filename); flag != true {
-		err := errors.New("Config file(" + basedir + ") isn't existed")
+		err := fmt.Errorf("Config file(%s) isn't existed", filename)
 		l.Error(err)
 		return sm, err
 	}
@@ -242,16 +225,18 @@ func OpenSMConfig(basedir string) (ServerMapping, error) {
 	return sm, nil
 }
 
-func OpenSIConfig(basedir string) (SysInfo, error) {
+/*
+func OpenSIConfig(filename string) (SysInfo, error) {
 	var si SysInfo
 
-	// check the base dir whether existed
-	if flag := utl.Exists(basedir); flag != true {
-		msg := "ERROR: 输入目录(" + basedir + ")不存在"
-		return si, errors.New(msg)
+	// check the config file whether existed
+	if flag := utl.Exists(filename); flag != true {
+		err := fmt.Errorf("Config file(%s) isn't existed", filename)
+		l.Error(err)
+		return sm, err
 	}
 
-	file, err1 := os.Open(basedir + "/conf/" + SYS_INFO)
+	file, err1 := os.Open(filename)
 	if err1 != nil {
 		return si, err1
 	}
@@ -264,18 +249,19 @@ func OpenSIConfig(basedir string) (SysInfo, error) {
 	}
 
 	return si, nil
-}
+} */
 
-func OpenSCConfig(basedir string) (SysConfig, error) {
+func OpenSCConfig(filename string) (SysConfig, error) {
 	var sc SysConfig
 
-	// check the base dir whether existed
-	if flag := utl.Exists(basedir); flag != true {
-		msg := "ERROR: 输入目录(" + basedir + ")不存在"
-		return sc, errors.New(msg)
+	// check the config file whether existed
+	if flag := utl.Exists(filename); flag != true {
+		err := fmt.Errorf("Config file(%s) isn't existed", filename)
+		l.Error(err)
+		return sc, err
 	}
 
-	file, err1 := os.Open(basedir + "/conf/" + SYS_CONFIG)
+	file, err1 := os.Open(filename)
 	if err1 != nil {
 		return sc, err1
 	}
@@ -290,16 +276,17 @@ func OpenSCConfig(basedir string) (SysConfig, error) {
 	return sc, nil
 }
 
-func OpenSDConfig(basedir string) (SysDeploy, error) {
+func OpenSDConfig(filename string) (SysDeploy, error) {
 	var sd SysDeploy
 
-	// check the base dir whether existed
-	if flag := utl.Exists(basedir); flag != true {
-		msg := "ERROR: 输入目录(" + basedir + ")不存在"
-		return sd, errors.New(msg)
+	// check the config file whether existed
+	if flag := utl.Exists(filename); flag != true {
+		err := fmt.Errorf("Config file(%s) isn't existed", filename)
+		l.Error(err)
+		return sd, err
 	}
 
-	file, err1 := os.Open(basedir + "/conf/" + SYS_DEPLOY)
+	file, err1 := os.Open(filename)
 	if err1 != nil {
 		return sd, err1
 	}
@@ -390,6 +377,25 @@ func RefreshSysDeploy(sd *SysDeploy, conffile string) error {
 	}
 
 	return nil
+}
+
+/// Reset the attribute of SysDeploy structure
+func (sd *SysDeploy) ResetSysDeploy(newvalue string, tags []string) error {
+	if len(tags) < 0 {
+		l.Warning("No attribute will be reseted")
+		return nil
+	}
+
+	return nil
+}
+
+/// Reset the deploy attribute of SysDeploy structure
+func (n *node) ResetSysDeploy(newvalue int) {
+	for i, v := range n.Attrs {
+		if v.Attrname == "deploy" {
+			n.Attrs[i].Attrvalue = strconv.Itoa(newvalue)
+		}
+	}
 }
 
 /*///////////////////////////////////////////////////////

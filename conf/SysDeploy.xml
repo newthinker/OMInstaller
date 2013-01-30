@@ -20,7 +20,7 @@
 				<attr name="pwd"></attr>
 				<!-- OneMap安装路径 -->
 				<attr name="omhome"></attr>
-				<!-- 部署情况 [0:部署成功/1:部署失败/2:进行部署/3:暂不部署] -->
+				<!-- 部署情况 [0:维持现状/1:安装/2:更新/3:卸载] -->
 				<attr name="deploy"></attr>
 		        <!-- 集群类型 [db/gis/main/agent/msg/token/web] -->
                 <attr name="cluster_type"></attr>
