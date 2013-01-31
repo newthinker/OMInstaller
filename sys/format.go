@@ -14,12 +14,11 @@ func ParseSysSubmit(jsonstr interface{}) (SysDeploy, []Layout, error) {
 	// 获取输入参数信息
 	sd := &SysDeploy{}
 	var arr_lo = []Layout{}
-    var status int
 
 	for _, v := range postmap {
 		switch vv := v.(type) {
-            case int:   // status flag [0:maintain, 1: install, 2: update, 3: uninstall]
-            status = vv
+		case int: // status flag [0:maintain, 1: install, 2: update, 3: uninstall]
+			status = vv
 			if status < 0 || status > 3 {
 				err := errors.New("Invalid status code, please check")
 				l.Error(err)
@@ -36,7 +35,7 @@ func ParseSysSubmit(jsonstr interface{}) (SysDeploy, []Layout, error) {
 
 				// base info
 				switch bases := (srvparams["Base"]).(type) {
-				case []interface{}:     /// Test the bases is null(install mode with no base section)
+				case []interface{}: /// Test the bases is null(install mode with no base section)
 					for _, ba := range bases {
 						base := ba.(map[string]interface{})
 
@@ -67,17 +66,17 @@ func ParseSysSubmit(jsonstr interface{}) (SysDeploy, []Layout, error) {
 							for _, p := range arrparams {
 								param := p.(map[string]interface{})
 								attr := &AttrInfo{}
-                                value, ok := (param["Attrname"]).(string)
-                                if ok != true || value == "" {
-                                    continue
-                                }
-                                attr.Attrname = value
+								value, ok := (param["Attrname"]).(string)
+								if ok != true || value == "" {
+									continue
+								}
+								attr.Attrname = value
 
-                                value, ok = (param["Attrvalue"]).(string)
-                                if ok != true || value == "" {
-                                    continue
-                                }
-                                attr.Attrvalue = value
+								value, ok = (param["Attrvalue"]).(string)
+								if ok != true || value == "" {
+									continue
+								}
+								attr.Attrvalue = value
 
 								encrypt, ok := (param["Encrypt"]).(string)
 								if ok == true && encrypt != "" {
@@ -114,17 +113,17 @@ func SysFormat(status int) (map[string]interface{}, error) {
 	if status == INSTALL {
 		result["Servers"] = omsc.LayOut.Servers
 	} else if status == UPDATE {
-        // first get the SysDeploy and Layout array struct
-        los, err := RemoteCollect(omsd)
-        if err!=nil {
-            l.Error(err)
-            return result, err
-        }
+		// first get the SysDeploy and Layout array struct
+		los, err := RemoteCollect(omsd)
+		if err != nil {
+			l.Error(err)
+			return result, err
+		}
 
-        fmt.Println(los)
+		fmt.Println(los)
 
-        /// then format exchange data and post
-        /// err = UpdateFormat(sd *SysDeploy, los []Layout)
+		/// then format exchange data and post
+		/// err = UpdateFormat(sd *SysDeploy, los []Layout)
 	} else if status == UNINSTALL {
 
 	}
@@ -132,4 +131,18 @@ func SysFormat(status int) (map[string]interface{}, error) {
 	l.Debug(result)
 
 	return result, nil
+}
+
+// format the message struct to the websocket with chan
+func FormatResult(status int, reason string, i interface{}) {
+	ret := Result{status, reason, i}
+
+	mc <- ret
+}
+
+// get the result queue
+func GetResult() (ret Result, flag bool) {
+	ret, flag = <-mc
+
+	return ret, flag
 }

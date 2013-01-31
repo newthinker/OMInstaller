@@ -3,11 +3,11 @@ package sys
 import (
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"github.com/newthinker/onemap-installer/utl"
 	"io/ioutil"
 	"os"
-    "fmt"
-    "strconv"
+	"strconv"
 )
 
 ///////////////////////////////////////////////////////

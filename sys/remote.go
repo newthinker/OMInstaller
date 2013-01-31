@@ -2,10 +2,10 @@ package sys
 
 import (
 	"errors"
+	"fmt"
 	"github.com/newthinker/onemap-installer/utl"
 	"os"
 	"os/exec"
-    "fmt"
 )
 
 // remote copy the OneMap package
@@ -133,75 +133,74 @@ func (om *OMPInfo) OMRemoteExec() error {
 
 func (om *OMPInfo) OMRemoteParam() error {
 
-    return nil
+	return nil
 }
 
 // Collect SysConfig from each node
 func RemoteCollect(sd *SysDeploy) (los []Layout, err error) {
-    for i:=0;i<len(sd.Nodes);i++ {
-        var ip string
-        var user string
-        var pwd string
-        var omhome string
+	for i := 0; i < len(sd.Nodes); i++ {
+		var ip string
+		var user string
+		var pwd string
+		var omhome string
 
-        no := sd.Nodes[i]
-        for _,a := range no.Attrs {
-            if a.Attrname=="ip" {
-                ip = a.Attrvalue
-            } else if a.Attrname=="user" {
-                user = a.Attrvalue
-            } else if a.Attrname=="pwd" {
-                pwd = a.Attrvalue
-            } else if a.Attrname=="omhome" {
-                omhome = a.Attrvalue
-            }
-        }
+		no := sd.Nodes[i]
+		for _, a := range no.Attrs {
+			if a.Attrname == "ip" {
+				ip = a.Attrvalue
+			} else if a.Attrname == "user" {
+				user = a.Attrvalue
+			} else if a.Attrname == "pwd" {
+				pwd = a.Attrvalue
+			} else if a.Attrname == "omhome" {
+				omhome = a.Attrvalue
+			}
+		}
 
-        // first check the sshpass
-	    cmd := exec.Command(basedir+"/sshpass/bin/sshpass", "-V")
-	    err := cmd.Run()
-	    if err != nil {
-		    msg := "Sshpass isn't installed"
-            l.Errorf(msg)
-		    return los, errors.New(msg)
-	    }
+		// first check the sshpass
+		cmd := exec.Command(basedir+"/sshpass/bin/sshpass", "-V")
+		err := cmd.Run()
+		if err != nil {
+			msg := "Sshpass isn't installed"
+			l.Errorf(msg)
+			return los, errors.New(msg)
+		}
 
-        // remote exec the systemconfig.jar process to get the SysConfig.xml
+		// remote exec the systemconfig.jar process to get the SysConfig.xml
 		cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", pwd, "ssh", user+"@"+ip,
 			"/bin/bash", omhome+"/config/SystemConfig/SysConfig.sh")
 		l.Debugf("sshpass -p %s ssh %s@%s /bin/bash %s/config/SystemConfig/SysConfig.sh",
-            pwd, user, ip, omhome)
+			pwd, user, ip, omhome)
 		err = cmd.Run()
 		if err != nil {
 			msg := "Remote exec the SystemConfig.jar failed"
-            l.Errorf(msg)
+			l.Errorf(msg)
 			return los, errors.New(msg)
 		}
 
-        // remote copy the SysConfig.xml file
+		// remote copy the SysConfig.xml file
 		cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", pwd, "scp",
-            user+"@"+ip, omhome+"/config/SystemConfig/SysConfig.xml", basedir+"/conf/"+ip+".SysConfig.xml")
-            l.Debugf("sshpass -p %s scp %s@%s:%s/config/SystemConfig/SysConfig.xml %s/conf/%s.SysConfig.xml",
-            pwd, user, ip, omhome, basedir, ip)
+			user+"@"+ip, omhome+"/config/SystemConfig/SysConfig.xml", basedir+"/conf/"+ip+".SysConfig.xml")
+		l.Debugf("sshpass -p %s scp %s@%s:%s/config/SystemConfig/SysConfig.xml %s/conf/%s.SysConfig.xml",
+			pwd, user, ip, omhome, basedir, ip)
 		err = cmd.Run()
 		if err != nil {
 			msg := "Remote copy the SysConfig.xml file failed"
-            l.Errorf(msg)
+			l.Errorf(msg)
 			return los, errors.New(msg)
 		}
 
-        // parse the SysConfig.xml file
-        filename := basedir+"/conf/"+ip+".SysConfig.xml"
-        sc, err := OpenSCConfig(filename)
-        if err!=nil {
-            nerr := fmt.Errorf("Open the SysConfig(%s) file failed", filename)
-            l.Error(nerr)
-            return los, nerr
-        }
+		// parse the SysConfig.xml file
+		filename := basedir + "/conf/" + ip + ".SysConfig.xml"
+		sc, err := OpenSCConfig(filename)
+		if err != nil {
+			nerr := fmt.Errorf("Open the SysConfig(%s) file failed", filename)
+			l.Error(nerr)
+			return los, nerr
+		}
 
-        los = append(los, sc.LayOut)
-    }
+		los = append(los, sc.LayOut)
+	}
 
-    return los, err
+	return los, err
 }
-

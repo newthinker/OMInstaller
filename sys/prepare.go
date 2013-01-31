@@ -20,12 +20,12 @@ import (
 
 const (
 	SERVER_MAPPING = "SrvMapping.xml" // 服务器类型映射文件名 
-//	SYS_INFO       = "SysInfo.xml"    // 服务器参数配置文件
-	SYS_CONFIG     = "SysConfig.xml"  // 配置工具配置文件名
-	SYS_DEPLOY     = "SysDeploy.xml"  // 系统部署配置文件
-	ONEMAP_NAME    = "OneMap"         // OneMap directory name
-	TOMCAT         = "Tomcat"         // Tomcat container
-	WEBLOGIC       = "Weblogic"       // Weblogic container
+	//	SYS_INFO       = "SysInfo.xml"    // 服务器参数配置文件
+	SYS_CONFIG  = "SysConfig.xml" // 配置工具配置文件名
+	SYS_DEPLOY  = "SysDeploy.xml" // 系统部署配置文件
+	ONEMAP_NAME = "OneMap"        // OneMap directory name
+	TOMCAT      = "Tomcat"        // Tomcat container
+	WEBLOGIC    = "Weblogic"      // Weblogic container
 )
 
 // 安装程序的三种状态
@@ -60,7 +60,7 @@ type OMPInfo struct {
 
 	Cluster
 
-	Deploy    int // 部署情况, [0:维持现状/1:安装/2:更新/3:卸载] 
+	Deploy int // 部署情况, [0:维持现状/1:安装/2:更新/3:卸载] 
 
 	Version   string   // onemap版本号
 	OMHome    string   // OneMap安装目录
@@ -82,37 +82,14 @@ type OMPInfo struct {
 }
 
 var (
-	omsc    *SysConfig
-	omsm    *ServerMapping
-    omsd    *SysDeploy
-	basedir string // 系统当前运行目录
+	omsc    *SysConfig     // SysConfig struct
+	omsm    *ServerMapping // ServerMapping struct
+	omsd    *SysDeploy     // SysDeploy struct
+	basedir string         // the working directory
+	status  int            // the process's status [MAINTAIN | INSTALL | UPDATE | UNINSTALL]
 )
 
-/*
-func Init() error {
-	// 获取当前目录
-	dir, err := utl.GetLocalDir()
-	if err != nil {
-		l.Error(err)
-		return err
-	}
-	basedir = dir
-	l.Debugf("Current directory is:%s", basedir)
-
-	// open the config files
-	sm, err1 := OpenSMConfig(basedir)
-	sc, err2 := OpenSCConfig(basedir)
-	if err1 != nil || err2 != nil {
-		l.Error(errors.New("Parse system config files failed"))
-		return errors.New("Parse system config files failed")
-	}
-	omsc = &sc
-	omsm = &sm
-
-	return nil
-}
-*/
-
+// Package the OneMap
 func (om *OMPInfo) OMPackage() error {
 	dstdir := basedir + "/" + ONEMAP_NAME
 	l.Message("Make OneMap directory")

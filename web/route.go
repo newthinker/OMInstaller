@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	l *(log.Logger)
+	l *(log.Logger) // log server
 )
 
 func Init(logger *(log.Logger)) {
