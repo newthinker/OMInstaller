@@ -40,7 +40,7 @@ const (
 	REFRESH_SYSDEPLOY = 10
 
 	///////////////////////////////////////////////////////
-	MAX_POOL_SIZE = 10 // message queue's max size
+	MAX_POOL_SIZE = 4 // message queue's max size
 )
 
 var (
@@ -74,18 +74,21 @@ func Init(logger *(log.Logger)) error {
 
 	// open the config files
 	filename := basedir + "/conf/" + SERVER_MAPPING
+	l.Debugf("SrvMapping file:%s", filename)
 	sm, err := OpenSMConfig(filename)
 	if err != nil {
 		l.Error(errors.New("Parse SrvMapping config files failed"))
 		return errors.New("Parse SrvMapping config files failed")
 	}
-	filename = basedir + "/conf" + SYS_CONFIG
+	filename = basedir + "/conf/" + SYS_CONFIG
+	l.Debugf("SysConfig file:%s", filename)
 	sc, err := OpenSCConfig(filename)
 	if err != nil {
 		l.Error(errors.New("Parse SysConfig config files failed"))
 		return errors.New("Parse SysConfig config files failed")
 	}
 	filename = basedir + "/conf/" + SYS_DEPLOY
+	l.Debugf("SysDeploy file:%s", filename)
 	sd, err := OpenSDConfig(filename)
 	if err != nil {
 		l.Error(errors.New("Parse SysDeploy config files failed"))
@@ -96,6 +99,7 @@ func Init(logger *(log.Logger)) error {
 	omsm = &sm
 	omsd = &sd
 
+	// message queue
 	mc = make(chan Result, MAX_POOL_SIZE)
 
 	return nil

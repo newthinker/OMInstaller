@@ -80,6 +80,26 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 	method.Call([]reflect.Value{responseValue, requestValue})
 }
 
+// 消息队列处理器
+func MsgHandler(w http.ResponseWriter, r *http.Request) {
+	l.Message("Msglist handler")
+
+	msg := &msgHandler{}
+	
+	controller := reflect.ValueOf(msg)
+	method := controller.MethodByName("SelectAction")
+
+	if !method.IsValid() {
+		l.Errorf("Invalid input params")
+		OutputJson(w, 1, "输入参数非法", nil)
+		return
+	}
+
+	requestValue := reflect.ValueOf(r)
+	responseValue := reflect.ValueOf(w)
+	method.Call([]reflect.Value{responseValue, requestValue})
+}
+
 // sysconfig页面中参数检查错误提醒页面
 func ErrHandler(w http.ResponseWriter, r *http.Request) {
 	l.Message("Error handler")

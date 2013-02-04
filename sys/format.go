@@ -141,8 +141,6 @@ func FormatResult(status int, reason string, i interface{}) {
 }
 
 // get the result queue
-func GetResult() (ret Result, flag bool) {
-	ret, flag = <-mc
-
-	return ret, flag
+func GetResult() Result {
+	return <-mc
 }

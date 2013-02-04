@@ -1,11 +1,9 @@
 package main
 
 import (
-	//	"encoding/json"
+	"code.google.com/p/go.net/websocket"
 	"fmt"
 	"github.com/newthinker/onemap-installer/log"
-	//	"github.com/newthinker/onemap-installer/sys"
-	"code.google.com/p/go.net/websocket"
 	"github.com/newthinker/onemap-installer/utl"
 	"github.com/newthinker/onemap-installer/web"
 	"net/http"
@@ -98,12 +96,15 @@ func main() {
 	http.Handle("/css/", http.FileServer(http.Dir("template")))
 	http.Handle("/js/", http.FileServer(http.Dir("template")))
 	http.Handle("/images/", http.FileServer(http.Dir("template")))
+
 	http.Handle("/json", websocket.Handler(web.JsonServer))
 
 	http.HandleFunc("/subconfig", web.SubHandler)
 	http.HandleFunc("/sysconfig", web.SysConfig)
 	http.HandleFunc("/syshandler", web.SysHandler)
 	http.HandleFunc("/error", web.ErrHandler)
+
+	http.HandleFunc("/msg", web.MsgHandler)
 
 	err = http.ListenAndServe(ip+":8888", nil)
 	if err != nil {
