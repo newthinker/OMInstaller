@@ -107,29 +107,30 @@ func GetSqlFile(basedir string) (string, error) {
 	//		}
 	//	}
 
-	filename = basedir + "/OneMap_Linux_V2.0/db/GeoShareManager/Manager_Table_Data.sql"
+	/// 增加根据文件名搜索文件函数
+	filename = filepath.FromSlash(basedir + "/OneMap_Linux_V2.0/db/GeoShareManager/Manager_Table_Data.sql")
 	l.Debugf("filename:%s", filename)
 	if flag := utl.Exists(filename); flag != true {
 		return filename, errors.New("SQL file isn't existed")
 	}
 
 	// 生成一个临时文件夹
-	tempdir := basedir + "/temp"
+	tempdir := filepath.FromSlash(basedir + "/temp")
 	if flag := utl.Exists(tempdir); flag == true {
 		err = os.RemoveAll(tempdir)
 		if err != nil {
 			return filename, errors.New("Delete temp directory failed")
 		}
 	}
-	if err = os.Mkdir(basedir+"/temp", 0755); err != nil {
+	if err = os.Mkdir(filepath.FromSlash(basedir+"/temp"), 0755); err != nil {
 		return filename, err
 	}
 
-	if err = utl.Copy(filename, basedir+"/temp"); err != nil {
+	if err = utl.Copy(filename, filepath.FromSlash(basedir+"/temp")); err != nil {
 		return filename, err
 	}
 
-	filename = basedir + "/temp/Manager_Table_Data.sql"
+	filename = filepath.FromSlash(basedir + "/temp/Manager_Table_Data.sql")
 
 	return filename, nil
 }

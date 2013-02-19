@@ -111,7 +111,8 @@ func SysFormat(status int) (map[string]interface{}, error) {
 	result := make(map[string]interface{})
 
 	if status == INSTALL {
-		result["Servers"] = omsc.LayOut.Servers
+        result["Base"] = ""
+		result["Params"] = omsc.LayOut.Servers
 	} else if status == UPDATE {
 		// first get the SysDeploy and Layout array struct
 		los, err := RemoteCollect(omsd)

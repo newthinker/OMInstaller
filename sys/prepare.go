@@ -14,6 +14,7 @@ import (
 	"github.com/newthinker/onemap-installer/utl"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -91,7 +92,7 @@ var (
 
 // Package the OneMap
 func (om *OMPInfo) OMPackage() error {
-	dstdir := basedir + "/" + ONEMAP_NAME
+	dstdir := filepath.FromSlash(basedir + "/" + ONEMAP_NAME)
 	l.Message("Make OneMap directory")
 	if flag := utl.Exists(dstdir); flag == true {
 		// 首先删除原来的
@@ -107,7 +108,7 @@ func (om *OMPInfo) OMPackage() error {
 	}
 
 	l.Message("Package OneMap")
-	srcdir := basedir + "/" + ONEMAP_NAME + "_Linux_" + om.Version
+	srcdir := filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "_Linux_" + om.Version)
 	if err := om.OMCopy(srcdir, dstdir); err != nil {
 		l.Errorf("Package OneMap failed")
 		return err
@@ -137,14 +138,16 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 		}
 	} else {
 		if (utl.Exists(dst + "/services")) == true {
-			if err := os.RemoveAll(dst + "/services"); err != nil {
-				msg := "Remove directory (" + dst + "/services) failed"
+			pathstr := filepath.FromSlash(dst + "/services")
+			if err := os.RemoveAll(pathstr); err != nil {
+				msg := "Remove directory (" + pathstr + ") failed"
 				return errors.New(msg)
 			}
 		}
-		if (utl.Exists(dst + "/" + om.Container + "/webapps")) == true {
-			if err := os.RemoveAll(dst + "/" + om.Container + "/webapps"); err != nil {
-				msg := "Remove directory (" + dst + "/" + om.Container + "/webapps) failed"
+		pathstr := filepath.FromSlash(dst + "/" + om.Container + "/webapps")
+		if (utl.Exists(pathstr)) == true {
+			if err := os.RemoveAll(pathstr); err != nil {
+				msg := "Remove directory (" + pathstr + ") failed"
 				return errors.New(msg)
 			}
 		}
@@ -159,31 +162,31 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	}
 	if (utl.Exists(dst + "/arcgis")) != true {
 		if err := utl.Copy(src+"/arcgis", dst); err != nil {
-			msg := "Copy directory (" + src + "/arcgis) failed"
+			msg := "Copy directory arcgis directory failed"
 			return errors.New(msg)
 		}
 	}
 	if (utl.Exists(dst + "/bin")) != true {
 		if err := utl.Copy(src+"/bin", dst); err != nil {
-			msg := "Copy directory(" + src + "/bin) failed"
+			msg := "Copy directory bin directory failed"
 			return errors.New(msg)
 		}
 	}
 	if (utl.Exists(dst + "/config")) != true {
 		if err := utl.Copy(src+"/config", dst); err != nil {
-			msg := "Copy directory(" + src + "/config) failed"
+			msg := "Copy directory config directory failed"
 			return errors.New(msg)
 		}
 	}
 	if (utl.Exists(dst + "/java")) != true {
 		if err := utl.Copy(src+"/java", dst); err != nil {
-			msg := "Copy directory(" + src + "/java) failed"
+			msg := "Copy directory java directory failed"
 			return errors.New(msg)
 		}
 	}
 	if (utl.Exists(dst + "/temp")) != true {
 		if err := utl.Copy(src+"/temp", dst); err != nil {
-			msg := "Copy directory(" + src + "/temp) failed"
+			msg := "Copy directory temp directory failed"
 			return errors.New(msg)
 		}
 	}
@@ -192,13 +195,13 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	if len(om.Apps) > 0 {
 		// copy web container
 		if err := utl.Copy(src+"/"+om.Container, dst); err != nil {
-			msg := "Copy OneMap web container (" + om.Container + ") failed"
+			msg := "Copy OneMap web container " + om.Container + "  container failed"
 			return errors.New(msg)
 		}
 
 		for i := 0; i < len(om.Apps); i++ {
 			if err := utl.Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
-				msg := "Copy module (" + om.Apps[i] + ") failed"
+				msg := "Copy module " + om.Apps[i] + " module failed"
 				return errors.New(msg)
 			}
 
@@ -240,7 +243,8 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 					}
 
 					// 删除临时目录
-					os.RemoveAll(basedir + "/temp")
+					pathstr := filepath.FromSlash(basedir + "/temp")
+					os.RemoveAll(pathstr)
 				}
 			}
 		}

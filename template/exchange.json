@@ -2,12 +2,12 @@
 	"Base": [{
 		"Attrname": "os",
 		"Attrdesc": "操作系统类型",
-		"Attrvalue": "linux"
+		"Select": "0,linux; 1,windows;"
 	},
 	{
 		"Attrname": "arch",
 		"Attrdesc": "操作系统架构",
-		"Attrvalue": "32/64"
+		"Select": "0,32; 1,64;"
 	},
 	{
 		"Attrname": "macname",
@@ -42,17 +42,17 @@
 	{
 		"Attrname": "deploy",
 		"Attrdesc": "部署情况",
-		"Attrvalue": "1"
+		"Attrvalue": "0/1(勾选框，0表示不启用，1表示启用)"
 	},
 	{
 		"Attrname": "cluster_type",
 		"Attrdesc": "集群类型",
-		"Attrvalue": ""
+		"Select": "db,数据库服务器;gis,GIS服务器;main,运维服务器;web,WEB服务器;token,TOKEN服务器;agent,监控代理服务器;"
 	},
 	{
 		"Attrname": "cluster_enabled",
 		"Attrdesc": "集群是否启用",
-		"Attrvalue": "1"
+		"Attrvalue": "0/1(勾选框，0表示不启用，1表示启用)"
 	},
 	{
 		"Attrname": "cluster_ip",
