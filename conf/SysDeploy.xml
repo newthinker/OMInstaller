@@ -1,44 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root>
-	<nodes>
-		<node name="node1">
-			<!-- 属性 -->
-			<attrs>
-				<!-- 操作系统类型 -->
-				<attr name="os"></attr>
-				<!-- 操作系统架构32/64 -->
-				<attr name="arch"></attr>
-				<!-- 机器名 -->
-				<attr name="macname"></attr>
-				<!-- 域名 -->
-				<attr name="domname"></attr>
-				<!-- ip地址 -->
-				<attr name="ip"></attr>
-				<!-- 系统帐号 -->
-				<attr name="user"></attr>
-				<!-- 帐号密码 -->
-				<attr name="pwd"></attr>
-				<!-- OneMap安装路径 -->
-				<attr name="omhome"></attr>
-				<!-- 部署情况 [0:维持现状/1:安装/2:更新/3:卸载] -->
-				<attr name="deploy"></attr>
-		        <!-- 集群类型 [db/gis/main/agent/msg/token/web] -->
-                <attr name="cluster_type"></attr>
-			    <!-- 集群是否启用 [0:启用, 1:不启用] -->
-			    <attr name="cluster_enabled"></attr>
-			    <!-- 集群IP -->
-			    <attr name="cluster_ip"></attr>
-			</attrs>
-			<!-- 安装的服务器 -->
-			<servers>
-				<server name="db"/>
-				<server name="gis" />
-				<server name="main" />
-				<server name="agent" />
-				<server name="msg" />
-				<server name="token" />
-				<server name="web" />
-			</servers>
-		</node>
-	</nodes>
-</root> 
+
+  <root>
+     <nodes>
+        <node name="192.168.80.54">
+           <attrs>
+              <attr name="macname">L54</attr>
+              <attr name="domname">localdomain</attr>
+              <attr name="ip">192.168.80.54</attr>
+              <attr name="port">8080</attr>
+              <attr name="user">root</attr>
+              <attr name="pwd">dasiyebushuo</attr>
+              <attr name="omhome">/opt/OneMap</attr>
+              <attr name="cluster_enabled">0</attr>
+              <attr name="os">Linux</attr>
+              <attr name="arch">amd64</attr>
+              <attr name="container">Tomcat</attr>
+              <attr name="deploy">1</attr>
+           </attrs>
+           <servers>
+              <server name="token"></server>
+              <server name="agent"></server>
+           </servers>
+        </node>
+     </nodes>
+  </root>

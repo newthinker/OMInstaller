@@ -14,6 +14,7 @@ import (
 	"github.com/newthinker/onemap-installer/utl"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -187,6 +188,13 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 			return errors.New(msg)
 		}
 	}
+	
+	if (utl.Exists(dst + "/example_data")) != true {
+		if err := utl.Copy(src+"/example_data", dst); err != nil {
+			msg := "Copy directory(" + src + "/example_data) failed"
+			return errors.New(msg)
+		}
+	}	
 
 	// copy modules
 	if len(om.Apps) > 0 {
@@ -201,17 +209,6 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 				msg := "Copy module (" + om.Apps[i] + ") failed"
 				return errors.New(msg)
 			}
-
-			switch om.Apps[i] {
-			case "H2memDB":
-				if err := utl.Copy(src+"/db", dst); err != nil {
-					return errors.New("Copy db directory failed")
-				}
-			case "GeoShareManager":
-				if err := utl.Copy(src+"/example_data", dst); err != nil {
-					return errors.New("Copy example data directory failed")
-				}
-			}
 		}
 	}
 
@@ -222,30 +219,62 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 				msg := "Copy OneMap service (" + om.Services[i] + ") failed"
 				return errors.New(msg)
 			}
-
-			// 如果包含H2MemDB模块，且在临时目录中包含分平台数据更新文件，还需要更新分平台数据文件
-			if om.Services[i] == "H2CommonMemDB" {
-				// 首先拷贝db目录
-				if err := utl.Copy(src+"/db", dst); err != nil {
-					msg := "Copy OneMap db directory failed"
-					return errors.New(msg)
-				}
-				// 更新数据库文件
-				srcfile := basedir + "/temp/Manager_Table_Data.sql"
-				dstfile := dst + "/db/GeoShareManager/Manager_Table_Data.sql"
-				if utl.Exists(basedir+"/temp/Manager_Table_Data.sql") == true {
-					if err := utl.Copy(srcfile, dstfile); err != nil {
-						msg := "Update subplatform SQL file failed"
-						return errors.New(msg)
-					}
-
-					// 删除临时目录
-					os.RemoveAll(basedir + "/temp")
-				}
-			}
 		}
 	}
 
+	// deal with the db server
+	for _, srv := range om.Servers {
+		if srv=="db" {
+			if err := utl.Copy(src+"/db/Driver", dst+"/db"); err != nil {
+				msg := "Copy OneMap Driver directory failed"
+				return errors.New(msg)
+			}
+						
+			if err := utl.Copy(src+"/db/GeoCoding", dst+"/db"); err != nil {
+				msg := "Copy OneMap GeoCoding directory failed"
+				return errors.New(msg)
+			}
+			
+			if err := utl.Copy(src+"/db/GeoPortal", dst+"/db"); err != nil {
+				msg := "Copy OneMap GeoPortal directory failed"
+				return errors.New(msg)
+			}			
+
+			if err := utl.Copy(src+"/db/GeoShareManager", dst+"/db"); err != nil {
+				msg := "Copy OneMap GeoShareManager directory failed"
+				return errors.New(msg)
+			}
+			
+			if err := utl.Copy(src+"/db/Portal", dst+"/db"); err != nil {
+				msg := "Copy OneMap Portal directory failed"
+				return errors.New(msg)
+			}			
+			
+			// install subplatform module
+			if subplatform {	
+				// delete the original file(Manager_Table_Data.sql)
+				sqlfile := filepath.FromSlash(dst+"/db/GeoShareManager/Manager_Table_Data.sql")
+				if err := os.Remove(sqlfile); err != nil {
+					msg := "Delete the file(" + sqlfile + ") failed!"
+					l.Errorf(msg)
+					return errors.New(msg)
+				}
+				// rename the bak file(Manager_Table_Data.sql)
+				bakfile := filepath.FromSlash(dst+"/db/GeoShareManager/Manager_Table_Data.sql.bak")
+				if err := os.Rename(bakfile, sqlfile); err != nil {
+					msg := "Rename the file(" + bakfile + ") failed!"
+					l.Errorf(msg)
+					return errors.New(msg)
+				}				
+				// copy the subplatform
+				if err := utl.Copy(src+"/db/SubPlatform", dst+"/db"); err != nil {
+					msg := "Copy OneMap SubPlatform directory failed"
+					return errors.New(msg)
+				}				
+			}
+		}
+	}
+		
 	l.Message("Copy OneMap files successfully")
 	return nil
 }

@@ -28,12 +28,11 @@ func Copy(srcfile string, dstfile string) error {
 		return os.ErrNotExist
 	}
 
-	// check dstfile's parent path whether existed
-	dir := filepath.Dir(dstfile)
-	_, derr := os.Stat(dir)
+	// check the dstfile whether existed
+	_, derr := os.Stat(dstfile)
 	if os.IsNotExist(derr) {
 
-		if serr = os.MkdirAll(dir, 0755); serr != nil {
+		if serr = os.MkdirAll(dstfile, 0755); serr != nil {
 			return serr
 		}
 	}
@@ -101,7 +100,7 @@ func GetSubDir(path string) ([]string, error) {
 		}
 	}
 
-	return pn, err
+	return pn, nil
 }
 
 //Get local directory

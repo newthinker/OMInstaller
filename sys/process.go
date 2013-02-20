@@ -45,7 +45,8 @@ const (
 
 var (
 	l  *(log.Logger)
-	mc chan Result // message chan
+	mc chan Result 		// message chan
+	subplatform	bool	// whether install subplatform module
 )
 
 // return result
@@ -101,6 +102,9 @@ func Init(logger *(log.Logger)) error {
 
 	// message queue
 	mc = make(chan Result, MAX_POOL_SIZE)
+	
+	// default installing subplatform module
+	subplatform = true
 
 	return nil
 }

@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+type Exchange struct {
+	Base   interface{}
+	Params interface{}
+}
+
 ///////////////////////////////
 // 解析POST的JSON结构
 func ParseSysSubmit(jsonstr interface{}) (SysDeploy, []Layout, error) {
@@ -107,20 +112,22 @@ func ParseSysSubmit(jsonstr interface{}) (SysDeploy, []Layout, error) {
 }
 
 /// Format the exchange data
-func SysFormat(status int) (map[string]interface{}, error) {
-	result := make(map[string]interface{})
-
+func SysFormat(status int) (interface{}, error) {
 	if status == INSTALL {
-		result["Servers"] = omsc.LayOut.Servers
+		obj := Exchange{Base: "", Params: omsc.LayOut.Servers}
+		arrobj := []Exchange{}
+		arrobj = append(arrobj, obj)
+
+		return arrobj, nil
 	} else if status == UPDATE {
 		// first get the SysDeploy and Layout array struct
-		los, err := RemoteCollect(omsd)
-		if err != nil {
-			l.Error(err)
-			return result, err
-		}
+		//los, err := RemoteCollect(omsd)
+		//if err != nil {
+		//	l.Error(err)
+		//	return result, err
+		//}
 
-		fmt.Println(los)
+		//fmt.Println(los)
 
 		/// then format exchange data and post
 		/// err = UpdateFormat(sd *SysDeploy, los []Layout)
@@ -128,9 +135,10 @@ func SysFormat(status int) (map[string]interface{}, error) {
 
 	}
 
-	l.Debug(result)
+	//l.Debug(result)
 
-	return result, nil
+	//return result, nil
+	return nil, nil
 }
 
 // format the message struct to the websocket with chan

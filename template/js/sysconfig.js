@@ -9,35 +9,34 @@ var exceeptionParam = {
     "gis_port" : "GIS服务器端口",
     "gis_ags_ip" : "ArcGISServer服务器IP",
     "wmts_ip" : "WMTS系统的IP",
-    "wmts_port" : "WMTS系统的端口",
+    "wmts_port" : "WMTS系统的PORT",
     "sysrest_ip" : "SysRest服务IP",
-    "sysrest_port" : "SysRest服务端口",
+    "sysrest_port" : "SysRest服务PORT",
     "main_ip" : "运维服务器IP",
     "main_port" : "运维服务器端口",
     "geocoding_ip" : "GeoCoding系统IP",
-    "geocoding_port" : "GeoCoding系统端口",
+    "geocoding_port" : "GeoCoding系统PORT",
     "geoportal_ip" : "GeoPortal系统IP",
-    "geoportal_port" : "GeoPortal系统端口",
+    "geoportal_port" : "GeoPortal系统PORT",
     "file_ip" : "FileServices系统IP",
-    "file_port" : "FileServices系统的端口",
+    "file_port" : "FileServices系统的PORT",
     "tile_ip" : "TileServices系统IP",
-    "tile_port" : "TileServices系统端口",
+    "tile_port" : "TileServices系统PORT",
     "aggregator_ip" : "Aggregator系统IP",
-    "aggregator_port" : "Aggregator系统端口",
+    "aggregator_port" : "Aggregator系统PORT",
     "agent_ip" : "监控代理服务器IP",
-    "agent_port" : "监控代理服务器端口",
+    "agent_port" : "监控代理服务器PORT",
     "jms_ip" : "JMS服务器IP",
     "token_ip" : "Token服务器IP",
-    "token_port" : "Token服务器端口",
+    "token_port" : "Token服务器PORT",
     "web_ip" : "门户IP",
-    "web_port" : "门户端口",
+    "web_port" : "门户PORT",
     "flex_ip" : "Flex发布服务器IP",
-    "flex_port" : "Flex发布服务器端口",
+    "flex_port" : "Flex发布服务器PORT",
     "sl_ip" : "Silverlight发布服务器IP",
-    "sl_port" : "Silverlight发布服务器端口",
+    "sl_port" : "Silverlight发布服务器PORT",
     "ria_ip" : "快速搭建服务器IP",
-    "ria_port" : "快速搭建服务器端口",
-    "msg_ip" : "JMS服务器IP",
+    "ria_port" : "快速搭建服务器PORT",
     //传空值就行
     "iis_root" : "Silverlight文件生成路径"
 };
@@ -49,16 +48,40 @@ window.onload = function() {
     getServerConfigDInfo();
     //注册提交事件
     document.getElementById("sys_submit_bt").onclick = postAllSeverConfigInfos;
-
+    //连接websocket
+    progress.connect();
 }
+//集群是否启用点击事件
+function clusterEnableClickHandler(obj) {
+    var selectedTab = tabContainer.selectedTab;
+    if (!selectedTab)
+        return;
+
+    var clustertype = dom.getDom('.base_cluster_type_p',selectedTab,'p')[0];
+    var clusterip = dom.getDom('.base_cluster_ip_p',selectedTab,'p')[0];
+
+    var addclass = dom.addClass;
+    var removeclass = dom.removeClass;
+
+    if (!obj.checked) {
+        addclass("dn", clustertype);
+        addclass("dn", clusterip);
+    } else {
+        removeclass('dn', clustertype);
+        removeclass('dn', clusterip);
+    }
+}
+
 //获取服务器配置信息
 function getServerConfigDInfo() {
 
-    jx.load(debug != -1 ? "post.json" : "syshandler", getServerConfigInfoHandler, "json", "get");
+    jx.load(debug != -1 ? "ex.json" : "syshandler", getServerConfigInfoHandler, "json", "get");
 }
 
 function getServerConfigInfoHandler(data) {
-    initServerConfigInfo(data.Data);
+    //先生成单个tab页面
+
+    initServerConfigInfo(data.Data[0]);
     initTabContainer();
 }
 
@@ -75,8 +98,8 @@ function initServerConfigInfo(data) {
         'class' : "twb"
     }, fieldset);
 
-    fieldset.appendChild(initServerModules(data['Server_modules']));
-    fieldset.appendChild(initServerParams(data['Server_params']));
+    fieldset.appendChild(initServerModules(data['Params']));
+    fieldset.appendChild(initServerParams(data['Params']));
     //将动态生成的config info节点添加到页面
     var configInfo = dom.getDom('.config-info',document.getElementById('customTabContent'),"div")[0];
     configInfo.appendChild(fragment);
@@ -149,7 +172,7 @@ function createCheckControl(module) {
     var lb = dc("label", {
         "class" : "control-label",
         "for" : cbname,
-        innerHTML : module.Srvname
+        innerHTML : module.Srvdesc
     }, checkControl);
 
     //agent默认选中且不能改变状态
@@ -200,7 +223,7 @@ function createConfigServer(param) {
         "class" : "twb",
         "innerHTML" : servername + "服务器信息配置"
     }, fieldset);
-    var inputInfos = param.Params;
+    var inputInfos = param.Attrs;
     for (var i = 0; i < inputInfos.length; i++) {
         fieldset.appendChild(createInputControl(inputInfos[i]));
     }
@@ -209,7 +232,7 @@ function createConfigServer(param) {
 
 //创建配置信息中的单个配置
 function createInputControl(obj) {
-    var dc = dom.createDom, name = obj.Paramname, desc = obj.Paramdesc, encrypt = obj.Encrypt, select = obj.Selects;
+    var dc = dom.createDom, name = obj.Attrname, desc = obj.Attrdesc, encrypt = obj.Encrypt, select = obj.Select;
     var p = dc("p", {
         "class" : hasKeyInException(name) ? "dn" : ""
     });
@@ -232,7 +255,8 @@ function createInputControl(obj) {
             var s = selectArr[i];
             dc("option", {
                 "value" : s.option,
-                "innerHTML" : s.param
+                "innerHTML" : s.param,
+                "selected" : s.option === obj.Attrvalue ? 'selected' : ''
             }, slt);
         }
     }
@@ -254,6 +278,9 @@ function createInputControl(obj) {
 function splitSelectStrToArray(str) {
     var arr = [];
     var selectArr = str.split(";");
+    //删除最后一个空项
+    if (!selectArr[selectArr.length - 1])
+        selectArr.pop();
     for (var i = 0; i < selectArr.length; i++) {
         var opts = selectArr[i].split(",");
         var obj = {
@@ -298,23 +325,25 @@ function postAllSeverConfigInfos() {
     var configData = getAllServerConfigInfos();
     configInfo.Data = configData;
     if (!checkInfo.flag) {
-        window.open("error", "error", " location=no, directories=no, status=no, width=700,height=500").focus();
+        window.open(debug != -1 ? "error.html" : "error", "error", " location=no, directories=no, status=no, width=700,height=500").focus();
         return;
     }
     var data = JSON.stringify(configInfo);
     console.log(data);
-    debug != -1 ? "" : jx.load("syshandler?input=" + data, postConfigInfosHandler, "json", "post");
+    debug != -1 ? "" : jx.load("syshandler?input=" + data, postConfigInfosHandler, "", "post");
+
+    progress.showPregressDialog();
+
 }
 
 function postConfigInfosHandler(data) {
-    switch (data.Ret) {
+    /*switch (data.Ret) {
         case 0:
             alert("服务器配置成功!");
-			window.location.reload();
             break;
         default:
             alert(data.Reason);
-    }
+    }*/
 
 }
 
@@ -331,24 +360,37 @@ function getAllServerConfigInfos() {
 //获取某一个tab页内的服务器配置信息
 function getServerConfigInfo(tab) {
     var info = {};
-    info.Server_base = getServerBaseInfo(tab);
-    info.Server_params = getServerParamsInfo(tab);
+    info.Base = getServerBaseInfo(tab);
+    info.Params = getServerParamsInfo(tab);
     return info;
 }
 
 //获取服务器的基础配置信息
 function getServerBaseInfo(tab) {
-    var i, j, base, configNodes, baseInfo = {};
+    var i, j, base, configNodes, baseInfo = [];
     base = dom.getDom("base",tab,"div")[0];
     configNodes = getConfigNodes(base);
 
+    //是否启用集群
+    var clusterEnabled = dom.getDom("base_cluster_enabled",tab,"input")[0].checked;
     for ( i = 0; i < configNodes.length; i++) {
         var cn = configNodes[i];
+        //
+        //如果没有开启集群，则不验证集群类型和集群ip两个输入框
+        //
+        if ((cn.name == 'base_cluster_type' || cn.name == 'base_cluster_ip') && !clusterEnabled)
+            continue;
+        //
         checkConfigNodeValue(tab, cn);
-        baseInfo[cn.name.replace("base_", "").toFirstCharUpperCase()] = cn.value;
+        var info = {
+            'Attrname' : cn.name.replace("base_", ""),
+            'Attrvalue' : cn.type != "checkbox" ? cn.value : (cn.checked ? '1' : '0')
+        }
+        baseInfo.push(info);
+        //baseInfo[cn.name.replace("base_", "").toFirstCharUpperCase()] = cn.value;
     }
     //基本信息不用传递端口号
-    delete baseInfo.Port;
+    //delete baseInfo.Port;
     return baseInfo;
 
 }
@@ -360,12 +402,12 @@ function getServerParamsInfo(tab) {
     checkBoxs = configChecks.getElementsByTagName("input");
     for ( i = 0; i < checkBoxs.length; i++) {
         var cb = checkBoxs[i];
-        if (cb.checked === true) {
+        if (cb.checked) {
             var name = cb.value;
             var params = getParamsOfSelectServer(name, tab);
             paramsInfo.push({
                 Srvname : name,
-                Params : params
+                Attrs : params
             });
         }
     }
@@ -388,17 +430,15 @@ function getParamsOfSelectServer(serverName, tab) {
         value = getValueForConfigNode(cn, tab);
         console.log("value: " + value);
         var param = {
-            Paramname : name,
-            Paramvalue : "",
-            Encrypt : "",
-            Selects : ""
+            Attrname : name,
+            Attrvalue : "",
         };
         if (tagName == "input") {
-            param.Paramvalue = value;
+            param.Attrvalue = value;
             var ec = cn.getAttribute('encrypt');
-            param.Encrypt = ec ? ec : "";
+            ec ? param.Encrypt = ec : "";
         } else if (tagName == "select") {
-            param.Selects = value;
+            param.Attrvalue = value;
         }
         params.push(param);
     }
@@ -497,7 +537,7 @@ function changeInputBorderColor(node, color) {
 //自定义方法将nodelist转换为array
 function nodeListToArray(nodelist) {
     var arr = [];
-    for (var i = 0; i < nodelist.length; i++) {
+    for (var i = 0, len = nodelist.length; i < len; i++) {
         arr.push(nodelist[i]);
     }
     return arr;

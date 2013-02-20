@@ -86,6 +86,7 @@ func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
 
 		l.Messagef("Done the main process successfully")
 		go sys.FormatResult(sys.END, "Done the main process successfully", nil)
+		//		OutputJson(w, 0, "Done the main process successfully", nil)
 	}
 }
 

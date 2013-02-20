@@ -92,13 +92,13 @@ type Key struct {
 // SysDeploy struct
 type SysDeploy struct {
 	XMLName xml.Name `xml:"root"`
-	Nodes   []node   `xml:"nodes->node"`
+	Nodes   []node   `xml:"nodes>node"`
 }
 
 type node struct {
 	Nodename string `xml:"name,attr"`
-	Attrs    []attr `xml:"attrs->attr"`
-	Srvs     []srv  `xml:"servers->server"`
+	Attrs    []attr `xml:"attrs>attr"`
+	Srvs     []srv  `xml:"servers>server"`
 }
 
 type attr struct {
@@ -355,6 +355,15 @@ func RefreshSysDeploy(sd *SysDeploy, conffile string) error {
 		}
 	}
 
+	// assign the node's name
+	for i, node := range sd.Nodes {
+		for _, attr := range node.Attrs {
+			if attr.Attrname == "ip" {
+				sd.Nodes[i].Nodename = attr.Attrvalue
+			}
+		}
+	}
+
 	output, err := xml.MarshalIndent(sd, "  ", "   ")
 	if err != nil {
 		return err
@@ -396,6 +405,29 @@ func (n *node) ResetSysDeploy(newvalue int) {
 			n.Attrs[i].Attrvalue = strconv.Itoa(newvalue)
 		}
 	}
+}
+
+// Reset the SysConfig when not install subplatform module
+func (sc *SysConfig) ResetSysConfig() {
+	for i, srv := range sc.LayOut.Servers {
+		if srv.Srvname == "db" {
+			for j, attr := range srv.Attrs {
+				if attr.Attrname == "sub_user" || attr.Attrname == "sub_pwd" {
+					sc.LayOut.Servers[i].Attrs = append(sc.LayOut.Servers[i].Attrs[:j], sc.LayOut.Servers[i].Attrs[j+1:]...)
+				}
+			}
+		}
+
+		if srv.Srvname == "main" {
+			for j, attr := range srv.Attrs {
+				if attr.Attrname == "sub_upload_num" || attr.Attrname == "sub_syn_code" {
+					sc.LayOut.Servers[i].Attrs = append(sc.LayOut.Servers[i].Attrs[:j], sc.LayOut.Servers[i].Attrs[j+1:]...)
+				}
+			}
+		}
+	}
+
+	l.Debugf("The SysConfig is:\n%s", sc)
 }
 
 /*///////////////////////////////////////////////////////

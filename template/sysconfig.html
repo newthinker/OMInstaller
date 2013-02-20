@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="zh-cn">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>OneMap System Config Tool</title>
@@ -10,6 +10,7 @@
 		<script type="text/javascript" src="js/lang.js"></script>
 		<script type="text/javascript" src="js/dom.js"></script>
 		<script type="text/javascript" src="js/tabContainer.js"></script>
+		<script type="text/javascript" src="js/progress.js"></script>
 		<script type="text/javascript" src="js/sysconfig.js"></script>
 	</head>
 	<body>
@@ -36,7 +37,7 @@
 								</select>
 							</p >
 							<p  class="select-control"name="base-select-arch">
-								<label class="control-label"> 架构: </label>
+								<label class="control-label"> 操作系统架构: </label>
 								<select class="select-value"name="base_arch">
 									<option value="i386">i386</option>
 									<option value="amd64">amd64</option>
@@ -52,35 +53,97 @@
 						</div>
 						<div class="input-controls">
 							<p  class="input-control">
-								<label class="control-label"for="base-label-ip"> 服务器IP地址: </label>
+								<label class="control-label"for="base-label-macname"> 服务器机器名: </label>
+								<input type="text"placeholder="服务器机器名"class="input-value"name="base_macname">
+
+							</p >
+							<p  class="input-control">
+								<label class="control-label"for="base-label-domname">服务器机域名: </label>
+								<input type="text"placeholder="服务器机域名"class="input-value"name="base_domname">
+
+							</p >
+
+							<p  class="input-control">
+								<label class="control-label"for="base-label-ip"> IP: </label>
 								<input type="text"placeholder="服务器IP地址"class="input-value"name="base_ip">
 
 							</p >
 							<p  class="input-control dn">
-								<label class="control-label"for="base-label-port"> WEB服务器端口: </label>
+								<label class="control-label"for="base-label-port"> PORT: </label>
 								<input type="hidden" placeholder="服务器端口"class="input-value"name="base_port" value="8080">
 
 							</p >
 							<p  class="input-control">
-								<label class="control-label"for="base-label-user"> 系统管理员帐号: </label>
+								<label class="control-label"for="base-label-user"> USER: </label>
 								<input type="text"placeholder="系统管理员帐户"class="input-value"name="base_user">
 
 							</p >
 							<p  class="input-control">
-								<label class="control-label"for="base-label-pwd"> 系统管理员密码: </label>
+								<label class="control-label"for="base-label-pwd"> PWD: </label>
 								<input type="text"placeholder="用户密码"class="input-value"name="base_pwd">
 
 							</p >
 							<p  class="input-control">
-								<label class="control-label"for="base-label-omhome"> OneMap安装路径: </label>
+								<label class="control-label"for="base-label-omhome"> OMHome: </label>
 								<input type="text"placeholder="OneMap安装目录"class="input-value"name="base_omhome">
 
 							</p >
+
+							<p  class="input-control">
+								<label class="control-label"for="base-label-cluster_enabled"> 集群是否启用: </label>
+								<input type="checkbox" class="input-value"name="base_cluster_enabled" style="width: auto;" onclick="clusterEnableClickHandler(this)">
+
+							</p >
+							<p  class="input-control base_cluster_type_p dn">
+								<label class="control-label"for="base-label-cluster_type">集群类型: </label>
+								<input type="text"placeholder="集群类型"class="input-value"name="base_cluster_type">
+
+							</p >
+							<p  class="input-control base_cluster_ip_p dn">
+								<label class="control-label"for="base-label-cluster_ip"> 集群IP: </label>
+								<input type="text"placeholder="集群IP"class="input-value"name="base_cluster_ip">
+
+							</p >
+
+							<p  class="input-control ">
+								<label class="control-label"for="base-label-deploy"> 部署情况: </label>
+								<!--input type="text"placeholder="部署情况"class="input-value"name="base_deploy"-->
+								<select class="select-value"name="base_deploy">
+									<option value="1">安装</option>
+									<option value="2">更新</option>
+									<option value="3">卸载</option>
+								</select>
+							</p >
+
 						</div>
 					</fieldset>
 				</div>
 				<div class="config-info"name="config"></div>
 			</form>
 		</div>
+		<div class="infodialogwrapper dn"></div>
+		<div class="infodialog bar-radius-15 dn">
+			<div class="infodialog-head">
+				<span class="close" style="display: none;" title="关闭"></span>
+			</div>
+			<div class="progresswell">
+				<div class="progressbar bar-radius-15">
+					<div class="progress bar-transition-06 bar-radius-15" style="width:0%;"></div>
+				</div>
+				<span class="progressvalue ">0%</span>
+			</div>
+			<div class="pregressinfos">
+				<!--p>
+					>> 创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...
+				</p>
+				<p>
+					>> 创建gis服务器2...
+				</p>
+				<p>
+					>> 创建gis服务器3...
+				</p-->
+			</div>
+		</div>
+
 	</body>
 </html>

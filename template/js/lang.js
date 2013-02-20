@@ -1,8 +1,9 @@
 /**
  * @author Administrator
  */
-(function() {
+(function(win) {
 
+var doc=win.document;
     function trim(/*String*/str) {
         return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
     }
@@ -50,7 +51,7 @@
         return {}.toString.call(it) == "[object String]";
     }
 
-function isIp(ip) {
+    function isIp(ip) {
         var pattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         return pattern.test(ip);
     }
@@ -76,14 +77,14 @@ function isIp(ip) {
 
     function hasChinese(str) {
         var pattern = /[\u4E00-\u9FA5\uf900-\ufa2d]/;
-        return str.match(pattern)? true : false;
-    }
-    //字符串首字母大写
-    String.prototype.toFirstCharUpperCase=function(){
-        var firstChar=this.charAt(0);
-        return this.replace(firstChar,firstChar.toUpperCase());
+        return str.match(pattern) ? true : false;
     }
 
+    //字符串首字母大写
+    String.prototype.toFirstCharUpperCase = function() {
+        var firstChar = this.charAt(0);
+        return this.replace(firstChar, firstChar.toUpperCase());
+    }
 
     window.lang = {
         trim : trim,
@@ -96,6 +97,8 @@ function isIp(ip) {
         isLinuxPath : isLinuxPath,
         isWinPath : isWinPath,
         isNum : isNum,
-        hasChinese : hasChinese
+        hasChinese : hasChinese,
+        docWidth:doc.documentElement.clientWidth || win.innerWidth,
+        docHeight:doc.documentElement.clientHeight || win.innerHeight
     };
-})()
+})(window)

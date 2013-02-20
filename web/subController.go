@@ -6,7 +6,7 @@ import (
 	"github.com/newthinker/onemap-installer/utl"
 	"html/template"
 	"net/http"
-	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -89,47 +89,38 @@ func GetSqlFile(basedir string) (string, error) {
 		return filename, errors.New("Input directory isn't existed")
 	}
 
-	//	subpath, err := sys.GetSubDir(basedir)
-	//	if err != nil || subpath==""{
-	//		return filename, errors.New("ERROR: 获取子目录失败")
-	//	}
+	subpath, err := utl.GetSubDir(basedir)
+	if err != nil || len(subpath) <= 0 {
+		return filename, errors.New("Get sub directory failed")
+	}
 
-	//	for i := range subpath {
-	//		filename := path.Base(subpath[i])
-	//		filename = strings.ToUpper(filename)
-	//		if strings.Index(filename, strings.ToUpper(sys.ONEMAP_NAME)) < 0 {
-	//			continue
-	//		}
+	for _, thepath := range subpath {
+		l.Debugf("The subpath is %s", thepath)
+		temp := path.Base(thepath)
+		temp = strings.ToUpper(temp)
+		if strings.Index(temp, strings.ToUpper(sys.ONEMAP_NAME)) < 0 {
+			continue
+		}
 
-	//		if strings.Index(filename, "_V") > 0 {
-	//			filename = subpath[i]
-	//			break
-	//		}
-	//	}
+		if strings.Index(temp, "_V") > 0 {
+			filename = thepath
+			break
+		}
+	}
 
-	filename = basedir + "/OneMap_Linux_V2.0/db/GeoShareManager/Manager_Table_Data.sql"
-	l.Debugf("filename:%s", filename)
+	if filename == "" {
+		return filename, errors.New("Could not found the OneMap installation package")
+	}
+	l.Debugf("OneMap install package name is:%s", filename)
 	if flag := utl.Exists(filename); flag != true {
 		return filename, errors.New("SQL file isn't existed")
 	}
 
 	// 生成一个临时文件夹
-	tempdir := basedir + "/temp"
-	if flag := utl.Exists(tempdir); flag == true {
-		err = os.RemoveAll(tempdir)
-		if err != nil {
-			return filename, errors.New("Delete temp directory failed")
-		}
+	filename = filepath.FromSlash(basedir + "/" + filename + "/db/GeoShareManager/Manager_Table_Data.sql")
+	if flag := utl.Exists(filename); flag == false {
+		return filename, errors.New("Object sql file is unexisted")
 	}
-	if err = os.Mkdir(basedir+"/temp", 0755); err != nil {
-		return filename, err
-	}
-
-	if err = utl.Copy(filename, basedir+"/temp"); err != nil {
-		return filename, err
-	}
-
-	filename = basedir + "/temp/Manager_Table_Data.sql"
 
 	return filename, nil
 }

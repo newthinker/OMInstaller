@@ -128,7 +128,7 @@ func (sp *SubPlatform) SPUpdateSql() error {
 		return errors.New(msg)
 	}
 
-	// 打开sql文件进行解析
+	// open and parse the sql file
 	infile, err := os.Open(sqlfile)
 	if err != nil {
 		msg := "Open the sql file failed!"
@@ -136,8 +136,15 @@ func (sp *SubPlatform) SPUpdateSql() error {
 		return errors.New(msg)
 	}
 
-	// 同时生成备份文件
+	// check and create the bak file at the same time
 	bakfile := sqlfile + ".bak"
+	if (utl.Exists(bakfile)) == true {
+		if err = os.Remove(bakfile); err != nil {
+			err = errors.New("Remove bak sql file failed")
+			l.Error(err)
+			return err
+		}
+	}
 	outfile, nerr := os.Create(bakfile)
 	if nerr != nil {
 		msg := "Create new file failed!"
@@ -145,11 +152,11 @@ func (sp *SubPlatform) SPUpdateSql() error {
 		return errors.New(msg)
 	}
 
-	// 进行更新sql文件
+	// update the sql file
 	var sqlstate string
 	reader := bufio.NewReader(infile)
 	for {
-		// 逐行读取
+		// read line by line
 		var str string
 		str, err = reader.ReadString('\n')
 
@@ -170,14 +177,14 @@ func (sp *SubPlatform) SPUpdateSql() error {
 		}
 
 		sqlstate = sqlstate + " " + str
-		// 如果获取到了一个完整的sql语句 
+		// when get a whole line sql statement 
 		if strings.Index(str, ";") > 0 {
 			var id string
 			id, _, _ = sp.parseSqlState(sqlstate)
 
-			// 判断此id是否在所选序列中
+			// check this id whether in selected ids
 			if id != "" && id != "0" {
-				flag := false // 是否在所选序列标识
+				flag := false
 				for selid := range sp.SelID {
 					if id == sp.SelID[selid] {
 						flag = true
@@ -185,36 +192,21 @@ func (sp *SubPlatform) SPUpdateSql() error {
 					}
 				}
 
-				// 如果不在所选列表中，不写入到新文件
+				// if not in then not update into the bak file
 				if flag == false {
 					sqlstate = ""
 					continue
 				}
 			}
 
-			// 删除不在所选序列中的menu
+			// output the bak file
 			outfile.Write([]byte(sqlstate))
 			sqlstate = ""
 		}
 	}
 
-	// 删除原文件
 	infile.Close()
-	if err = os.Remove(sqlfile); err != nil {
-		msg := "Delete the file(" + sqlfile + ") failed!"
-		outfile.Close()
-		l.Errorf(msg)
-		return errors.New(msg)
-	}
-
-	//更新sql文件
 	outfile.Close()
-	if err = os.Rename(bakfile, sqlfile); err != nil {
-		msg := "Rename the file(" + bakfile + ") failed!"
-		outfile.Close()
-		l.Errorf(msg)
-		return errors.New(msg)
-	}
 
 	return nil
 }
