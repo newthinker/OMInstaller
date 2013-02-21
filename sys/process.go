@@ -7,6 +7,7 @@ import (
 	"github.com/newthinker/onemap-installer/utl"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 // process status
@@ -24,7 +25,8 @@ const (
 	GET_WORKINGDIR = 5
 	PARSE_JSON     = 5
 	MAIN_PROCESS   = 5
-	// main process
+
+	// process
 	CHECK_WORKINGDIR  = 5
 	GET_VERSION       = 5
 	GET_CONTAINER     = 5
@@ -32,12 +34,17 @@ const (
 	PACKAGE           = 5
 	REFRESH_SYSCONFIG = 10
 	// install
-	UPDATE_SCRIPT = 10
-	REMOTE_COPY   = 10
+	UPDATE_SCRIPT = 5
+	REMOTE_COPY   = 15
 	REMOTE_EXEC   = 10
 	/// update 
+	// UPDATE_SCRIPT = 5
+	MOUNT_SSHFS = 5
+	REMOTE_DIFF = 10
+	// REMOTE_EXEC = 10
 
 	/// uninstall 
+	REMOTE_STANDALONE = 45
 
 	// sysdeploy
 	REFRESH_SYSDEPLOY = 10
@@ -48,8 +55,9 @@ const (
 
 var (
 	l       *(log.Logger)
-	mc      chan Result // message chan
-	SubFlag bool        // whether install subplatform module
+	mc      chan Result     // message chan
+	SubFlag bool            // whether install subplatform module
+	curos   string          // current machine's os	["windows"|"linux"]
 )
 
 // return result
@@ -77,21 +85,21 @@ func Init(logger *(log.Logger)) error {
 	l.Debugf("Current directory is:%s", basedir)
 
 	// open the config files
-	filename := basedir + "/conf/" + SERVER_MAPPING
+	filename := filepath.FromSlash(basedir + "/conf/" + SERVER_MAPPING)
 	l.Debugf("SrvMapping file:%s", filename)
 	sm, err := OpenSMConfig(filename)
 	if err != nil {
 		l.Error(errors.New("Parse SrvMapping config files failed"))
 		return errors.New("Parse SrvMapping config files failed")
 	}
-	filename = basedir + "/conf/" + SYS_CONFIG
+	filename = filepath.FromSlash(basedir + "/conf/" + SYS_CONFIG)
 	l.Debugf("SysConfig file:%s", filename)
 	sc, err := OpenSCConfig(filename)
 	if err != nil {
 		l.Error(errors.New("Parse SysConfig config files failed"))
 		return errors.New("Parse SysConfig config files failed")
 	}
-	filename = basedir + "/conf/" + SYS_DEPLOY
+	filename = filepath.FromSlash(basedir + "/conf/" + SYS_DEPLOY)
 	l.Debugf("SysDeploy file:%s", filename)
 	sd, err := OpenSDConfig(filename)
 	if err != nil {
@@ -108,6 +116,9 @@ func Init(logger *(log.Logger)) error {
 
 	// default installing subplatform module
 	SubFlag = true
+
+	// os type
+	curos = runtime.GOOS
 
 	return nil
 }
@@ -197,11 +208,32 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		if status == MAINTAIN { // do nothing
 			continue
 		} else if status == INSTALL { // install process
+			// package onemap
+			rate += PACKAGE * (i + 1) / num
+			go FormatResult(rate, "Package the OneMap", nil)
+			if err := om.OMPackage(); err != nil {
+				l.Error(err)
+				flag = false
+				goto Unexpected
+			}
+
+			// refresh the SysConfig.xml file
+			rate += REFRESH_SYSCONFIG * (i + 1) / num
+			go FormatResult(rate, "Refresh the SysConfig file", nil)
+			l.Message("Update the local config file")
+			srcfile := filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml")
+			omsc.LayOut = *lo
+			if err := RefreshSysConfig(omsc, srcfile); err != nil {
+				l.Error(err)
+				flag = false
+				goto Unexpected
+			}
+
 			// update the installing script
 			rate += UPDATE_SCRIPT / num
 			go FormatResult(rate, "Update standalone install script", nil)
 			l.Message("Update the local install script")
-			srcfile = basedir + "/" + ONEMAP_NAME + "/install.sh"
+			srcfile = filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/install.sh")
 			if err := UpdateScritp(&om, srcfile); err != nil {
 				l.Errorf("Update the local install script failed")
 				flag = false
@@ -209,8 +241,8 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			}
 
 			// remote copy the OneMap package
-			srcdir := basedir + "/" + ONEMAP_NAME
-			dstdir := om.OMHome
+			srcdir := filepath.FromSlash(basedir + "/" + ONEMAP_NAME) /// 目前不考虑异构平台
+			dstdir := filepath.FromSlash(om.OMHome)
 
 			rate += REMOTE_COPY / num
 			go FormatResult(rate, "Remote copy the OneMap package", nil)
@@ -234,6 +266,27 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 
 			flag = true
 		} else if status == UPDATE { /// update 
+			// package onemap
+			rate += PACKAGE * (i + 1) / num
+			go FormatResult(rate, "Package the OneMap", nil)
+			if err := om.OMPackage(); err != nil {
+				l.Error(err)
+				flag = false
+				goto Unexpected
+			}
+
+			// refresh the SysConfig.xml file
+			rate += REFRESH_SYSCONFIG * (i + 1) / num
+			go FormatResult(rate, "Refresh the SysConfig file", nil)
+			l.Message("Update the local config file")
+			srcfile := filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml")
+			omsc.LayOut = *lo
+			if err := RefreshSysConfig(omsc, srcfile); err != nil {
+				l.Error(err)
+				flag = false
+				goto Unexpected
+			}
+
 			/// remote mount sshfs
 
 			/// exec the remote script diff the two directory,
@@ -255,7 +308,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 	}
 
 	// refresh the SysDeploy.xml config file
-	filename := basedir + "/conf/" + SYS_DEPLOY
+	filename := filepath.FromSlash(basedir + "/conf/" + SYS_DEPLOY)
 	if err := RefreshSysDeploy(&sd, filename); err != nil {
 		l.Errorf("Save the SysDeploy config file failed")
 		return err

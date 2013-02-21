@@ -113,7 +113,7 @@ func GetSqlFile(basedir string) (string, error) {
 		return filename, errors.New("SQL file isn't existed")
 	}
 
-	// 生成一个临时文件夹
+	// get the object sql file name 
 	filename = filepath.FromSlash(basedir + "/" + filename + "/db/GeoShareManager/Manager_Table_Data.sql")
 	if flag := utl.Exists(filename); flag == false {
 		return filename, errors.New("Object sql file is unexisted")

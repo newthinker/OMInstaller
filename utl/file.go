@@ -9,6 +9,7 @@ import (
 
 // 判断文件或者路径是否存在
 func Exists(path string) bool {
+	path = filepath.FromSlash(path)
 	_, err := os.Stat(path)
 	if err == nil {
 		return true
@@ -22,6 +23,9 @@ func Exists(path string) bool {
 
 // Copy file or dirctory
 func Copy(srcfile string, dstfile string) error {
+	srcfile = filepath.FromSlash(srcfile)
+	dstfile = filepath.FromSlash(dstfile)
+
 	// first check the srcfile whether exist
 	fi, serr := os.Stat(srcfile)
 	if os.IsNotExist(serr) {
@@ -55,6 +59,7 @@ func Copy(srcfile string, dstfile string) error {
 
 // list files in the path recursion
 func GetAllfiles(path string) {
+	path = filepath.FromSlash(path)
 	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
 			return err
@@ -73,6 +78,7 @@ func GetAllfiles(path string) {
 
 // list sub directory in current path
 func GetSubDir(path string) ([]string, error) {
+	path = filepath.FromSlash(path)
 	pn := []string{}
 
 	f, err := os.Open(path)

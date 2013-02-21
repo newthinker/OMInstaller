@@ -200,7 +200,6 @@ func OpenSMConfig(filename string) (ServerMapping, error) {
 	var sm ServerMapping
 
 	// check the config file whether existed
-	//	filename := basedir + "/conf/" + SERVER_MAPPING
 	if flag := utl.Exists(filename); flag != true {
 		err := fmt.Errorf("Config file(%s) isn't existed", filename)
 		l.Error(err)
