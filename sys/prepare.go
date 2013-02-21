@@ -31,10 +31,11 @@ const (
 
 // 安装程序的三种状态
 const (
-	MAINTAIN  = iota // 0, 当前节点维持现状不做任何修改
-	INSTALL          // 1, 当前节点需要进行安装操作
-	UPDATE           // 2, 当前节点需要进行更新操作
-	UNINSTALL        // 3, 当前节点需要进行卸载操作
+	MAINTAIN    = iota // 0, 当前节点维持现状不做任何修改
+	INSTALL            // 1, 当前节点需要进行安装操作
+	UPDATE             // 2, 当前节点需要进行更新操作
+	UNINSTALL          // 3, 当前节点需要进行卸载操作
+	SUBPLATFORM        // 4, 
 )
 
 // 服务器基本信息
@@ -188,13 +189,13 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 			return errors.New(msg)
 		}
 	}
-	
+
 	if (utl.Exists(dst + "/example_data")) != true {
 		if err := utl.Copy(src+"/example_data", dst); err != nil {
 			msg := "Copy directory(" + src + "/example_data) failed"
 			return errors.New(msg)
 		}
-	}	
+	}
 
 	// copy modules
 	if len(om.Apps) > 0 {
@@ -205,7 +206,7 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 		}
 
 		for i := 0; i < len(om.Apps); i++ {
-			if err := utl.Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
+			if err := utl.Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps"); err != nil {
 				msg := "Copy module (" + om.Apps[i] + ") failed"
 				return errors.New(msg)
 			}
@@ -215,7 +216,7 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	// copy services  
 	if len(om.Services) > 0 {
 		for i := 0; i < len(om.Services); i++ {
-			if err := utl.Copy(src+"/services/"+om.Services[i], dst+"/services/"+om.Services[i]); err != nil {
+			if err := utl.Copy(src+"/services/"+om.Services[i], dst+"/services"); err != nil {
 				msg := "Copy OneMap service (" + om.Services[i] + ") failed"
 				return errors.New(msg)
 			}
@@ -224,57 +225,57 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 
 	// deal with the db server
 	for _, srv := range om.Servers {
-		if srv=="db" {
+		if srv == "db" {
 			if err := utl.Copy(src+"/db/Driver", dst+"/db"); err != nil {
 				msg := "Copy OneMap Driver directory failed"
 				return errors.New(msg)
 			}
-						
+
 			if err := utl.Copy(src+"/db/GeoCoding", dst+"/db"); err != nil {
 				msg := "Copy OneMap GeoCoding directory failed"
 				return errors.New(msg)
 			}
-			
+
 			if err := utl.Copy(src+"/db/GeoPortal", dst+"/db"); err != nil {
 				msg := "Copy OneMap GeoPortal directory failed"
 				return errors.New(msg)
-			}			
+			}
 
 			if err := utl.Copy(src+"/db/GeoShareManager", dst+"/db"); err != nil {
 				msg := "Copy OneMap GeoShareManager directory failed"
 				return errors.New(msg)
 			}
-			
+
 			if err := utl.Copy(src+"/db/Portal", dst+"/db"); err != nil {
 				msg := "Copy OneMap Portal directory failed"
 				return errors.New(msg)
-			}			
-			
+			}
+
 			// install subplatform module
-			if subplatform {	
+			if SubFlag {
 				// delete the original file(Manager_Table_Data.sql)
-				sqlfile := filepath.FromSlash(dst+"/db/GeoShareManager/Manager_Table_Data.sql")
+				sqlfile := filepath.FromSlash(dst + "/db/GeoShareManager/Manager_Table_Data.sql")
 				if err := os.Remove(sqlfile); err != nil {
 					msg := "Delete the file(" + sqlfile + ") failed!"
 					l.Errorf(msg)
 					return errors.New(msg)
 				}
 				// rename the bak file(Manager_Table_Data.sql)
-				bakfile := filepath.FromSlash(dst+"/db/GeoShareManager/Manager_Table_Data.sql.bak")
+				bakfile := filepath.FromSlash(dst + "/db/GeoShareManager/Manager_Table_Data.sql.bak")
 				if err := os.Rename(bakfile, sqlfile); err != nil {
 					msg := "Rename the file(" + bakfile + ") failed!"
 					l.Errorf(msg)
 					return errors.New(msg)
-				}				
+				}
 				// copy the subplatform
 				if err := utl.Copy(src+"/db/SubPlatform", dst+"/db"); err != nil {
 					msg := "Copy OneMap SubPlatform directory failed"
 					return errors.New(msg)
-				}				
+				}
 			}
 		}
 	}
-		
+
 	l.Message("Copy OneMap files successfully")
 	return nil
 }

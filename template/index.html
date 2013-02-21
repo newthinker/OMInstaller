@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>OneMap分布式安装配置工具</title>
+		<meta name="description" content="OneMap分布式安装配置工具.">
+		<link rel="stylesheet" type="text/css" href="css/custom.css"/>
+		<script type="text/javascript" src="js/index.js"></script>
+	</head>
+
+	<body>
+		<div class="selectForm ">
+			<form id="onemaptool-form" method="post">
+				<input type="hidden" name="flag" id="flag"/>
+				<p>
+					<input type="radio" name="onemaptool"  value="1" checked="checked">
+					<label class=""  >安装</label>
+					<input style="margin-left: 50px;" type="checkbox" name="subconfig" />
+					<label class=""  >分平台配置</label>
+				</p>
+				<p>
+					<input type="radio" name="onemaptool"  value="2" disabled="disabled">
+					<label class=""  >更新</label>
+				</p>
+				<p>
+					<input type="radio" name="onemaptool"  value="3" disabled="disabled">
+					<label class=""  >卸载</label>
+				</p>
+			</form>
+			<p style="text-align: right;margin-top: 10px;">
+				<input type="button" class="sys_submit_bt" onclick="nextStep();" value="下一步"/>					
+			</p>
+		</div>
+
+	</body>
+</html>

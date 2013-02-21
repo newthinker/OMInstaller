@@ -2,11 +2,11 @@
 
   <root>
      <nodes>
-        <node name="192.168.80.54">
+        <node name="192.168.80.60">
            <attrs>
-              <attr name="macname">L54</attr>
+              <attr name="macname">L60</attr>
               <attr name="domname">localdomain</attr>
-              <attr name="ip">192.168.80.54</attr>
+              <attr name="ip">192.168.80.60</attr>
               <attr name="port">8080</attr>
               <attr name="user">root</attr>
               <attr name="pwd">dasiyebushuo</attr>
@@ -18,7 +18,69 @@
               <attr name="deploy">1</attr>
            </attrs>
            <servers>
+              <server name="web"></server>
+              <server name="agent"></server>
+           </servers>
+        </node>
+        <node name="192.168.80.66">
+           <attrs>
+              <attr name="macname">L66</attr>
+              <attr name="domname">localdomain</attr>
+              <attr name="ip">192.168.80.66</attr>
+              <attr name="port">8080</attr>
+              <attr name="user">root</attr>
+              <attr name="pwd">dasiyebushuo</attr>
+              <attr name="omhome">/opt/OneMap</attr>
+              <attr name="cluster_enabled">0</attr>
+              <attr name="os">Linux</attr>
+              <attr name="arch">amd64</attr>
+              <attr name="container">Tomcat</attr>
+              <attr name="deploy">1</attr>
+           </attrs>
+           <servers>
+              <server name="main"></server>
+              <server name="msg"></server>
+              <server name="agent"></server>
+           </servers>
+        </node>
+        <node name="192.168.80.74">
+           <attrs>
+              <attr name="macname">L74</attr>
+              <attr name="domname">localdomain</attr>
+              <attr name="ip">192.168.80.74</attr>
+              <attr name="port">8080</attr>
+              <attr name="user">root</attr>
+              <attr name="pwd">dasiyebushuo</attr>
+              <attr name="omhome">/opt/OneMap</attr>
+              <attr name="cluster_enabled">0</attr>
+              <attr name="os">Linux</attr>
+              <attr name="arch">amd64</attr>
+              <attr name="container">Tomcat</attr>
+              <attr name="deploy">1</attr>
+           </attrs>
+           <servers>
+              <server name="gis"></server>
               <server name="token"></server>
+              <server name="agent"></server>
+           </servers>
+        </node>
+        <node name="192.168.80.84">
+           <attrs>
+              <attr name="macname">L84</attr>
+              <attr name="domname">localdomain</attr>
+              <attr name="ip">192.168.80.84</attr>
+              <attr name="port">8080</attr>
+              <attr name="user">root</attr>
+              <attr name="pwd">dasiyebushuo</attr>
+              <attr name="omhome">/opt/OneMap</attr>
+              <attr name="cluster_enabled">0</attr>
+              <attr name="os">Linux</attr>
+              <attr name="arch">amd64</attr>
+              <attr name="container">Tomcat</attr>
+              <attr name="deploy">1</attr>
+           </attrs>
+           <servers>
+              <server name="db"></server>
               <server name="agent"></server>
            </servers>
         </node>

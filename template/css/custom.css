@@ -251,4 +251,22 @@ p {
 	-o-transition: width 0.6s ease;
 	transition: width 0.6s ease;
 }
-
+/*首页*/
+.selectForm{
+	width:400px;
+	height:auto;
+	margin:50px auto;
+	margin-top: 150px;
+	
+}
+.selectForm form{
+	background: #ffffff;
+	padding:20px;
+	
+	-webkit-border-radius:5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.selectForm p{
+	line-height: 15px;
+}

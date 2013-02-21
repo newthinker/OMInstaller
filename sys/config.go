@@ -408,26 +408,44 @@ func (n *node) ResetSysDeploy(newvalue int) {
 }
 
 // Reset the SysConfig when not install subplatform module
-func (sc *SysConfig) ResetSysConfig() {
-	for i, srv := range sc.LayOut.Servers {
-		if srv.Srvname == "db" {
-			for j, attr := range srv.Attrs {
-				if attr.Attrname == "sub_user" || attr.Attrname == "sub_pwd" {
-					sc.LayOut.Servers[i].Attrs = append(sc.LayOut.Servers[i].Attrs[:j], sc.LayOut.Servers[i].Attrs[j+1:]...)
+func ResetSysConfig() {
+	if omsc != nil {
+		for i, srv := range omsc.LayOut.Servers {
+			if srv.Srvname == "db" {
+				for j, attr := range srv.Attrs {
+					if attr.Attrname == "sub_user" {
+						omsc.LayOut.Servers[i].Attrs = append(omsc.LayOut.Servers[i].Attrs[:j], omsc.LayOut.Servers[i].Attrs[j+1:]...)
+						break
+					}
+				}
+
+				for j, attr := range srv.Attrs {
+					if attr.Attrname == "sub_pwd" {
+						omsc.LayOut.Servers[i].Attrs = append(omsc.LayOut.Servers[i].Attrs[:j], omsc.LayOut.Servers[i].Attrs[j+1:]...)
+						break
+					}
+				}
+			}
+
+			if srv.Srvname == "main" {
+				for j, attr := range srv.Attrs {
+					if attr.Attrname == "sub_upload_num" {
+						omsc.LayOut.Servers[i].Attrs = append(omsc.LayOut.Servers[i].Attrs[:j], omsc.LayOut.Servers[i].Attrs[j+1:]...)
+						break
+					}
+				}
+
+				for j, attr := range srv.Attrs {
+					if attr.Attrname == "sub_syn_code" {
+						omsc.LayOut.Servers[i].Attrs = append(omsc.LayOut.Servers[i].Attrs[:j], omsc.LayOut.Servers[i].Attrs[j+1:]...)
+						break
+					}
 				}
 			}
 		}
 
-		if srv.Srvname == "main" {
-			for j, attr := range srv.Attrs {
-				if attr.Attrname == "sub_upload_num" || attr.Attrname == "sub_syn_code" {
-					sc.LayOut.Servers[i].Attrs = append(sc.LayOut.Servers[i].Attrs[:j], sc.LayOut.Servers[i].Attrs[j+1:]...)
-				}
-			}
-		}
+		l.Debugf("The SysConfig is:\n%s", omsc)
 	}
-
-	l.Debugf("The SysConfig is:\n%s", sc)
 }
 
 /*///////////////////////////////////////////////////////

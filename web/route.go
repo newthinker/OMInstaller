@@ -17,6 +17,25 @@ func Init(logger *(log.Logger)) {
 	sys.Init(l)
 }
 
+// the main page
+func MainHandler(w http.ResponseWriter, r *http.Request) {
+	l.Message("MainPage handler")
+
+	main := &mainController{}
+	controller := reflect.ValueOf(main)
+	method := controller.MethodByName("SelectAction")
+
+	if !method.IsValid() {
+		l.Errorf("Invalid input params")
+		OutputJson(w, 1, "输入参数非法", nil)
+		return
+	}
+
+	requestValue := reflect.ValueOf(r)
+	responseValue := reflect.ValueOf(w)
+	method.Call([]reflect.Value{responseValue, requestValue})
+}
+
 // 分平台处理器
 func SubHandler(w http.ResponseWriter, r *http.Request) {
 	l.Message("SubPlatform handler")
@@ -60,38 +79,12 @@ func SysHandler(w http.ResponseWriter, r *http.Request) {
 	l.Message("SysConfig handler")
 
 	sys := &sysController{}
-	/*	if err := sys.Init(); err != nil {
-			l.Errorf("Sys module init failed")
-			OutputJson(w, 2, "系统初始化错误!", nil)
-			return
-		}
-	*/
 	controller := reflect.ValueOf(sys)
 	method := controller.MethodByName("SysAction")
 
 	if !method.IsValid() {
 		l.Errorf("Invalid input params")
 		OutputJson(w, 1, "非法输入参数!", nil)
-		return
-	}
-
-	requestValue := reflect.ValueOf(r)
-	responseValue := reflect.ValueOf(w)
-	method.Call([]reflect.Value{responseValue, requestValue})
-}
-
-// 消息队列处理器
-func MsgHandler(w http.ResponseWriter, r *http.Request) {
-	l.Message("Msglist handler")
-
-	msg := &msgHandler{}
-	
-	controller := reflect.ValueOf(msg)
-	method := controller.MethodByName("SelectAction")
-
-	if !method.IsValid() {
-		l.Errorf("Invalid input params")
-		OutputJson(w, 1, "输入参数非法", nil)
 		return
 	}
 

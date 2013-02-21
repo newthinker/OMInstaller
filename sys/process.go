@@ -2,8 +2,11 @@ package sys
 
 import (
 	"errors"
+	"fmt"
 	"github.com/newthinker/onemap-installer/log"
 	"github.com/newthinker/onemap-installer/utl"
+	"os"
+	"path/filepath"
 )
 
 // process status
@@ -12,9 +15,9 @@ const (
 	END   = 100  // 100, process is end
 	BREAK = -1   // -1, process is abnormal
 
-	PREPARE   = 20 // rate of the prepare
+	PREPARE   = 20 // rate of the preparing
 	PROCESS   = 70 // rate of the main process
-	SYSDEPLOY = 10 // rate of refresh SysDeploy.xml file
+	CLEAN     = 10 // rate of cleaning up work
 
 	// prepare
 	GET_JSON       = 5
@@ -44,9 +47,9 @@ const (
 )
 
 var (
-	l  *(log.Logger)
-	mc chan Result 		// message chan
-	subplatform	bool	// whether install subplatform module
+	l       *(log.Logger)
+	mc      chan Result // message chan
+	SubFlag bool        // whether install subplatform module
 )
 
 // return result
@@ -102,9 +105,9 @@ func Init(logger *(log.Logger)) error {
 
 	// message queue
 	mc = make(chan Result, MAX_POOL_SIZE)
-	
+
 	// default installing subplatform module
-	subplatform = true
+	SubFlag = true
 
 	return nil
 }
@@ -115,7 +118,9 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 	rate := PREPARE // main process's initial rate
 
 	for i := 0; i < len(sd.Nodes); i++ { // from one to one
-		l.Messagef("Begin process the %d machine", i+1)
+		msg := fmt.Sprintf("Begin to process the %dth machine", i+1)
+		l.Message(msg)
+		go FormatResult(rate, msg, nil)
 
 		var mac *node = &(sd.Nodes[i])
 		var lo *Layout = &(arr_lo[i])
@@ -123,12 +128,12 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 
 	Unexpected:
 		if flag == false {
-			rate = PREPARE + PROCESS*(i+1)/num
+			rate = PREPARE + PROCESS/num
 			mac.ResetSysDeploy(INSTALL)
 			continue
 		}
 
-		rate += CHECK_WORKINGDIR * (i + 1) / num
+		rate += CHECK_WORKINGDIR / num
 		go FormatResult(rate, "Check the working directory", nil)
 		var om OMPInfo
 		if flag := utl.Exists(basedir); flag != true {
@@ -139,7 +144,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		}
 
 		// get OneMap's version
-		rate += GET_VERSION * (i + 1) / num
+		rate += GET_VERSION / num
 		go FormatResult(rate, "Get OneMap's version info", nil)
 		filename, err := om.OMGetVersion(basedir)
 		if err != nil {
@@ -149,7 +154,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		}
 
 		// get the container
-		rate += GET_CONTAINER * (i + 1) / num
+		rate += GET_CONTAINER / num
 		go FormatResult(rate, "Get OneMap's container", nil)
 		if err = om.OMGetContainer(basedir, filename); err != nil {
 			l.Errorf("Get OneMap container failed")
@@ -158,7 +163,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		}
 
 		// get the info of the current machine
-		rate += GET_INFO * (i + 1) / num
+		rate += GET_INFO / num
 		go FormatResult(rate, "Get OneMap package's info", nil)
 		l.Messagef("Get the %dth machine's info", i+1)
 		if err := om.OMGetInfo(mac, omsm, lo); err != nil {
@@ -168,7 +173,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		}
 
 		// package onemap
-		rate += PACKAGE * (i + 1) / num
+		rate += PACKAGE / num
 		go FormatResult(rate, "Package the OneMap", nil)
 		if err := om.OMPackage(); err != nil {
 			l.Error(err)
@@ -177,7 +182,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		}
 
 		// refresh the SysConfig.xml file
-		rate += REFRESH_SYSCONFIG * (i + 1) / num
+		rate += REFRESH_SYSCONFIG / num
 		go FormatResult(rate, "Refresh the SysConfig file", nil)
 		l.Message("Update the local config file")
 		srcfile := basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml"
@@ -193,7 +198,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			continue
 		} else if status == INSTALL { // install process
 			// update the installing script
-			rate += UPDATE_SCRIPT * (i + 1) / num
+			rate += UPDATE_SCRIPT / num
 			go FormatResult(rate, "Update standalone install script", nil)
 			l.Message("Update the local install script")
 			srcfile = basedir + "/" + ONEMAP_NAME + "/install.sh"
@@ -207,7 +212,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			srcdir := basedir + "/" + ONEMAP_NAME
 			dstdir := om.OMHome
 
-			rate += REMOTE_COPY * (i + 1) / num
+			rate += REMOTE_COPY / num
 			go FormatResult(rate, "Remote copy the OneMap package", nil)
 			l.Message("Exec the remote copy")
 			if err := om.OMRemoteCopy(srcdir, dstdir); err != nil {
@@ -217,7 +222,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			}
 
 			// remote exec the install bash script
-			rate += REMOTE_EXEC * (i + 1) / num
+			rate += REMOTE_EXEC / num
 			go FormatResult(rate, "Remote exec the standalone install script", nil)
 			l.Message("Exec the remote copy")
 			l.Message("Exec the remote install script")
@@ -242,9 +247,14 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		}
 	}
 
-	// refresh the SysDeploy.xml config file
 	rate = PREPARE + PROCESS
-	go FormatResult(rate, "Refresh the SysDeploy.xml config file", nil)
+	go FormatResult(rate, "Do the cleaning up work", nil)
+	// delete the temp directory
+	if err := os.RemoveAll(filepath.FromSlash(basedir + "/" + ONEMAP_NAME)); err != nil {
+		l.Warningf("Remove the temp directory failed and please do it manually")
+	}
+
+	// refresh the SysDeploy.xml config file
 	filename := basedir + "/conf/" + SYS_DEPLOY
 	if err := RefreshSysDeploy(&sd, filename); err != nil {
 		l.Errorf("Save the SysDeploy config file failed")

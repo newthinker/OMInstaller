@@ -70,26 +70,6 @@ func main() {
 	}
 
 	////////////////////////////////////////////////////////////////
-	/*// post.json test
-	    str := `{"data":[{
-		}]}`
-		jsonstr := make(map[string]interface{})
-		err = json.Unmarshal([]byte(str), &jsonstr)
-		if err != nil {
-			l.Error(err)
-			fmt.Println(err)
-			return
-		}
-		sd, arrlo, err := sys.ParseSysSubmit(jsonstr)
-		if err != nil {
-			l.Error(err)
-			fmt.Println(err)
-			return
-		}
-		l.Debug(sd)
-		l.Debug(arrlo)
-	*/
-	////////////////////////////////////////////////////////////////
 	l.Message("Listen and serve")
 	web.Init(l)
 
@@ -103,8 +83,7 @@ func main() {
 	http.HandleFunc("/sysconfig", web.SysConfig)
 	http.HandleFunc("/syshandler", web.SysHandler)
 	http.HandleFunc("/error", web.ErrHandler)
-
-	http.HandleFunc("/msg", web.MsgHandler)
+	http.HandleFunc("/", web.MainHandler)
 
 	err = http.ListenAndServe(ip+":8888", nil)
 	if err != nil {

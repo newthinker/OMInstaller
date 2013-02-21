@@ -16,7 +16,7 @@ type subController struct {
 
 // 处理用户菜单选择操作
 func (this *subController) SelectAction(w http.ResponseWriter, r *http.Request) {
-	l.Messagef("method:", r.Method)
+	l.Messagef("SubPlatform page method:", r.Method)
 
 	if r.Method == "GET" {
 		t, err := template.ParseFiles("template/subconfig.html")
@@ -26,13 +26,10 @@ func (this *subController) SelectAction(w http.ResponseWriter, r *http.Request) 
 		t.Execute(w, nil)
 	} else if r.Method == "POST" {
 		err := r.ParseForm() // 解析URL传递的参数
-
-		// 如果分平台参数解析有问题，报告错误并返回
 		if err != nil {
 			l.Error(err)
 			OutputJson(w, 1, err.Error(), nil)
-		} else { // 解析用户选择menu并进入下个页面
-			//			fmt.Println(r.Form["selectValues"])
+		} else {
 			l.Messagef("Subplatform select nodes:%s", r.Form["selectValues"])
 
 			// 进行分平台配置

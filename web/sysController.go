@@ -13,7 +13,7 @@ type sysController struct {
 
 // 处理系统配置页面
 func (this *sysController) SysAction(w http.ResponseWriter, r *http.Request) {
-	l.Messagef("method:", r.Method)
+	l.Messagef("Sysconfig page method:", r.Method)
 
 	w.Header().Set("content-type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
