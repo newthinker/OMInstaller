@@ -16,9 +16,9 @@ const (
 	END   = 100  // 100, process is end
 	BREAK = -1   // -1, process is abnormal
 
-	PREPARE   = 20 // rate of the preparing
-	PROCESS   = 70 // rate of the main process
-	CLEAN     = 10 // rate of cleaning up work
+	PREPARE = 20 // rate of the preparing
+	PROCESS = 70 // rate of the main process
+	CLEAN   = 10 // rate of cleaning up work
 
 	// prepare
 	GET_JSON       = 5
@@ -55,9 +55,9 @@ const (
 
 var (
 	l       *(log.Logger)
-	mc      chan Result     // message chan
-	SubFlag bool            // whether install subplatform module
-	curos   string          // current machine's os	["windows"|"linux"]
+	mc      chan Result // message chan
+	SubFlag bool        // whether install subplatform module
+	curos   string      // current machine's os	["windows"|"linux"]
 )
 
 // return result
