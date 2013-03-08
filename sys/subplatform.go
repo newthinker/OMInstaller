@@ -9,29 +9,29 @@ import (
 	"strings"
 )
 
-// 从sql文件中查找目标行的标识
+// search flags in the sql sentences
 var ARR_FLAG = [...]string{"MAINTENACE_FRAMEWORK_MODULES", "insert", "values"}
 
 type SubPlatform struct {
-	SqlFile string            // sql文件保存路径 
-	MenuMap map[string]string // id-菜单名map
-	RelMap  map[string]string // 子节点与父节点对应map
-	SelID   []string          // 选择的菜单id
+	SqlFile string            // the sql filename 
+	MenuMap map[string]string // menu map
+	RelMap  map[string]string // parent-sun nodes map
+	SelID   []string          // selected nodes' ids
 }
 
-// 从sql文件中解析出所有需要配置的列表项
+// Parse the sql file with config menus
 func (sp *SubPlatform) SPParseSQLFile() error {
 	sqlfile := sp.SqlFile
 
 	l.Messagef("Begin to parse the sql file:%s", sqlfile)
-	// 首先判断文件是否存在
+	// first check whether the sql file is there
 	if (utl.Exists(sqlfile)) != true {
 		msg := "File isn't existed!"
 		l.Errorf(msg)
 		return errors.New(msg)
 	}
 
-	// 打开并解析sql文件
+	// open and parse the sql file
 	file, err := os.Open(sqlfile)
 	if err != nil {
 		msg := "Open the sql file failed!"
@@ -57,9 +57,9 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 			return errors.New(msg)
 		}
 
-		//str = str[0 : len(str)-2] // 去掉换行符 
+		//str = str[0 : len(str)-2] // remove line breaks 
 		sqlstate = sqlstate + " " + str
-		// 如果获取到了一个完整的sql语句 
+		// get a complete sql sentences 
 		if strings.Index(str, ";") > 0 {
 			id, parentid, name := sp.parseSqlState(sqlstate)
 
@@ -80,7 +80,7 @@ func (sp *SubPlatform) SPParseSQLFile() error {
 	return nil
 }
 
-// 解析单条sql语句
+// Parse single sql statement
 func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 	var id string
 	var parentid string
@@ -91,7 +91,7 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 		return id, parentid, name
 	}
 
-	// 开始解析
+	// parse
 	for i := 0; i < len(ARR_FLAG); i++ {
 		sample := ARR_FLAG[i]
 		if sample == "" || strings.Index(sqlstate, sample) < 0 {
@@ -110,7 +110,7 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 	values = strings.TrimLeft(values, "(")
 	arrValue = strings.Split(values, ",")
 
-	// 获取id, parentid及name
+	// get id, parentid and name
 	id = arrValue[0]
 	parentid = arrValue[1]
 	name = arrValue[2]
@@ -118,7 +118,7 @@ func (sp *SubPlatform) parseSqlState(sqlstate string) (string, string, string) {
 	return id, parentid, name
 }
 
-// 更新sql文件
+// Update the sql file
 func (sp *SubPlatform) SPUpdateSql() error {
 	sqlfile := sp.SqlFile
 

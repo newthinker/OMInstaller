@@ -52,14 +52,28 @@ func writeLines(om *OMPInfo, lines []string, path string) (err error) {
 	defer file.Close()
 
 	for _, item := range lines {
-		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
+		// line breaks difference of windows and linux
+		var perline string
+		switch CurOS {
+		case "linux":
+			perline = item + "\n"
+		case "windows":
+			perline = item + "\r\n"
+		}
+		_, err := file.WriteString(perline)
 		if err != nil {
 			fmt.Println(err)
 			break
 		}
 
 		// 查找插入点
-		flag := "#!/bin/bash"
+		var flag string
+		switch CurOS {
+		case "windows":
+			flag = "@echo off"
+		case "linux":
+			flag = "#!/bin/bash"
+		}
 		if ins := strings.Contains(item, flag); ins == true {
 			addons, err := formatAddon(om)
 			if err != nil {
@@ -68,7 +82,13 @@ func writeLines(om *OMPInfo, lines []string, path string) (err error) {
 			}
 
 			for _, addon := range addons {
-				_, err = file.WriteString(strings.TrimSpace(addon) + "\n")
+				switch CurOS {
+				case "linux":
+					perline = strings.TrimSpace(addon) + "\n"
+				case "windows":
+					perline = strings.TrimSpace(addon) + "\r\n"
+				}
+				_, err = file.WriteString(perline)
 				if err != nil {
 					l.Error(err)
 					break
@@ -90,19 +110,23 @@ func formatAddon(om *OMPInfo) (addon []string, err error) {
 	if om.OMHome == "" {
 		return addon, errors.New("OneMap install directory isn't existed and please check")
 	}
-	addon = append(addon, "########################################")
-	addon = append(addon, "###Input params###")
-	addon = append(addon, "ONEMAP_HOME=\""+om.OMHome+"\"")
-
 	if om.Container == "" {
 		return addon, errors.New("Get OneMap WEB container failed")
 	}
-	addon = append(addon, "CONTAINER_NAME=\""+om.Container+"\"")
-
-	addon = append(addon, "ESRI_GROUP=\""+om.OM_Group+"\"")
-	addon = append(addon, "OM_ACCOUNT=\""+om.OM_User+"\"")
-	addon = append(addon, "OM_PWD=\""+om.OM_PWD+"\"")
-	addon = append(addon, "ULIMIT_NUM=10240")
+	switch CurOS {
+	case "windows":
+		addon = append(addon, "SET ONEMAP_HOME=\""+om.OMHome+"\"")
+		addon = append(addon, "SET CONTAINER_NAME="+om.Container)
+	case "linux":
+		addon = append(addon, "########################################")
+		addon = append(addon, "###InputParams###")
+		addon = append(addon, "ONEMAP_HOME=\""+om.OMHome+"\"")
+		addon = append(addon, "CONTAINER_NAME=\""+om.Container+"\"")
+		addon = append(addon, "ESRI_GROUP=\""+om.OM_Group+"\"")
+		addon = append(addon, "OM_ACCOUNT=\""+om.OM_User+"\"")
+		addon = append(addon, "OM_PWD=\""+om.OM_PWD+"\"")
+		addon = append(addon, "ULIMIT_NUM=10240")
+	}
 
 	// db server
 	flag_db := false
@@ -117,27 +141,75 @@ func formatAddon(om *OMPInfo) (addon []string, err error) {
 		}
 	}
 	if flag_db == true {
-		addon = append(addon, "ORCL_ACCOUNT=\""+om.ORCL_User+"\"")
-		addon = append(addon, "ORACLE_SYSTEM_ACCOUNT=\""+om.DB_User[0]+"\"")
-		addon = append(addon, "ORACLE_SYSTEM_PWD=\""+om.DB_PWD[0]+"\"")
-		addon = append(addon, "ORACLE_SID=\""+om.ORCL_SID+"\"")
-		addon = append(addon, "MANAGER_USER=\""+om.DB_User[1]+"\"")
-		addon = append(addon, "MANAGER_PWD=\""+om.DB_PWD[1]+"\"")
-		addon = append(addon, "PORTAL_USER=\""+om.DB_User[2]+"\"")
-		addon = append(addon, "PORTAL_PWD=\""+om.DB_PWD[2]+"\"")
-		addon = append(addon, "GEOCODING_USER=\""+om.DB_User[3]+"\"")
-		addon = append(addon, "GEOCODING_PWD=\""+om.DB_PWD[3]+"\"")
-		addon = append(addon, "GEOPORTAL_USER=\""+om.DB_User[4]+"\"")
-		addon = append(addon, "GEOPORTAL_PWD=\""+om.DB_PWD[4]+"\"")
-		addon = append(addon, "SUB_USER=\""+om.DB_User[5]+"\"")
-		addon = append(addon, "SUB_PWD=\""+om.DB_PWD[5]+"\"")
+		switch CurOS {
+		case "windows":
+			addon = append(addon, "SET ORCL_ACCOUNT="+om.ORCL_User+"")
+			addon = append(addon, "SET ORACLE_SYSTEM_ACCOUNT="+om.DB_User[0]+"")
+			addon = append(addon, "SET ORACLE_SYSTEM_PWD="+om.DB_PWD[0]+"")
+			addon = append(addon, "SET ORACLE_SID=ORCL")
+			//addon = append(addon, "SET MANAGER_TS=GEOSHARE_PLATFORM")
+			//addon = append(addon, "SET MANAGER_USER=GEOSHARE_PLATFORM")
+			//addon = append(addon, "SET MANAGER_PWD=admin")
+			//addon = append(addon, "SET PORTAL_TS=GEOSHARE_PORTAL")
+			//addon = append(addon, "SET PORTAL_USER=GEOSHARE_PORTAL")
+			//addon = append(addon, "SET PORTAL_PWD=admin")
+			//addon = append(addon, "SET GEOCODING_TS=GEO_CODING")
+			//addon = append(addon, "SET GEOCODING_USER=GEO_CODING")
+			//addon = append(addon, "SET GEOCODING_PWD=admin")
+			//addon = append(addon, "SET GEOPORTAL_TS=GEO_PORTAL")
+			//addon = append(addon, "SET GEOPORTAL_USER=GEO_PORTAL")
+			//addon = append(addon, "SET GEOPORTAL_PWD=admin")
+			//addon = append(addon, "SET SUB_TS=GEOSHARE_SUB_PLATFORM")
+			//addon = append(addon, "SET SUB_USER=GEOSHARE_SUB_PLATFORM")
+			//addon = append(addon, "SET SUB_PWD=admin")
+		case "linux":
+			addon = append(addon, "ORCL_ACCOUNT=\""+om.ORCL_User+"\"")
+			addon = append(addon, "ORACLE_SYSTEM_ACCOUNT=\""+om.DB_User[0]+"\"")
+			addon = append(addon, "ORACLE_SYSTEM_PWD=\""+om.DB_PWD[0]+"\"")
+			// addon = append(addon, "ORACLE_SID=\""+om.ORCL_SID+"\"")
+			// addon = append(addon, "MANAGER_USER=\""+om.DB_User[1]+"\"")
+			// addon = append(addon, "MANAGER_PWD=\""+om.DB_PWD[1]+"\"")
+			// addon = append(addon, "PORTAL_USER=\""+om.DB_User[2]+"\"")
+			// addon = append(addon, "PORTAL_PWD=\""+om.DB_PWD[2]+"\"")
+			// addon = append(addon, "GEOCODING_USER=\""+om.DB_User[3]+"\"")
+			// addon = append(addon, "GEOCODING_PWD=\""+om.DB_PWD[3]+"\"")
+			// addon = append(addon, "GEOPORTAL_USER=\""+om.DB_User[4]+"\"")
+			// addon = append(addon, "GEOPORTAL_PWD=\""+om.DB_PWD[4]+"\"")
+			// addon = append(addon, "SUB_USER=\""+om.DB_User[5]+"\"")
+			// addon = append(addon, "SUB_PWD=\""+om.DB_PWD[5]+"\"")
+			addon = append(addon, "ORACLE_SID=\"ORCL\"")
+			addon = append(addon, "MANAGER_TS=\"GEOSHARE_PLATFORM\"")
+			addon = append(addon, "MANAGER_USER=\"GEOSHARE_PLATFORM\"")
+			addon = append(addon, "MANAGER_PWD=\"admin\"")
+			addon = append(addon, "PORTAL_TS=\"GEOSHARE_PORTAL\"")
+			addon = append(addon, "PORTAL_USER=\"GEOSHARE_PORTAL\"")
+			addon = append(addon, "PORTAL_PWD=\"admin\"")
+			addon = append(addon, "GEOCODING_TS=\"GEO_CODING\"")
+			addon = append(addon, "GEOCODING_USER=\"GEO_CODING\"")
+			addon = append(addon, "GEOCODING_PWD=\"admin\"")
+			addon = append(addon, "GEOPORTAL_TS=\"GEO_PORTAL\"")
+			addon = append(addon, "GEOPORTAL_USER=\"GEO_PORTAL\"")
+			addon = append(addon, "GEOPORTAL_PWD=\"admin\"")
+			addon = append(addon, "SUB_TS=\"GEOSHARE_SUB_PLATFORM\"")
+			addon = append(addon, "SUB_USER=\"GEOSHARE_SUB_PLATFORM\"")
+			addon = append(addon, "SUB_PWD=\"admin\"")
+		}
 	}
 
 	// gis server
 	if flag_gis == true {
-		addon = append(addon, "AGS_HOME=\""+om.AGS_Home+"\"")
+		switch CurOS {
+		case "windows":
+			addon = append(addon, "SET AGS_HOME=\""+om.AGS_Home+"\"")
+		case "linux":
+			addon = append(addon, "AGS_HOME=\""+om.AGS_Home+"\"")
+		}
 	}
-	addon = append(addon, "########################################")
+
+	switch CurOS {
+	case "linux":
+		addon = append(addon, "########################################")
+	}
 
 	return
 }

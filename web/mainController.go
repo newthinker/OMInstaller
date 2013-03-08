@@ -36,7 +36,9 @@ func (this *mainController) SelectAction(w http.ResponseWriter, r *http.Request)
 				OutputJson(w, 3, "Invalid input flag", nil)
 			}
 
-			switch flag {
+			sys.Deploy = flag
+
+			switch sys.Deploy {
 			case sys.INSTALL:
 				sys.SubFlag = false
 				// reset the SysConfig struct

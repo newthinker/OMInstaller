@@ -57,7 +57,8 @@ var (
 	l       *(log.Logger)
 	mc      chan Result // message chan
 	SubFlag bool        // whether install subplatform module
-	curos   string      // current machine's os	["windows"|"linux"]
+	CurOS   string      // current machine's os	["windows"|"linux"]
+	Deploy  int         // deploy status
 )
 
 // return result
@@ -118,7 +119,10 @@ func Init(logger *(log.Logger)) error {
 	SubFlag = true
 
 	// os type
-	curos = runtime.GOOS
+	CurOS = runtime.GOOS
+
+	// deploy status, default 
+	Deploy = MAINTAIN
 
 	return nil
 }
@@ -151,6 +155,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			err := errors.New("The working directory isn't existed")
 			l.Error(err)
 			flag = false
+			go FormatResult(rate, "Check the working directory failed", nil)
 			goto Unexpected
 		}
 
@@ -161,6 +166,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		if err != nil {
 			l.Errorf("Get OneMap version failed")
 			flag = false
+			go FormatResult(rate, "Get OneMap's version info failed", nil)
 			goto Unexpected
 		}
 
@@ -170,6 +176,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		if err = om.OMGetContainer(basedir, filename); err != nil {
 			l.Errorf("Get OneMap container failed")
 			flag = false
+			go FormatResult(rate, "Get OneMap's container failed", nil)
 			goto Unexpected
 		}
 
@@ -180,15 +187,18 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		if err := om.OMGetInfo(mac, omsm, lo); err != nil {
 			l.Errorf("Get the %dth machine's info failed", i+1)
 			flag = false
+			go FormatResult(rate, "Get OneMap package's info failed", nil)
 			goto Unexpected
 		}
 
+		status := om.Deploy // current node's deploy status
 		// package onemap
 		rate += PACKAGE / num
 		go FormatResult(rate, "Package the OneMap", nil)
 		if err := om.OMPackage(); err != nil {
 			l.Error(err)
 			flag = false
+			go FormatResult(rate, "Package the OneMap failed", nil)
 			goto Unexpected
 		}
 
@@ -201,42 +211,28 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		if err := RefreshSysConfig(omsc, srcfile); err != nil {
 			l.Error(err)
 			flag = false
+			go FormatResult(rate, "Refresh the SysConfig file failed", nil)
 			goto Unexpected
 		}
 
-		status := om.Deploy
+		fmt.Printf("status:%d\n", status)
 		if status == MAINTAIN { // do nothing
 			continue
 		} else if status == INSTALL { // install process
-			// package onemap
-			rate += PACKAGE * (i + 1) / num
-			go FormatResult(rate, "Package the OneMap", nil)
-			if err := om.OMPackage(); err != nil {
-				l.Error(err)
-				flag = false
-				goto Unexpected
-			}
-
-			// refresh the SysConfig.xml file
-			rate += REFRESH_SYSCONFIG * (i + 1) / num
-			go FormatResult(rate, "Refresh the SysConfig file", nil)
-			l.Message("Update the local config file")
-			srcfile := filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml")
-			omsc.LayOut = *lo
-			if err := RefreshSysConfig(omsc, srcfile); err != nil {
-				l.Error(err)
-				flag = false
-				goto Unexpected
-			}
-
 			// update the installing script
 			rate += UPDATE_SCRIPT / num
 			go FormatResult(rate, "Update standalone install script", nil)
 			l.Message("Update the local install script")
-			srcfile = filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/install.sh")
+			switch CurOS {
+			case "windows":
+				srcfile = filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/install.bat")
+			case "linux":
+				srcfile = filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/install.sh")
+			}
 			if err := UpdateScritp(&om, srcfile); err != nil {
 				l.Errorf("Update the local install script failed")
 				flag = false
+				go FormatResult(rate, "Update standalone install script failed", nil)
 				goto Unexpected
 			}
 
@@ -250,24 +246,25 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			if err := om.OMRemoteCopy(srcdir, dstdir); err != nil {
 				l.Errorf("Exec retmote copy failed")
 				flag = false
+				go FormatResult(rate, "Remote copy the OneMap package failed", nil)
 				goto Unexpected
 			}
 
 			// remote exec the install bash script
 			rate += REMOTE_EXEC / num
 			go FormatResult(rate, "Remote exec the standalone install script", nil)
-			l.Message("Exec the remote copy")
 			l.Message("Exec the remote install script")
 			if err := om.OMRemoteExec(); err != nil {
 				l.Errorf("Exec retmote command failed")
 				flag = false
+				go FormatResult(rate, "Remote exec the standalone install script failed", nil)
 				goto Unexpected
 			}
 
 			flag = true
 		} else if status == UPDATE { /// update 
 			// package onemap
-			rate += PACKAGE * (i + 1) / num
+			rate += PACKAGE / num
 			go FormatResult(rate, "Package the OneMap", nil)
 			if err := om.OMPackage(); err != nil {
 				l.Error(err)
@@ -276,7 +273,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			}
 
 			// refresh the SysConfig.xml file
-			rate += REFRESH_SYSCONFIG * (i + 1) / num
+			rate += REFRESH_SYSCONFIG / num
 			go FormatResult(rate, "Refresh the SysConfig file", nil)
 			l.Message("Update the local config file")
 			srcfile := filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml")
@@ -315,15 +312,15 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 	}
 
 	if flag == false {
-		if status == INSTALL {
+		if Deploy == INSTALL {
 			err := errors.New("OneMap install failed")
 			l.Error(err)
 			return err
-		} else if status == UPDATE {
+		} else if Deploy == UPDATE {
 			err := errors.New("OneMap update failed")
 			l.Error(err)
 			return err
-		} else if status == UNINSTALL {
+		} else if Deploy == UNINSTALL {
 			err := errors.New("OneMap uninstall failed")
 			l.Error(err)
 			return err
@@ -336,8 +333,6 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		} else if status == UNINSTALL {
 			l.Message("OneMap uninstall successfully")
 		}
-
-		return nil
 	}
 
 	return nil

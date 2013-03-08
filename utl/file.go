@@ -1,10 +1,15 @@
 package utl
 
 import (
+	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
 	"os"
-	"os/exec"
+	//	"path"
 	"path/filepath"
+	"strings"
 )
 
 // 判断文件或者路径是否存在
@@ -27,34 +32,150 @@ func Copy(srcfile string, dstfile string) error {
 	dstfile = filepath.FromSlash(dstfile)
 
 	// first check the srcfile whether exist
-	fi, serr := os.Stat(srcfile)
+	si, serr := os.Stat(srcfile)
 	if os.IsNotExist(serr) {
 		return os.ErrNotExist
 	}
 
 	// check the dstfile whether existed
-	_, derr := os.Stat(dstfile)
-	if os.IsNotExist(derr) {
-
-		if serr = os.MkdirAll(dstfile, 0755); serr != nil {
-			return serr
-		}
-	}
+	di, derr := os.Stat(dstfile)
 
 	// check the srcfile is file or directory
-	if fi.IsDir() {
-		cmd := exec.Command("cp", "-r", srcfile, dstfile)
-		serr = cmd.Run()
+	if si.IsDir() {
+		if !os.IsNotExist(derr) { // dst is existed
+			if di.IsDir() { // if dst is dir then add the last
+				var filename string
+				parts := strings.Split(srcfile, string(filepath.Separator))
+				for i := (len(parts) - 1); i >= 0; i-- {
+					if parts[i] != "" {
+						filename = parts[i]
+						break
+					}
+				}
+				if filename == "" {
+					msg := fmt.Sprintf("Invalid file path(%s)", srcfile)
+					return errors.New(msg)
+				}
+				fmt.Println(filename)
+				dstfile = filepath.FromSlash(dstfile + "/" + filename)
+			} else { // if dst is file then return error
+				msg := fmt.Sprintf("Cann't copy a directory(%s) to a file(%s)", srcfile, dstfile)
+				return errors.New(msg)
+			}
+		}
+		serr = CopyDir(srcfile, dstfile)
 	} else {
-		cmd := exec.Command("cp", srcfile, dstfile)
-		serr = cmd.Run()
+		if !os.IsNotExist(derr) { // dst is existed
+			if di.IsDir() { // dst is directory and then add the filename
+				/// why not filepath split???
+				var filename string
+				parts := strings.Split(srcfile, string(filepath.Separator))
+				for i := (len(parts) - 1); i >= 0; i-- {
+					if parts[i] != "" {
+						filename = parts[i]
+						break
+					}
+				}
+				if filename == "" {
+					msg := fmt.Sprintf("Invalid file path(%s)", srcfile)
+					return errors.New(msg)
+				}
+				fmt.Println(filename)
+				dstfile = filepath.FromSlash(dstfile + "/" + filename)
+			} else { // dst is file and delete it first
+				if serr = os.Remove(dstfile); serr != nil {
+					msg := fmt.Sprintf("Remove the existed file failed(%s)", dstfile)
+					return errors.New(msg)
+				}
+			}
+		}
+		serr = CopyFile(srcfile, dstfile)
 	}
 	// exec the copy comand
 	if serr != nil {
+		fmt.Println(serr)
 		return serr
 	}
 
 	return nil
+}
+
+// Copies file source to destination dest.
+func CopyFile(source string, dest string) (err error) {
+	//	fmt.Printf("Source file is:%s\n", source)
+	//	fmt.Printf("Dest file is:%s\n", dest)
+	sf, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+	defer sf.Close()
+	df, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+	defer df.Close()
+	_, err = io.Copy(df, sf)
+	if err == nil {
+		si, err := os.Stat(source)
+		if err != nil {
+			err = os.Chmod(dest, si.Mode())
+		}
+
+	}
+
+	return
+}
+
+// Recursively copies a directory tree, attempting to preserve permissions. 
+// Source directory must exist, destination directory must *not* exist. 
+func CopyDir(source string, dest string) (err error) {
+	//	fmt.Printf("Source directory is:%s\n", source)
+	//	fmt.Printf("Dest directory is:%s\n", dest)
+
+	// get properties of source dir
+	fi, err := os.Stat(source)
+	if err != nil {
+		return err
+	}
+
+	if !fi.IsDir() {
+		return errors.New("Source is not a directory")
+	}
+
+	// ensure dest dir does not already exist
+
+	_, err = os.Open(dest)
+	if !os.IsNotExist(err) {
+		return errors.New("Destination already exists")
+	}
+
+	// create dest dir
+	err = os.MkdirAll(dest, fi.Mode())
+	if err != nil {
+		return err
+	}
+
+	entries, err := ioutil.ReadDir(source)
+
+	for _, entry := range entries {
+
+		sfp := source + string(filepath.Separator) + entry.Name()
+		dfp := dest + string(filepath.Separator) + entry.Name()
+		if entry.IsDir() {
+			err = CopyDir(sfp, dfp)
+			if err != nil {
+				log.Println(err)
+			}
+		} else {
+			// perform copy         
+			err = CopyFile(sfp, dfp)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
+	}
+	return
 }
 
 // list files in the path recursion

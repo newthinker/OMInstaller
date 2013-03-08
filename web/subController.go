@@ -95,11 +95,15 @@ func GetSqlFile(basedir string) (string, error) {
 		l.Debugf("The subpath is %s", thepath)
 		temp := path.Base(thepath)
 		temp = strings.ToUpper(temp)
-		if strings.Index(temp, strings.ToUpper(sys.ONEMAP_NAME)) < 0 {
+		if strings.Index(temp, strings.ToUpper(sys.ONEMAP_NAME)) < 0 { // onemap flag
 			continue
 		}
 
-		if strings.Index(temp, "_V") > 0 {
+		if strings.Index(temp, strings.ToUpper(sys.CurOS)) < 0 { // windows or linux flag
+			continue
+		}
+
+		if strings.Index(temp, "_V") > 0 { // v*.*flag
 			filename = thepath
 			break
 		}

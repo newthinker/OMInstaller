@@ -5,21 +5,21 @@
 		<server name="db" desc="数据库服务器">
 			<attr name="db_ip" desc="数据库服务器IP:" value="127.0.0.1" />
 			<attr name="db_port" desc="数据库服务器端口:" value="1521" />
-			<attr name="db_sid" desc="数据库服务器实例名:" value="orcl" />
+			<!--attr name="db_sid" desc="数据库服务器实例名:" value="orcl" /-->
 			<attr name="db_user" desc="数据库系统安装帐号:" value="oracle" />
 			<attr name="system_user" desc="数据库管理员用户名:" value="system" />
 			<attr name="system_pwd" desc="数据库管理员密码:" value="admin" />
-			<attr name="manager_user" desc="GeoShareManager数据库用户名:" value="geoshare_platform" />
+			<!--attr name="manager_user" desc="GeoShareManager数据库用户名:" value="geoshare_platform" />
 			<attr name="manager_pwd" desc="GeoShareManager数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
 			<attr name="portal_user" desc="GeoSharePortal数据库用户名:" value="geoshare_portal" />
 			<attr name="portal_pwd" desc="GeoSharePortal数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
 			<attr name="geocoding_user" desc="GeoCoding数据库用户名:" value="geo_coding" />
 			<attr name="geocoding_pwd" desc="GeoCoding数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
 			<attr name="geoportal_user" desc="GeoPortal数据库用户名:" value="geo_portal" />
-			<attr name="geoportal_pwd" desc="GeoPortal数据库密码:" encrypt="true" value="Gzt3XR0PAto=" />
+			<attr name="geoportal_pwd" desc="GeoPortal数据库密码:" encrypt="true" value="Gzt3XR0PAto=" /-->
 			<attr name="db_h2" desc="内存数据库IP:" value="127.0.0.1" />
-			<attr name="sub_user" desc="分平台数据库用户名:" value="GEOSHARE_SUB_PLATFORM" />
-			<attr name="sub_pwd" desc="分平台数据库密码:" encrypt="true" value="Gzt3XR0PAto" />
+			<!--attr name="sub_user" desc="分平台数据库用户名:" value="GEOSHARE_SUB_PLATFORM" />
+			<attr name="sub_pwd" desc="分平台数据库密码:" encrypt="true" value="Gzt3XR0PAto" /-->
 		</server>
 		<server name="web" desc="WEB服务器">
 			<attr name="web_ip" desc="门户IP:" value="127.0.0.1" />

@@ -1,0 +1,478 @@
+{
+	"Servers": [{
+		"Srvname": "db",
+		"Srvdesc": "数据库服务器",
+		"Attrs": [{
+			"Attrname": "db_ip",
+			"Attrdesc": "数据库服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "db_port",
+			"Attrdesc": "数据库服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "1521"
+		},
+		{
+			"Attrname": "db_sid",
+			"Attrdesc": "数据库服务器实例名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "orcl"
+		},
+		{
+			"Attrname": "db_user",
+			"Attrdesc": "数据库系统安装帐号:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "oracle"
+		},
+		{
+			"Attrname": "system_user",
+			"Attrdesc": "数据库管理员用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "system"
+		},
+		{
+			"Attrname": "system_pwd",
+			"Attrdesc": "数据库管理员密码:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "admin"
+		},
+		{
+			"Attrname": "manager_user",
+			"Attrdesc": "GeoShareManager数据库用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "geoshare_platform"
+		},
+		{
+			"Attrname": "manager_pwd",
+			"Attrdesc": "GeoShareManager数据库密码:",
+			"Encrypt": "true",
+			"Select": "",
+			"Attrvalue": "Gzt3XR0PAto="
+		},
+		{
+			"Attrname": "portal_user",
+			"Attrdesc": "GeoSharePortal数据库用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "geoshare_portal"
+		},
+		{
+			"Attrname": "portal_pwd",
+			"Attrdesc": "GeoSharePortal数据库密码:",
+			"Encrypt": "true",
+			"Select": "",
+			"Attrvalue": "Gzt3XR0PAto="
+		},
+		{
+			"Attrname": "geocoding_user",
+			"Attrdesc": "GeoCoding数据库用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "geo_coding"
+		},
+		{
+			"Attrname": "geocoding_pwd",
+			"Attrdesc": "GeoCoding数据库密码:",
+			"Encrypt": "true",
+			"Select": "",
+			"Attrvalue": "Gzt3XR0PAto="
+		},
+		{
+			"Attrname": "geoportal_user",
+			"Attrdesc": "GeoPortal数据库用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "geo_portal"
+		},
+		{
+			"Attrname": "geoportal_pwd",
+			"Attrdesc": "GeoPortal数据库密码:",
+			"Encrypt": "true",
+			"Select": "",
+			"Attrvalue": "Gzt3XR0PAto="
+		},
+		{
+			"Attrname": "db_h2",
+			"Attrdesc": "内存数据库IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "sub_user",
+			"Attrdesc": "分平台数据库用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "GEOSHARE_SUB_PLATFORM"
+		},
+		{
+			"Attrname": "sub_pwd",
+			"Attrdesc": "分平台数据库密码:",
+			"Encrypt": "true",
+			"Select": "",
+			"Attrvalue": "Gzt3XR0PAto"
+		}]
+	},
+	{
+		"Srvname": "web",
+		"Srvdesc": "WEB服务器",
+		"Attrs": [{
+			"Attrname": "web_ip",
+			"Attrdesc": "门户IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "web_port",
+			"Attrdesc": "门户端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "web_user",
+			"Attrdesc": "门户默认用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "super"
+		},
+		{
+			"Attrname": "web_pwd",
+			"Attrdesc": "门户默认用户名密码:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "admin"
+		},
+		{
+			"Attrname": "flex_ip",
+			"Attrdesc": "Flex发布服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "flex_port",
+			"Attrdesc": "Flex发布服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "sl_ip",
+			"Attrdesc": "Silverlight发布服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "sl_port",
+			"Attrdesc": "Silverlight发布服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "80"
+		},
+		{
+			"Attrname": "ria_ip",
+			"Attrdesc": "快速搭建服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "ria_port",
+			"Attrdesc": "快速发布服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "iis_root",
+			"Attrdesc": "silverlight文件生成路径:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "c:\\inetpub\\wwwroot\\"
+		},
+		{
+			"Attrname": "web_csw",
+			"Attrdesc": "是否启用CSW服务:",
+			"Encrypt": "",
+			"Select": "0,禁用;1,开启",
+			"Attrvalue": "1"
+		}]
+	},
+	{
+		"Srvname": "gis",
+		"Srvdesc": "GIS服务器",
+		"Attrs": [{
+			"Attrname": "gis_ip",
+			"Attrdesc": "GIS服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "gis_port",
+			"Attrdesc": "GIS服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "gis_ags_ip",
+			"Attrdesc": "ArcGISServer服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "gis_ags_user",
+			"Attrdesc": "ArcGISServer服务器用户名:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "arcgismanager"
+		},
+		{
+			"Attrname": "gis_ags_pwd",
+			"Attrdesc": "ArcGISServer服务器密码:",
+			"Encrypt": "true",
+			"Select": "",
+			"Attrvalue": "/2IWry6fWdsq9l5S69ER8Q=="
+		},
+		{
+			"Attrname": "gis_sharekey",
+			"Attrdesc": "sharekey:",
+			"Encrypt": "true",
+			"Select": "",
+			"Attrvalue": "9STRE5GPzs2UpCvzrlfktw=="
+		},
+		{
+			"Attrname": "ags_log_path",
+			"Attrdesc": "ArcGISServer安装目录:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "/opt/arcgis/server10.0"
+		},
+		{
+			"Attrname": "gis_basemap_type",
+			"Attrdesc": "底图服务类型:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "dynamic"
+		},
+		{
+			"Attrname": "gis_services_port",
+			"Attrdesc": "RemoteServices系统的HTTPS端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8443"
+		},
+		{
+			"Attrname": "wmts_ip",
+			"Attrdesc": "WMTS系统的IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "wmts_port",
+			"Attrdesc": "WMTS系统的端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "sysrest_ip",
+			"Attrdesc": "SysRest服务IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "sysrest_port",
+			"Attrdesc": "SysRest服务端口",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8081"
+		}]
+	},
+	{
+		"Srvname": "main",
+		"Srvdesc": "运维服务器",
+		"Attrs": [{
+			"Attrname": "main_ip",
+			"Attrdesc": "运维服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "main_port",
+			"Attrdesc": "运维服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "main_upload_level",
+			"Attrdesc": "运维文件上传目录深度:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "3"
+		},
+		{
+			"Attrname": "main_upload_num",
+			"Attrdesc": "运维文件上传最大值:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "1"
+		},
+		{
+			"Attrname": "geocoding_ip",
+			"Attrdesc": "GeoCoding系统的IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "geocoding_port",
+			"Attrdesc": "GeoCoding系统的端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "geoportal_ip",
+			"Attrdesc": "GeoPortal系统的IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "geoportal_port",
+			"Attrdesc": "GeoPortal系统的端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "sub_upload_num",
+			"Attrdesc": "分平台文件上传最大值",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "10"
+		},
+		{
+			"Attrname": "sub_syn_code",
+			"Attrdesc": "分平台同步代码",
+			"Encrypt": "",
+			"Select": "0,主分平台之间进行同步; 1,主主平台之间进行同步;",
+			"Attrvalue": "0"
+		},
+		{
+			"Attrname": "file_ip",
+			"Attrdesc": "FileServices系统的IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "file_port",
+			"Attrdesc": "FileServices系统的端口号:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "tile_ip",
+			"Attrdesc": "TileServices系统的IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "tile_port",
+			"Attrdesc": "TileServices系统的端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		},
+		{
+			"Attrname": "aggregator_ip",
+			"Attrdesc": "Aggregator系统的IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "aggregator_port",
+			"Attrdesc": "Aggregator系统的端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		}]
+	},
+	{
+		"Srvname": "token",
+		"Srvdesc": "TOKEN服务器",
+		"Attrs": [{
+			"Attrname": "token_ip",
+			"Attrdesc": "Token服务器ip:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "token_port",
+			"Attrdesc": "Token服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		}]
+	},
+	{
+		"Srvname": "msg",
+		"Srvdesc": "消息服务器",
+		"Attrs": [{
+			"Attrname": "msg_ip",
+			"Attrdesc": "JMS服务器ip:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "msg_port",
+			"Attrdesc": "JMS服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "61616"
+		}]
+	},
+	{
+		"Srvname": "agent",
+		"Srvdesc": "监控代理服务器",
+		"Attrs": [{
+			"Attrname": "agent_ip",
+			"Attrdesc": "监控代理服务器IP:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "127.0.0.1"
+		},
+		{
+			"Attrname": "agent_port",
+			"Attrdesc": "监控代理服务器端口:",
+			"Encrypt": "",
+			"Select": "",
+			"Attrvalue": "8080"
+		}]
+	}]
+}

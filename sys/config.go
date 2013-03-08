@@ -300,14 +300,14 @@ func OpenSDConfig(filename string) (SysDeploy, error) {
 	return sd, nil
 }
 
-// 更新保存系统配置文件
+// Refresh the SysConfig.xml
 func RefreshSysConfig(sc *SysConfig, conffile string) error {
 	if sc == nil || conffile == "" {
-		return errors.New("输入的配置文件为空、文件路径为空")
+		return errors.New("Input params is null or input config filename is null")
 	}
 
 	if flag := utl.Exists(conffile); flag != true {
-		return errors.New("配置文件路径不存在")
+		return errors.New("The config file isn't existed")
 	}
 
 	output, err := xml.MarshalIndent(sc, "  ", "   ")

@@ -95,21 +95,43 @@ var (
 func (om *OMPInfo) OMPackage() error {
 	dstdir := filepath.FromSlash(basedir + "/" + ONEMAP_NAME)
 	l.Message("Make OneMap directory")
-	if flag := utl.Exists(dstdir); flag == true {
-		// 首先删除原来的
-		if err := os.RemoveAll(dstdir); err != nil {
-			l.Errorf("Remove the old OneMap package failed")
-			return err
+	/*	if flag := utl.Exists(dstdir); flag == true {
+			// 首先删除原来的
+			if err := os.RemoveAll(dstdir); err != nil {
+				l.Errorf("Remove the old OneMap package failed")
+				return err
+			}
+			// 再创建新的空文件夹
+			if err := os.Mkdir(dstdir, 0777); err != nil {
+				l.Errorf("Make OneMap directory failed")
+				return err
+			}
 		}
-		// 再创建新的空文件夹
-		if err := os.Mkdir(dstdir, 0755); err != nil {
-			l.Errorf("Make OneMap directory failed")
-			return err
+	*/
+	l.Message("Package OneMap")
+	srcdir := basedir
+	// search the OneMap package
+	subpath, err := utl.GetSubDir(basedir)
+	if err != nil || len(subpath) <= 0 {
+		return errors.New("Get sub directory failed")
+	}
+	for _, thepath := range subpath {
+		l.Debugf("The subpath is %s", thepath)
+		temp := path.Base(thepath)
+		temp = strings.ToUpper(temp)
+		if strings.Index(temp, strings.ToUpper(ONEMAP_NAME)) < 0 { // onemap flag
+			continue
+		}
+
+		if strings.Index(temp, strings.ToUpper(CurOS)) < 0 { // windows or linux flag
+			continue
+		}
+
+		if strings.Index(temp, "_V") > 0 { // v*.*flag
+			srcdir += "/" + thepath
+			break
 		}
 	}
-
-	l.Message("Package OneMap")
-	srcdir := filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "_Linux_" + om.Version)
 	if err := om.OMCopy(srcdir, dstdir); err != nil {
 		l.Errorf("Package OneMap failed")
 		return err
@@ -132,34 +154,34 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 		msg := "Source directory (" + src + ") isn't existed"
 		return errors.New(msg)
 	}
-	if (utl.Exists(dst)) != true {
-		if err := os.Mkdir(dst, 0755); err != nil {
-			msg := "Destination directory (" + dst + ") isn't existed and create failed"
-			return errors.New(msg)
-		}
-	} else {
-		if (utl.Exists(dst + "/services")) == true {
-			pathstr := filepath.FromSlash(dst + "/services")
-			if err := os.RemoveAll(pathstr); err != nil {
-				msg := "Remove directory (" + pathstr + ") failed"
-				return errors.New(msg)
-			}
-		}
-		pathstr := filepath.FromSlash(dst + "/" + om.Container + "/webapps")
-		if (utl.Exists(pathstr)) == true {
-			if err := os.RemoveAll(pathstr); err != nil {
-				msg := "Remove directory (" + pathstr + ") failed"
-				return errors.New(msg)
-			}
+	si, err := os.Stat(src)
+	if err != nil {
+		l.Error(err)
+		return err
+	}
+	if (utl.Exists(dst)) == true {
+		if err := os.RemoveAll(dst); err != nil {
+			l.Errorf("Remove the old OneMap package failed")
+			return err
 		}
 	}
-
+	if err := os.Mkdir(dst, si.Mode()); err != nil {
+		l.Errorf("Make OneMap directory failed")
+		return err
+	}
 	// copy public
-	if (utl.Exists(dst + "/install.sh")) != true {
-		if err := utl.Copy(src+"/install.sh", dst); err != nil {
-			msg := "Copy install bash script failed"
-			return errors.New(msg)
-		}
+	var inst_script string
+	switch CurOS {
+	case "linux":
+		inst_script = filepath.FromSlash(src + "/install.sh")
+	case "windows":
+		inst_script = filepath.FromSlash(src + "/install.bat")
+	}
+	l.Debugf(inst_script)
+	l.Debugf(dst)
+	if err := utl.Copy(inst_script, dst); err != nil {
+		msg := "Copy install bash script failed"
+		return errors.New(msg)
 	}
 	if (utl.Exists(dst + "/arcgis")) != true {
 		if err := utl.Copy(src+"/arcgis", dst); err != nil {
@@ -208,7 +230,7 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 		}
 
 		for i := 0; i < len(om.Apps); i++ {
-			if err := utl.Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps"); err != nil {
+			if err := utl.Copy(src+"/webapps/"+om.Apps[i], dst+"/"+om.Container+"/webapps/"+om.Apps[i]); err != nil {
 				msg := "Copy module (" + om.Apps[i] + ") failed"
 				return errors.New(msg)
 			}
@@ -218,7 +240,7 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	// copy services  
 	if len(om.Services) > 0 {
 		for i := 0; i < len(om.Services); i++ {
-			if err := utl.Copy(src+"/services/"+om.Services[i], dst+"/services"); err != nil {
+			if err := utl.Copy(src+"/services/"+om.Services[i], dst+"/services/"+om.Services[i]); err != nil {
 				msg := "Copy OneMap service (" + om.Services[i] + ") failed"
 				return errors.New(msg)
 			}
@@ -228,27 +250,27 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	// deal with the db server
 	for _, srv := range om.Servers {
 		if srv == "db" {
-			if err := utl.Copy(src+"/db/Driver", dst+"/db"); err != nil {
+			if err := utl.Copy(src+"/db/Driver", dst+"/db/Driver"); err != nil {
 				msg := "Copy OneMap Driver directory failed"
 				return errors.New(msg)
 			}
 
-			if err := utl.Copy(src+"/db/GeoCoding", dst+"/db"); err != nil {
+			if err := utl.Copy(src+"/db/GeoCoding", dst+"/db/GeoCoding"); err != nil {
 				msg := "Copy OneMap GeoCoding directory failed"
 				return errors.New(msg)
 			}
 
-			if err := utl.Copy(src+"/db/GeoPortal", dst+"/db"); err != nil {
+			if err := utl.Copy(src+"/db/GeoPortal", dst+"/db/GeoPortal"); err != nil {
 				msg := "Copy OneMap GeoPortal directory failed"
 				return errors.New(msg)
 			}
 
-			if err := utl.Copy(src+"/db/GeoShareManager", dst+"/db"); err != nil {
+			if err := utl.Copy(src+"/db/GeoShareManager", dst+"/db/GeoShareManager"); err != nil {
 				msg := "Copy OneMap GeoShareManager directory failed"
 				return errors.New(msg)
 			}
 
-			if err := utl.Copy(src+"/db/Portal", dst+"/db"); err != nil {
+			if err := utl.Copy(src+"/db/Portal", dst+"/db/Portal"); err != nil {
 				msg := "Copy OneMap Portal directory failed"
 				return errors.New(msg)
 			}
@@ -412,9 +434,11 @@ func (om *OMPInfo) OMGetInfo(mi *node, sm *ServerMapping, lo *Layout) error {
 	}
 
 	/// default params
-	om.OM_Group = "esri"
-	om.OM_User = "esri"
-	om.OM_PWD = "esri1234"
+	if CurOS == "linux" {
+		om.OM_Group = "esri"
+		om.OM_User = "esri"
+		om.OM_PWD = "esri1234"
+	}
 
 	return nil
 }
