@@ -93,21 +93,26 @@ var (
 
 // Package the OneMap
 func (om *OMPInfo) OMPackage() error {
-	dstdir := filepath.FromSlash(basedir + "/" + ONEMAP_NAME)
+	dstdir := filepath.FromSlash(basedir + "/" + om.MacName + "_" + ONEMAP_NAME)
 	l.Message("Make OneMap directory")
-	/*	if flag := utl.Exists(dstdir); flag == true {
-			// 首先删除原来的
-			if err := os.RemoveAll(dstdir); err != nil {
-				l.Errorf("Remove the old OneMap package failed")
-				return err
-			}
-			// 再创建新的空文件夹
-			if err := os.Mkdir(dstdir, 0777); err != nil {
-				l.Errorf("Make OneMap directory failed")
-				return err
-			}
+	if flag := utl.Exists(dstdir); flag == true {
+		// 首先删除原来的
+		//		if err := os.RemoveAll(dstdir); err != nil {
+		if err := utl.RemoveDir(dstdir); err != nil {
+			l.Errorf("Remove the old OneMap package failed")
+			return err
 		}
-	*/
+	}
+	si, err := os.Stat(basedir)
+	if err != nil {
+		l.Error(err)
+		return err
+	}
+	if err := os.Mkdir(dstdir, si.Mode()); err != nil {
+		l.Errorf("Make OneMap directory failed")
+		return err
+	}
+
 	l.Message("Package OneMap")
 	srcdir := basedir
 	// search the OneMap package
@@ -116,7 +121,7 @@ func (om *OMPInfo) OMPackage() error {
 		return errors.New("Get sub directory failed")
 	}
 	for _, thepath := range subpath {
-		l.Debugf("The subpath is %s", thepath)
+		//		l.Debugf("The subpath is %s", thepath)
 		temp := path.Base(thepath)
 		temp = strings.ToUpper(temp)
 		if strings.Index(temp, strings.ToUpper(ONEMAP_NAME)) < 0 { // onemap flag
@@ -154,21 +159,26 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 		msg := "Source directory (" + src + ") isn't existed"
 		return errors.New(msg)
 	}
-	si, err := os.Stat(src)
-	if err != nil {
-		l.Error(err)
-		return err
+	if (utl.Exists(dst)) != true {
+		msg := "OneMap directory isn't existed"
+		return errors.New(msg)
 	}
-	if (utl.Exists(dst)) == true {
-		if err := os.RemoveAll(dst); err != nil {
-			l.Errorf("Remove the old OneMap package failed")
+	/*	si, err := os.Stat(src)
+		if err != nil {
+			l.Error(err)
 			return err
 		}
-	}
-	if err := os.Mkdir(dst, si.Mode()); err != nil {
-		l.Errorf("Make OneMap directory failed")
-		return err
-	}
+		if (utl.Exists(dst)) == true {
+			if err := os.RemoveAll(dst); err != nil {
+				l.Errorf("Remove the old OneMap package failed")
+				return err
+			}
+		}
+		if err := os.Mkdir(dst, si.Mode()); err != nil {
+			l.Errorf("Make OneMap directory failed")
+			return err
+		}
+	*/
 	// copy public
 	var inst_script string
 	switch CurOS {

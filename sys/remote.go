@@ -25,10 +25,9 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 		// create the remote link
 		cmd := exec.Command("cmd", "/C", "net", "use", "\\\\"+om.Ip+"\\admin$",
 			om.Pwd, "/user:"+om.Ip+"\\"+om.Root)
-		msg := "cmd " + " /C " + " net " + " use " + " \\\\" + om.Ip + "\\admin$ " +
-			om.Pwd + " /user:" + om.Ip + "\\" + om.Root
-		l.Debugf(msg)
-		if err := cmd.Run(); err != nil {
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
+		if err := cmd.Start(); err != nil {
 			err := errors.New("Create remote link failed")
 			l.Error(err)
 			return err
@@ -39,27 +38,22 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 		temp := strings.Replace(dstdir, ":", "$", 1)
 		if fi.IsDir() {
 			cmd = exec.Command("cmd", "/C", "xcopy", srcdir, "\\\\"+om.Ip+"\\"+temp, "/I", "/E")
-			msg := "cmd " + " /C " + " xcopy " + srcdir + " \\\\" + om.Ip + "\\" + temp + " /I " + " /E "
-			l.Debugf(msg)
-			if err := cmd.Run(); err != nil {
-				fmt.Println(err)
-				err := errors.New("Remote copy directory failed")
-				l.Error(err)
-				return err
-			}
 		} else {
 			cmd = exec.Command("cmd", "/C", "copy", srcdir, "\\\\"+om.Ip+"\\"+temp, "/S")
-			msg := "cmd " + " /C " + " copy " + srcdir + " \\\\" + om.Ip + "\\" + temp + " /S "
-			l.Debugf(msg)
-			if err := cmd.Run(); err != nil {
-				err := errors.New("Remote copy directory failed")
-				l.Error(err)
-				return err
-			}
+
+		}
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
+		if err := cmd.Run(); err != nil {
+			err := errors.New("Remote copy directory failed")
+			l.Error(err)
+			return err
 		}
 
 		// delete the remote link
 		cmd = exec.Command("cmd", "/C", "net", "use", "\\\\"+om.Ip+"\\admin$", "/delete")
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
 		if err := cmd.Run(); err != nil {
 			err := errors.New("Delete remote link failed")
 			l.Error(err)
@@ -70,13 +64,12 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 
 		if fi.IsDir() {
 			cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "scp", "-r", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
-
-			l.Debugf("sshpass -p %s scp -r %s %s@%s:%s", om.Pwd, srcdir, om.Root, om.Ip, dstdir)
 		} else {
 			cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "scp", srcdir, om.Root+"@"+om.Ip+":"+dstdir)
-
-			l.Debugf("sshpass -p %s scp %s %s@%s:%s", om.Pwd, srcdir, om.Root, om.Ip, dstdir)
 		}
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
+
 		err := cmd.Run()
 		if err != nil {
 			err := errors.New("Exec remote copy command failed")
@@ -107,13 +100,11 @@ func (om *OMPInfo) OMRemoteExec() error {
 	var inputs string
 	for i := 0; i < len(om.Servers); i++ {
 		// exec the server installing command
-		switch CurOS {
-		case "linux":
-			inputs = inputs + "|" + om.Servers[i]
-		case "windows":
+		if inputs == "" {
+			inputs = om.Servers[i]
+		} else {
 			inputs = inputs + " " + om.Servers[i]
 		}
-
 		if (om.Servers[i] == "gis") || (om.Servers[i] == "web") || (om.Servers[i] == "token") {
 			flag_om = true
 		}
@@ -131,16 +122,14 @@ func (om *OMPInfo) OMRemoteExec() error {
 		standalone := filepath.FromSlash(om.OMHome + "/install.bat")  // path of the standalone installation script
 		cmd = exec.Command("cmd", "/C", psexec, "\\\\"+om.Ip, "-u", om.Root, "-p", om.Pwd,
 			standalone, inputs)
-		msg := "cmd " + " /C " + psexec + " \\\\" + om.Ip + " -u " + om.Root + " -p " + om.Pwd + " " +
-			standalone + " " + inputs
-		fmt.Println(msg)
 	case "linux":
 		sshpass := filepath.FromSlash(basedir + "/sshpass/bin/sshpass")
 		standalone := filepath.FromSlash(om.OMHome + "/install.sh")
 		cmd = exec.Command(sshpass, "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 			"/bin/bash", standalone, inputs)
-		l.Debugf(om.Pwd, om.Root, om.Ip, om.OMHome, inputs)
 	}
+	l.Debugf("The cmd path:%s\n", cmd.Path)
+	l.Debugf("The cmd args:%s\n", cmd.Args)
 	err := cmd.Run()
 	if err != nil {
 		msg := "Install OneMap server failed"
@@ -153,9 +142,8 @@ func (om *OMPInfo) OMRemoteExec() error {
 		standalone := filepath.FromSlash(om.OMHome + "/install.bat")
 		cmd = exec.Command("cmd", "/C", psexec, "\\\\"+om.Ip, "-u", om.Root, "-p", om.Pwd,
 			standalone, "sysconfig")
-		msg := "cmd " + " /C " + psexec + " \\\\" + om.Ip + " -u " + om.Root + " -p " + om.Pwd + " " +
-			standalone + " sysconfig"
-		fmt.Println(msg)
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
 		err := cmd.Run()
 		if err != nil {
 			msg := "System config failed"
@@ -165,65 +153,84 @@ func (om *OMPInfo) OMRemoteExec() error {
 
 	// install the services
 	if flag_ma == true {
+		l.Message("Begin to install MonitorAgent service")
 		switch CurOS {
 		case "windows":
-			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")                                        // path of the psexec
-			instbash := filepath.FromSlash(om.OMHome + "/services/GeoShareMonitorAgent/InstallMonitorAgent.bat") // path of the monitoragent service installation script
+			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")                   // path of the psexec
+			instbash := filepath.FromSlash(om.OMHome + "/bin/command/srv_monitoragent.bat") // path of the monitoragent service installation script
 			cmd = exec.Command("cmd", "/C", psexec, "\\\\"+om.Ip,
 				"-u", om.Root, "-p", om.Pwd, instbash)
 		case "linux":
 			cmd = exec.Command("nohup", basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/monitoragent", "start", ">/dev/null", "2>&1", "&")
 		}
-		err := cmd.Run()
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
+		err := cmd.Start()
 		if err != nil {
-			l.Errorf("Start up monitoragent service failed")
+			l.Errorf("Install monitoragent service failed")
 		}
 	}
 	if flag_h2 == true {
+		l.Message("Begin to install H2MemDB service")
 		switch CurOS {
 		case "windows":
-			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")                            // path of the psexec
-			instbash := filepath.FromSlash(om.OMHome + "/services/H2CommonMemDB/installH2MemDB.bat") // path of the h2memdb service installation script
+			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")              // path of the psexec
+			instbash := filepath.FromSlash(om.OMHome + "/bin/command/srv_h2memdb.bat") // path of the h2memdb service installation script
 			cmd = exec.Command("cmd", "/C", psexec, "\\\\"+om.Ip,
 				"-u", om.Root, "-p", om.Pwd, instbash)
 		case "linux":
 			cmd = exec.Command("nohup", basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/h2memdb", "start", ">/dev/null", "2>&1", "&")
 		}
-		err := cmd.Run()
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
+		err := cmd.Start()
 		if err != nil {
 			l.Errorf("Start up h2memdb service failed")
 		}
 	}
 	if flag_mq == true {
+		l.Message("Begin to install ActiveMQ service")
 		switch CurOS {
 		case "windows":
-			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")                                      // path of the psexec
-			instbash := filepath.FromSlash(om.OMHome + "/services/activemq5.4.1/bin/win32/InstallService.bat") // path of the activemq service installation script
+			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")               // path of the psexec
+			instbash := filepath.FromSlash(om.OMHome + "/bin/command/srv_activemq.bat") // path of the activemq service installation script
 			cmd = exec.Command("cmd", "/C", psexec, "\\\\"+om.Ip,
 				"-u", om.Root, "-p", om.Pwd, instbash)
+			err := cmd.Start()
+			if err != nil {
+				l.Errorf("Install activemq service failed")
+			}
+			pssvc := filepath.FromSlash(basedir + "/PSTools/PsService.exe")
+			cmd = exec.Command("cmd", "/C", pssvc, "\\\\"+om.Ip,
+				"-u", om.Root, "-p", om.Pwd, "start", "ActiveMQ")
 		case "linux":
 			cmd = exec.Command(basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/activemq", "start")
 		}
-		err := cmd.Run()
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
+		err := cmd.Start()
 		if err != nil {
 			l.Errorf("Start up activemq service failed")
 		}
 	}
 	if flag_om == true {
+		l.Message("Begin to install OneMap service")
 		switch CurOS {
 		case "windows":
-			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")               // path of the psexec
-			instbash := filepath.FromSlash(om.OMHome + "/Tomcat6.0.29/bin/service.bat") // path of the onemap service installation script
+			psexec := filepath.FromSlash(basedir + "/PSTools/PsExec.exe")             // path of the psexec
+			instbash := filepath.FromSlash(om.OMHome + "/bin/command/srv_onemap.bat") // path of the onemap service installation script
 			cmd = exec.Command("cmd", "/C", psexec, "\\\\"+om.Ip,
 				"-u", om.Root, "-p", om.Pwd, instbash, "install")
 		case "linux":
 			cmd = exec.Command("nohup", basedir+"/sshpass/bin/sshpass", "-p", om.Pwd, "ssh", om.Root+"@"+om.Ip,
 				"/etc/init.d/onemap", "start", ">/dev/null", "2>&1", "&")
 		}
-		err := cmd.Run()
+		l.Debugf("The cmd path:%s\n", cmd.Path)
+		l.Debugf("The cmd args:%s\n", cmd.Args)
+		err := cmd.Start()
 		if err != nil {
 			l.Errorf("Start up onemap service failed")
 		}
@@ -279,7 +286,7 @@ func RemoteCollect(sd *SysDeploy) (los []Layout, err error) {
 			user+"@"+ip, omhome+"/config/SystemConfig/SysConfig.xml", basedir+"/conf/"+ip+".SysConfig.xml")
 		l.Debugf("sshpass -p %s scp %s@%s:%s/config/SystemConfig/SysConfig.xml %s/conf/%s.SysConfig.xml",
 			pwd, user, ip, omhome, basedir, ip)
-		err = cmd.Run()
+		err = cmd.Start()
 		if err != nil {
 			msg := "Remote copy the SysConfig.xml file failed"
 			l.Errorf(msg)

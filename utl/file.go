@@ -56,7 +56,7 @@ func Copy(srcfile string, dstfile string) error {
 					msg := fmt.Sprintf("Invalid file path(%s)", srcfile)
 					return errors.New(msg)
 				}
-				fmt.Println(filename)
+				//				fmt.Println(filename)
 				dstfile = filepath.FromSlash(dstfile + "/" + filename)
 			} else { // if dst is file then return error
 				msg := fmt.Sprintf("Cann't copy a directory(%s) to a file(%s)", srcfile, dstfile)
@@ -80,7 +80,7 @@ func Copy(srcfile string, dstfile string) error {
 					msg := fmt.Sprintf("Invalid file path(%s)", srcfile)
 					return errors.New(msg)
 				}
-				fmt.Println(filename)
+				//				fmt.Println(filename)
 				dstfile = filepath.FromSlash(dstfile + "/" + filename)
 			} else { // dst is file and delete it first
 				if serr = os.Remove(dstfile); serr != nil {
@@ -230,7 +230,7 @@ func GetSubDir(path string) ([]string, error) {
 	return pn, nil
 }
 
-//Get local directory
+// Get local directory
 func GetLocalDir() (string, error) {
 	basedir, err := filepath.Abs("./")
 	if err != nil || basedir == "" {
@@ -238,4 +238,39 @@ func GetLocalDir() (string, error) {
 	}
 
 	return basedir, nil
+}
+
+// Recursion remove the directory (For windows' long directory)
+func RemoveDir(dir string) error {
+	if Exists(dir) != true { // the directory isn't existed
+		return nil
+	}
+
+	entries, err := ioutil.ReadDir(dir)
+
+	for _, entry := range entries {
+		sfp := dir + string(filepath.Separator) + entry.Name()
+		if entry.IsDir() {
+			if err = RemoveDir(sfp); err != nil {
+				fmt.Printf("Remove the directory failed:%s\n", sfp)
+				return errors.New("Remove directory failed")
+			}
+		} else {
+			// perform remove file         
+			err = os.Remove(sfp)
+			if err != nil {
+				fmt.Printf("Remove the file failed:%s", sfp)
+				return errors.New("Remove file failed")
+			}
+		}
+	}
+
+	// remove the empty dir
+	err = os.Remove(dir)
+	if err != nil {
+		fmt.Printf("Remove current directory failed:%s\n", dir)
+		return err
+	}
+
+	return nil
 }

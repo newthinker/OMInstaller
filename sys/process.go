@@ -141,13 +141,6 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 		var lo *Layout = &(arr_lo[i])
 		var num int = len(sd.Nodes)
 
-	Unexpected:
-		if flag == false {
-			rate = PREPARE + PROCESS/num
-			mac.ResetSysDeploy(INSTALL)
-			continue
-		}
-
 		rate += CHECK_WORKINGDIR / num
 		go FormatResult(rate, "Check the working directory", nil)
 		var om OMPInfo
@@ -156,7 +149,11 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			l.Error(err)
 			flag = false
 			go FormatResult(rate, "Check the working directory failed", nil)
-			goto Unexpected
+
+			// Goto process the next machine
+			rate = PREPARE + PROCESS/num
+			mac.ResetSysDeploy(INSTALL)
+			continue
 		}
 
 		// get OneMap's version
@@ -167,7 +164,11 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			l.Errorf("Get OneMap version failed")
 			flag = false
 			go FormatResult(rate, "Get OneMap's version info failed", nil)
-			goto Unexpected
+
+			//			goto Unexpected
+			rate = PREPARE + PROCESS/num
+			mac.ResetSysDeploy(INSTALL)
+			continue
 		}
 
 		// get the container
@@ -177,7 +178,11 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			l.Errorf("Get OneMap container failed")
 			flag = false
 			go FormatResult(rate, "Get OneMap's container failed", nil)
-			goto Unexpected
+
+			//goto Unexpected
+			rate = PREPARE + PROCESS/num
+			mac.ResetSysDeploy(INSTALL)
+			continue
 		}
 
 		// get the info of the current machine
@@ -188,7 +193,10 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			l.Errorf("Get the %dth machine's info failed", i+1)
 			flag = false
 			go FormatResult(rate, "Get OneMap package's info failed", nil)
-			goto Unexpected
+
+			rate = PREPARE + PROCESS/num
+			mac.ResetSysDeploy(INSTALL)
+			continue
 		}
 
 		status := om.Deploy // current node's deploy status
@@ -199,20 +207,26 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			l.Error(err)
 			flag = false
 			go FormatResult(rate, "Package the OneMap failed", nil)
-			goto Unexpected
+
+			rate = PREPARE + PROCESS/num
+			mac.ResetSysDeploy(INSTALL)
+			continue
 		}
 
 		// refresh the SysConfig.xml file
 		rate += REFRESH_SYSCONFIG / num
 		go FormatResult(rate, "Refresh the SysConfig file", nil)
 		l.Message("Update the local config file")
-		srcfile := basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml"
+		srcfile := filepath.FromSlash(basedir + "/" + om.MacName + "_" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml")
 		omsc.LayOut = *lo
 		if err := RefreshSysConfig(omsc, srcfile); err != nil {
 			l.Error(err)
 			flag = false
 			go FormatResult(rate, "Refresh the SysConfig file failed", nil)
-			goto Unexpected
+
+			rate = PREPARE + PROCESS/num
+			mac.ResetSysDeploy(INSTALL)
+			continue
 		}
 
 		fmt.Printf("status:%d\n", status)
@@ -225,19 +239,22 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			l.Message("Update the local install script")
 			switch CurOS {
 			case "windows":
-				srcfile = filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/install.bat")
+				srcfile = filepath.FromSlash(basedir + "/" + om.MacName + "_" + ONEMAP_NAME + "/install.bat")
 			case "linux":
-				srcfile = filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/install.sh")
+				srcfile = filepath.FromSlash(basedir + "/" + om.MacName + "_" + ONEMAP_NAME + "/install.sh")
 			}
 			if err := UpdateScritp(&om, srcfile); err != nil {
 				l.Errorf("Update the local install script failed")
 				flag = false
 				go FormatResult(rate, "Update standalone install script failed", nil)
-				goto Unexpected
+
+				rate = PREPARE + PROCESS/num
+				mac.ResetSysDeploy(INSTALL)
+				continue
 			}
 
 			// remote copy the OneMap package
-			srcdir := filepath.FromSlash(basedir + "/" + ONEMAP_NAME) /// 目前不考虑异构平台
+			srcdir := filepath.FromSlash(basedir + "/" + om.MacName + "_" + ONEMAP_NAME) /// 目前不考虑异构平台
 			dstdir := filepath.FromSlash(om.OMHome)
 
 			rate += REMOTE_COPY / num
@@ -247,7 +264,10 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 				l.Errorf("Exec retmote copy failed")
 				flag = false
 				go FormatResult(rate, "Remote copy the OneMap package failed", nil)
-				goto Unexpected
+
+				rate = PREPARE + PROCESS/num
+				mac.ResetSysDeploy(INSTALL)
+				continue
 			}
 
 			// remote exec the install bash script
@@ -258,7 +278,10 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 				l.Errorf("Exec retmote command failed")
 				flag = false
 				go FormatResult(rate, "Remote exec the standalone install script failed", nil)
-				goto Unexpected
+
+				rate = PREPARE + PROCESS/num
+				mac.ResetSysDeploy(INSTALL)
+				continue
 			}
 
 			flag = true
@@ -269,19 +292,25 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			if err := om.OMPackage(); err != nil {
 				l.Error(err)
 				flag = false
-				goto Unexpected
+
+				rate = PREPARE + PROCESS/num
+				mac.ResetSysDeploy(INSTALL)
+				continue
 			}
 
 			// refresh the SysConfig.xml file
 			rate += REFRESH_SYSCONFIG / num
 			go FormatResult(rate, "Refresh the SysConfig file", nil)
 			l.Message("Update the local config file")
-			srcfile := filepath.FromSlash(basedir + "/" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml")
+			srcfile := filepath.FromSlash(basedir + "/" + om.MacName + "_" + ONEMAP_NAME + "/config/SystemConfig/SysConfig.xml")
 			omsc.LayOut = *lo
 			if err := RefreshSysConfig(omsc, srcfile); err != nil {
 				l.Error(err)
 				flag = false
-				goto Unexpected
+
+				rate = PREPARE + PROCESS/num
+				mac.ResetSysDeploy(INSTALL)
+				continue
 			}
 
 			/// remote mount sshfs
@@ -295,15 +324,22 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			/// remote exec the standalone uninstall script(include uninstall the services
 			/// and delete the directory)
 		}
+		///////////////////////////////////////////////////////////////////////////////////
+		rate += CLEAN / num
+		go FormatResult(rate, "Remove the temp directory", nil)
+		// delete the temp directory
+		if err := os.RemoveAll(filepath.FromSlash(basedir + "/" + om.MacName + "_" + ONEMAP_NAME)); err != nil {
+			l.Warningf("Remove the temp directory failed and please do it manually")
+		}
 	}
 
-	rate = PREPARE + PROCESS
-	go FormatResult(rate, "Do the cleaning up work", nil)
-	// delete the temp directory
-	if err := os.RemoveAll(filepath.FromSlash(basedir + "/" + ONEMAP_NAME)); err != nil {
-		l.Warningf("Remove the temp directory failed and please do it manually")
-	}
-
+	/*	rate = PREPARE + PROCESS
+		go FormatResult(rate, "Do the cleaning up work", nil)
+		// delete the temp directory
+		if err := os.RemoveAll(filepath.FromSlash(basedir + "/" + ONEMAP_NAME)); err != nil {
+			l.Warningf("Remove the temp directory failed and please do it manually")
+		}
+	*/
 	// refresh the SysDeploy.xml config file
 	filename := filepath.FromSlash(basedir + "/conf/" + SYS_DEPLOY)
 	if err := RefreshSysDeploy(&sd, filename); err != nil {

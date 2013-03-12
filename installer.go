@@ -14,13 +14,6 @@ import (
 )
 
 func main() {
-	/*	
-		// check the windows's version
-		dll := syscall.MustLoadDLL("kernel32.dll")
-		p := dll.MustFindProc("GetVersion")
-		v, _, _ := p.Call()
-		fmt.Printf("Windows version %d.%d (Build %d)\n", byte(v), uint8(v>>8), uint16(v>>16))
-	*/
 	////////////////////////////////////////////////////////////////
 	// init log
 	l, err := log.NewLog("inst.log", log.LogAll, log.DefaultBufSize)
