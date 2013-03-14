@@ -81,42 +81,42 @@ function regEnv(){
 	return 0
 }
 
-# @Discription: registration a system service
-# @Arguments: regService SERVICE_NAME
-# @RET: 0 => registration service successfully
+# @Discription: registration a server
+# @Arguments: regServer SERVER_NAME
+# @RET: 0 => registration server successfully
 #       !0 => registration failed
-function regService(){
+function regServer(){
 	if [ $# -eq 0 ];then
-		echo "ERROR: Please input the registration service name"
+		echo "ERROR: Please input the registration server name"
 		return 1
 	elif [ $# -ne 1 ];then
-		echo "ERROR: Please input only one service name per time"
+		echo "ERROR: Please input only one server name per time"
 		return 1
 	fi
 
 	srvName=$1
 	cp ${ONEMAP_HOME}/bin/service/$srvName /etc/init.d/
 	
-	# registration the service
+	# registration the server
 	chmod +x /etc/init.d/$srvName
 	chkconfig --add $srvName
 	RET=$?
 	if ( ! [ $RET -eq 0 ] );then
-		echo "ERROR: Registration service $srvName failed"
+		echo "ERROR: Registration server $srvName failed"
 		return 2
 	fi
 	# set the status
 	chkconfig $srvName on
 	RET=$?
 	if ( ! [ $RET -eq 0 ] );then
-		echo "ERROR: Set the status of service $srvName failed"
+		echo "ERROR: Set the status of server $srvName failed"
 		return 2
 	fi
 	# start the server
 	#service $srvName start
 #    /etc/init.d/${srvName} start &
 #	if ( ! [ $RET -eq 0 ] );then
-#		echo "ERROR: Start service $srvName failed"
+#		echo "ERROR: Start server $srvName failed"
 #		return 2
 #	fi
 }
@@ -134,15 +134,16 @@ function chkServer(){
 	then
 		if test -f "/var/run/${srvName}.pid"
 		then
-			if test -z "$(cat /var/run/$srvName)"
+			if test -z "$(cat /var/run/${srvName}.pid)"
 			then 
 				echo "INFO: The pid file of Service $srvName is null"
 				return 3
 			fi
 			
-			if test ps -p $(cat /var/run/$srvName) >/dev/null
+			ps -p $(cat /var/run/${srvName}.pid) >/dev/null
+			if test $? -eq 0
 			then
-				echo "INFO: Server $srvName(pid: cat /var/run/${srvName}.pid)"
+				echo "INFO: Server $srvName(pid: cat /var/run/${srvName}.pid) is running"
 				return 0
 			else
 				echo "INFO: Server $srvName has terminated unexpectedly"
@@ -150,13 +151,12 @@ function chkServer(){
 			fi
 		else
 			echo "INFO: Server $srvName isn't running"
-			return 1
+			return 2
 		fi
 	else
 		echo "INFO: Server $srvName hasn't installed"
-		return 2
+		return 4
 	fi
-
 }
 
 # @Discription: Check the oracle database
@@ -373,7 +373,7 @@ function instSrvMonitor(){
     fi
 
 	# registration the service
-	regService "$MA"
+	regServer "$MA"
 	RET=$?
 	if [ $RET -ne 0 ];then
 		echo "ERROR: Failed to install MonitorAgent Server"
@@ -407,32 +407,59 @@ function instSrvDB(){
 		echo "ERROR: Something wrong with oracle database, please check!"
 		return 1
 	fi
-	
-	# copy files
-	#cp -r OneMap/db $ONEMAP_HOME/
-	
-	# update the ORACLE_HOME path of SQL scripts
-	sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/GeoShareManager/geoshare_platform.sql
-	sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/Portal/geoshare_portal.sql
-	sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/GeoCoding/geo_coding.sql
-	sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/GeoPortal/geo_portal.sql
-	
-	# create the database and import data
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/GeoShareManager/geoshare_platform.sql \"" 
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${MANAGER_USER}/${MANAGER_PWD} @$ONEMAP_HOME/db/GeoShareManager/Manager_Table_Script.sql \"" 
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${MANAGER_USER}/${MANAGER_PWD} @$ONEMAP_HOME/db/GeoShareManager/Manager_Table_Data.sql \"" 
-	
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/Portal/geoshare_portal.sql \""
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${PORTAL_USER}/${PORTAL_PWD} @$ONEMAP_HOME/db/Portal/Portal_Table_Script.sql \"" 
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${PORTAL_USER}/${PORTAL_PWD} @$ONEMAP_HOME/db/Portal/Portal_Table_Data.sql \"" 
 
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/GeoCoding/geo_coding.sql \""
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${GEOCODING_USER}/${GEOCODING_PWD} @$ONEMAP_HOME/db/GeoCoding/geo_coding_table.sql \"" 
-	
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/GeoPortal/geo_portal.sql \""
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${GEOPORTAL_USER}/${GEOPORTAL_PWD} @$ONEMAP_HOME/db/GeoPortal/geo_portal_table.sql \"" 	
-	su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${GEOPORTAL_USER}/${GEOPORTAL_PWD} @$ONEMAP_HOME/db/GeoPortal/geo_portal_data.sql \"" 	
-	
+	# GeoSharePlatform
+	if [ -f "${ONEMAP_HOME}/db/GeoShareManager/geoshare_platform.sql" ]; then
+		# update the sql scripts
+		sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/GeoShareManager/geoshare_platform.sql
+		sed -i "s:\$MANAGER_TS:$MANAGER_TS:g"  ${ONEMAP_HOME}/db/GeoShareManager/geoshare_platform.sql
+		sed -i "s:\$MANAGER_USER:$MANAGER_USER:g"  ${ONEMAP_HOME}/db/GeoShareManager/geoshare_platform.sql
+		sed -i "s:\$MANAGER_PWD:$MANAGER_PWD:g"  ${ONEMAP_HOME}/db/GeoShareManager/geoshare_platform.sql
+		#create database and import data
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/GeoShareManager/geoshare_platform.sql \"" 
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${MANAGER_USER}/${MANAGER_PWD} @$ONEMAP_HOME/db/GeoShareManager/Manager_Table_Script.sql \"" 
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${MANAGER_USER}/${MANAGER_PWD} @$ONEMAP_HOME/db/GeoShareManager/Manager_Table_Data.sql \"" 
+	fi
+	# SubPlatform
+	if [ -f "${ONEMAP_HOME}/db/SubPlatform/geoshare_sub_platform.sql" ]; then
+		# update the sql scripts
+		sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/SubPlatform/geoshare_sub_platform.sql
+		sed -i "s:\$SUB_TS:$SUB_TS:g"  ${ONEMAP_HOME}/db/SubPlatform/geoshare_sub_platform.sql
+		sed -i "s:\$SUB_USER:$SUB_USER:g"  ${ONEMAP_HOME}/db/SubPlatform/geoshare_sub_platform.sql
+		sed -i "s:\$SUB_PWD:$SUB_PWD:g"  ${ONEMAP_HOME}/db/SubPlatform/geoshare_sub_platform.sql
+		# create the database and import data
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${MANAGER_USER}/${MANAGER_PWD} @$ONEMAP_HOME/db/SubPlatform/Sub_Table_Script.sql \"" 
+	fi
+	# GeoSharePortal
+	if [ if "${ONEMAP_HOME}/db/Portal/geoshare_portal.sql" ]; then
+		sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/Portal/geoshare_portal.sql
+		sed -i "s:\$PORTAL_TS:$PORTAL_TS:g"  ${ONEMAP_HOME}/db/Portal/geoshare_portal.sql
+		sed -i "s:\$PORTAL_USER:$PORTAL_USER:g"  ${ONEMAP_HOME}/db/Portal/geoshare_portal.sql
+		sed -i "s:\$PORTAL_PWD:$PORTAL_PWD:g"  ${ONEMAP_HOME}/db/Portal/geoshare_portal.sql
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/Portal/geoshare_portal.sql \""
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${PORTAL_USER}/${PORTAL_PWD} @$ONEMAP_HOME/db/Portal/Portal_Table_Script.sql \"" 
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${PORTAL_USER}/${PORTAL_PWD} @$ONEMAP_HOME/db/Portal/Portal_Table_Data.sql \"" 
+	fi
+	#GeoCoding
+	if [ if "${ONEMAP_HOME}/db/GeoCoding/geo_coding.sql" ]; then
+		sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/GeoCoding/geo_coding.sql
+		sed -i "s:\$GEOCODING_TS:$GEOCODING_TS:g"  ${ONEMAP_HOME}/db/GeoCoding/geo_coding.sql
+		sed -i "s:\$GEOCODING_USER:$GEOCODING_USER:g"  ${ONEMAP_HOME}/db/GeoCoding/geo_coding.sql
+		sed -i "s:\$GEOCODING_PWD:$GEOCODING_PWD:g"  ${ONEMAP_HOME}/db/GeoCoding/geo_coding.sql
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/GeoCoding/geo_coding.sql \""
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${GEOCODING_USER}/${GEOCODING_PWD} @$ONEMAP_HOME/db/GeoCoding/geo_coding_table.sql \"" 
+	fi
+	# GeoPortal
+	if [ -f "${ONEMAP_HOME}/db/GeoPortal/geo_portal.sql" ]; then
+		sed -i "s:\$ORACLE_DATA:$ORACLE_DATA:g"  ${ONEMAP_HOME}/db/GeoPortal/geo_portal.sql
+		sed -i "s:\$GEOPORTAL_TS:$GEOPORTAL_TS:g"  ${ONEMAP_HOME}/db/GeoPortal/geo_portal.sql
+		sed -i "s:\$GEOPORTAL_USER:$GEOPORTAL_USER:g"  ${ONEMAP_HOME}/db/GeoPortal/geo_portal.sql
+		sed -i "s:\$GEOPORTAL_PWD:$GEOPORTAL_PWD:g"  ${ONEMAP_HOME}/db/GeoPortal/geo_portal.sql
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${ORACLE_SYSTEM_ACCOUNT}/${ORACLE_SYSTEM_PWD} as sysdba @$ONEMAP_HOME/db/GeoPortal/geo_portal.sql \""
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${GEOPORTAL_USER}/${GEOPORTAL_PWD} @$ONEMAP_HOME/db/GeoPortal/geo_portal_table.sql \"" 	
+		su - ${ORCL_ACCOUNT} -c "/bin/sh -c \"echo exit | $ORACLE_HOME/bin/sqlplus ${GEOPORTAL_USER}/${GEOPORTAL_PWD} @$ONEMAP_HOME/db/GeoPortal/geo_portal_data.sql \"" 	
+	fi
+
 	echo "INFO: Finish installing Database server"
 			
 	return 0
@@ -484,7 +511,7 @@ function instSrvGIS(){
 
 		# cp -r OneMap/webapps/arcgis*  OneMap/webapps/LogServer  OneMap/webapps/Remote*  OneMap/webapps/ROOT $ONEMAP_HOME/WLS1035/onemap/onemap/webapps	
 			
-		regService "$ONEMAP"
+		regServer "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -524,7 +551,7 @@ function instSrvMain(){
 	if test $RET -eq 2 
 	then
 		# cp -r OneMap/services/H2CommonMemDB $ONEMAP_HOME/services/
-		regService "$H2"
+		regServer "$H2"
 		RET=$?
 		if test $RET -ne 0
 		then
@@ -556,7 +583,7 @@ function instSrvMain(){
 		
 		# cp -r OneMap/webapps/GeoShareManager  OneMap/webapps/BufferAnalyst	OneMap/webapps/ROOT ${ONEMAP_HOME}/WLS1035/onemap/onemap/webapps
 		
-		regService "$ONEMAP"
+		regServer "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -601,7 +628,7 @@ function instSrvWEB(){
 		
 		# cp -r OneMap/webapps/Portal  OneMap/webapps/RIA_APP_WIZARD OneMap/webapps/arcgis_js_api ${ONEMAP_HOME}/WLS1035/onemap/onemap/webapps
 		
-		regService "$ONEMAP"
+		regServer "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -646,7 +673,7 @@ function instSrvToken(){
 		
 		# cp -r OneMap/webapps/RemoteTokenServer  ${ONEMAP_HOME}/WLS1035/onemap/onemap/webapps
 		
-		regService "$ONEMAP"
+		regServer "$ONEMAP"
 		RET=$?
 		if [ $RET -ne 0 ];then
 			echo "ERROR: Failed to install onemap Server"
@@ -679,7 +706,7 @@ function instSrvMsg(){
 	# cp -r OneMap/services/activemq5.4.1 $ONEMAP_HOME/services/
 	
 	# registration the service
-	regService "$MQ"
+	regServer "$MQ"
 	RET=$?
 	if [ $RET -ne 0 ];then
 		echo "ERROR: Failed to install ActiveMQ Server"

@@ -10,20 +10,24 @@ set javahome=%ONEMAP_HOME%\Java\jdk1.6.26
 set activemqhome=%ONEMAP_HOME%\services\activemq5.4.1
 set tomcathome=%ONEMAP_HOME%\Tomcat6.0.29
  
+echo 新建环境变量 ONEMAP_HOME=%ONEMAP_HOME%
+reg add "%regpath%" /v "ONEMAP_HOME" /d "%ONEMAP_HOME%" /f
+echo.
+ 
 echo 新建环境变量 JAVA_HOME=%javahome%
-reg add "%regpath%" /v "JAVA_HOME" /d %javahome% /f
+reg add "%regpath%" /v "JAVA_HOME" /d "%javahome%" /f
 echo.
 
 echo 新建环境变量 CATALINA_HOME=%tomcathome%
-reg add "%regpath%" /v "CATALINA_HOME" /d %tomcathome% /f
+reg add "%regpath%" /v "CATALINA_HOME" /d "%tomcathome%" /f
 echo.
 
 echo 新建环境变量 CATALINA_BASE=%tomcathome%
-reg add "%regpath%" /v "CATALINA_BASE" /d %tomcathome% /f
+reg add "%regpath%" /v "CATALINA_BASE" /d "%tomcathome%" /f
 echo.
  
 echo 新建环境变量 CLASSPATH=.;%activemqhome%\lib;%javahome%\lib\tools.jar;%javahome%\lib\dt.jar
-reg add "%regpath%" /v "CLASSPATH" /d .;%activemqhome%\lib;%javahome%\lib\tools.jar;%javahome%\lib\dt.jar /t REG_EXPAND_SZ /f
+reg add "%regpath%" /v "CLASSPATH" /d ".;%activemqhome%\lib;%javahome%\lib\tools.jar;%javahome%\lib\dt.jar" /t REG_EXPAND_SZ /f
 echo.
 
 ::echo 新建环境变量 JAVA_OPTS=-Xms2048m -Xmx2048m -Duser.timezone=GMT+08 -XX:PermSize=256M -XX:MaxPermSize=1024M -Dsun.lang.ClassLoader.allowArraySyntax=true

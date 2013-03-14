@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
+	"time"
 )
 
 // remote copy the OneMap package
@@ -27,7 +29,7 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 			om.Pwd, "/user:"+om.Ip+"\\"+om.Root)
 		l.Debugf("The cmd path:%s\n", cmd.Path)
 		l.Debugf("The cmd args:%s\n", cmd.Args)
-		if err := cmd.Start(); err != nil {
+		if err := cmd.Run(); err != nil {
 			err := errors.New("Create remote link failed")
 			l.Error(err)
 			return err
@@ -37,17 +39,47 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 		dstdir = filepath.FromSlash(dstdir)
 		temp := strings.Replace(dstdir, ":", "$", 1)
 		if fi.IsDir() {
-			cmd = exec.Command("cmd", "/C", "xcopy", srcdir, "\\\\"+om.Ip+"\\"+temp, "/I", "/E")
+			// /e => copy empty sub directory, /MT:128 => 128 multi-thread number, /r:3 => retry times when copy failed
+			cmd = exec.Command("cmd", "/C", "robocopy", srcdir, "\\\\"+om.Ip+"\\"+temp, "/e", "/MT:128", "/r:3")
 		} else {
-			cmd = exec.Command("cmd", "/C", "copy", srcdir, "\\\\"+om.Ip+"\\"+temp, "/S")
+			// first get the source directory and filename
+			tmpfile := srcdir[strings.LastIndex(srcdir, string(filepath.Separator))+1 : len(srcdir)]
+			tmpdir := srcdir[0:strings.LastIndex(srcdir, string(filepath.Separator))]
 
+			if tmpdir == "" || tmpfile == "" {
+				err := errors.New("Invalid source filepath:" + srcdir)
+				l.Error(err)
+				return err
+			}
+			cmd = exec.Command("cmd", "/C", "robocopy", tmpdir, "\\\\"+om.Ip+"\\"+temp, tmpfile, "/MT:128", "/r:3")
 		}
 		l.Debugf("The cmd path:%s\n", cmd.Path)
 		l.Debugf("The cmd args:%s\n", cmd.Args)
-		if err := cmd.Run(); err != nil {
-			err := errors.New("Remote copy directory failed")
+		if err := cmd.Start(); err != nil {
+			err := errors.New("Fatal error of the command")
 			l.Error(err)
 			return err
+		}
+
+		// parse the exit code of robocopy
+		if err := cmd.Wait(); err != nil {
+			if exiterr, ok := err.(*exec.ExitError); ok {
+				// The program has exited with an exit code != 0
+				if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+					//					log.Printf("Exit Status: %d", status.ExitStatus())
+					ret := status.ExitStatus()
+					l.Debugf("The exit status:%d", ret)
+					// 0 | 1 | 2 : normally(See robocopy's return codes in robocopy.doc for details)
+					if ret < 0 || ret > 2 {
+						l.Debugf("Remote copy error")
+						return err
+					}
+				}
+			} else {
+				//				log.Fatalf("cmd.Wait: %v", err)
+				l.Debugf("Remote copy abnormal")
+				return err
+			}
 		}
 
 		// delete the remote link
@@ -135,6 +167,8 @@ func (om *OMPInfo) OMRemoteExec() error {
 		msg := "Install OneMap server failed"
 		return errors.New(msg)
 	}
+
+	time.Sleep(10000 * time.Millisecond) // wait for the server log out
 
 	// run the sysconfig(only windows, because log out the system to enable the java enviroment)
 	if CurOS == "windows" {

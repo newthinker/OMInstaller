@@ -49,5 +49,7 @@ echo.
 ::reg delete "%regpath%" /v JAVA_OPTS  /f
 ::echo.
 
-rem @pause
-rem exit
+echo 删除环境变量 ONEMAP_HOME
+reg delete "%regpath%" /v ONEMAP_HOME /f
+echo.
+

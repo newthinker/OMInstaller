@@ -44,14 +44,7 @@ func Copy(srcfile string, dstfile string) error {
 	if si.IsDir() {
 		if !os.IsNotExist(derr) { // dst is existed
 			if di.IsDir() { // if dst is dir then add the last
-				var filename string
-				parts := strings.Split(srcfile, string(filepath.Separator))
-				for i := (len(parts) - 1); i >= 0; i-- {
-					if parts[i] != "" {
-						filename = parts[i]
-						break
-					}
-				}
+				filename := srcfile[strings.LastIndex(srcfile, string(filepath.Separator))+1 : len(srcfile)]
 				if filename == "" {
 					msg := fmt.Sprintf("Invalid file path(%s)", srcfile)
 					return errors.New(msg)
@@ -67,20 +60,12 @@ func Copy(srcfile string, dstfile string) error {
 	} else {
 		if !os.IsNotExist(derr) { // dst is existed
 			if di.IsDir() { // dst is directory and then add the filename
-				/// why not filepath split???
-				var filename string
-				parts := strings.Split(srcfile, string(filepath.Separator))
-				for i := (len(parts) - 1); i >= 0; i-- {
-					if parts[i] != "" {
-						filename = parts[i]
-						break
-					}
-				}
+				/// not compatible at windows platform of path package
+				filename := srcfile[strings.LastIndex(srcfile, string(filepath.Separator))+1 : len(srcfile)]
 				if filename == "" {
 					msg := fmt.Sprintf("Invalid file path(%s)", srcfile)
 					return errors.New(msg)
 				}
-				//				fmt.Println(filename)
 				dstfile = filepath.FromSlash(dstfile + "/" + filename)
 			} else { // dst is file and delete it first
 				if serr = os.Remove(dstfile); serr != nil {
