@@ -31,10 +31,14 @@
 						<div class="select-controls">
 							<p class="select-control"name="base-select-os">
 								<label class="control-label"> 操作系统类型: </label>
-								<select class="select-value"name="base_os">
+								<select class="select-value"name="base_os" onchange="baseoschangehandler(this);">
 									<option value="Windows">Windows</option>
 									<option value="Linux">Linux</option>
 								</select>
+								<span name="mcwrapper" style="display: inline-block;">
+									<input type="checkbox" name="base_manual" style="margin-left: 15px;"/>
+									<label style="margin-left: 5px;">手动拷贝</label>
+								</span>
 							</p >
 							<p  class="select-control"name="base-select-arch">
 								<label class="control-label"> 操作系统架构: </label>
@@ -57,7 +61,7 @@
 								<input type="text"placeholder="服务器机器名"class="input-value"name="base_macname">
 
 							</p >
-							<p  class="input-control">
+							<p  class="input-control dn">
 								<label class="control-label"for="base-label-domname">服务器机域名: </label>
 								<input type="text"placeholder="服务器机域名"class="input-value"name="base_domname">
 
@@ -91,7 +95,7 @@
 
 							<p  class="input-control">
 								<label class="control-label"for="base-label-cluster_enabled"> 集群是否启用: </label>
-								<input type="checkbox" class="input-value"name="base_cluster_enabled" style="width: auto;" onclick="clusterEnableClickHandler(this)">
+								<input type="checkbox" class="input-value"name="base_cluster_enabled"  style="width: auto;" onclick="clusterEnableClickHandler(this)">
 
 							</p >
 							<p  class="input-control base_cluster_type_p dn">
@@ -134,13 +138,13 @@
 			</div>
 			<div class="pregressinfos">
 				<!--p>
-					>> 创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...
+				>> 创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...创建gis服务器1...
 				</p>
 				<p>
-					>> 创建gis服务器2...
+				>> 创建gis服务器2...
 				</p>
 				<p>
-					>> 创建gis服务器3...
+				>> 创建gis服务器3...
 				</p-->
 			</div>
 		</div>

@@ -21,12 +21,11 @@ import (
 
 const (
 	SERVER_MAPPING = "SrvMapping.xml" // 服务器类型映射文件名 
-	//	SYS_INFO       = "SysInfo.xml"    // 服务器参数配置文件
-	SYS_CONFIG  = "SysConfig.xml" // 配置工具配置文件名
-	SYS_DEPLOY  = "SysDeploy.xml" // 系统部署配置文件
-	ONEMAP_NAME = "OneMap"        // OneMap directory name
-	TOMCAT      = "Tomcat"        // Tomcat container
-	WEBLOGIC    = "Weblogic"      // Weblogic container
+	SYS_CONFIG     = "SysConfig.xml"  // 配置工具配置文件名
+	SYS_DEPLOY     = "SysDeploy.xml"  // 系统部署配置文件
+	ONEMAP_NAME    = "OneMap"         // OneMap directory name
+	TOMCAT         = "Tomcat"         // Tomcat container
+	WEBLOGIC       = "Weblogic"       // Weblogic container
 )
 
 // 安装程序的三种状态
@@ -81,6 +80,8 @@ type OMPInfo struct {
 	DB_PWD    [6]string // 用户密码
 
 	AGS_Home string // AGS home目录
+
+	Manual bool /// manual copy the OneMap package at windows platform
 }
 
 var (
@@ -137,6 +138,7 @@ func (om *OMPInfo) OMPackage() error {
 			break
 		}
 	}
+
 	if err := om.OMCopy(srcdir, dstdir); err != nil {
 		l.Errorf("Package OneMap failed")
 		return err
@@ -163,22 +165,7 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 		msg := "OneMap directory isn't existed"
 		return errors.New(msg)
 	}
-	/*	si, err := os.Stat(src)
-		if err != nil {
-			l.Error(err)
-			return err
-		}
-		if (utl.Exists(dst)) == true {
-			if err := os.RemoveAll(dst); err != nil {
-				l.Errorf("Remove the old OneMap package failed")
-				return err
-			}
-		}
-		if err := os.Mkdir(dst, si.Mode()); err != nil {
-			l.Errorf("Make OneMap directory failed")
-			return err
-		}
-	*/
+
 	// copy public
 	var inst_script string
 	switch CurOS {
@@ -193,6 +180,39 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 		msg := "Copy install bash script failed"
 		return errors.New(msg)
 	}
+	if (utl.Exists(dst + "/config")) != true {
+		if om.Manual {
+			conffile := src + "/config/SystemConfig/SysConfig.xml"
+			if (utl.Exists(conffile)) != true {
+				msg := "SysConfig file isn't existed"
+				l.Errorf(msg)
+				return errors.New(msg)
+			}
+			// make the dest directory
+			si, err := os.Stat(src)
+			if err != nil {
+				l.Error(err)
+				return err
+			}
+			dest := dst + "/config/SystemConfig"
+			err = os.MkdirAll(dest, si.Mode())
+			if err != nil {
+				return err
+			}
+			if err := utl.Copy(conffile, dest+"/SysConfig.xml"); err != nil {
+				msg := "Copy directory config directory failed"
+				return errors.New(msg)
+			}
+
+			return nil
+		} else {
+			if err := utl.Copy(src+"/config", dst); err != nil {
+				msg := "Copy directory config directory failed"
+				return errors.New(msg)
+			}
+		}
+	}
+
 	if (utl.Exists(dst + "/arcgis")) != true {
 		if err := utl.Copy(src+"/arcgis", dst); err != nil {
 			msg := "Copy directory arcgis directory failed"
@@ -202,12 +222,6 @@ func (om *OMPInfo) OMCopy(src string, dst string) error {
 	if (utl.Exists(dst + "/bin")) != true {
 		if err := utl.Copy(src+"/bin", dst); err != nil {
 			msg := "Copy directory bin directory failed"
-			return errors.New(msg)
-		}
-	}
-	if (utl.Exists(dst + "/config")) != true {
-		if err := utl.Copy(src+"/config", dst); err != nil {
-			msg := "Copy directory config directory failed"
 			return errors.New(msg)
 		}
 	}
@@ -360,6 +374,12 @@ func (om *OMPInfo) OMGetInfo(mi *node, sm *ServerMapping, lo *Layout) error {
 			om.Enabled, _ = strconv.Atoi(attvalue)
 		case "cluster_ip":
 			om.CIP = attvalue
+		case "manual": /// manual copy the OneMap package only for windows
+			if attvalue == "1" {
+				om.Manual = true
+			} else { // default or others not copy manually
+				om.Manual = false
+			}
 		}
 	}
 

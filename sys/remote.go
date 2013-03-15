@@ -51,7 +51,7 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 				l.Error(err)
 				return err
 			}
-			cmd = exec.Command("cmd", "/C", "robocopy", tmpdir, "\\\\"+om.Ip+"\\"+temp, tmpfile, "/MT:128", "/r:3")
+			cmd = exec.Command("cmd", "/C", "robocopy", tmpdir, "\\\\"+om.Ip+"\\"+temp, tmpfile, "/r:3")
 		}
 		l.Debugf("The cmd path:%s\n", cmd.Path)
 		l.Debugf("The cmd args:%s\n", cmd.Args)
@@ -69,8 +69,8 @@ func (om *OMPInfo) OMRemoteCopy(srcdir string, dstdir string) error {
 					//					log.Printf("Exit Status: %d", status.ExitStatus())
 					ret := status.ExitStatus()
 					l.Debugf("The exit status:%d", ret)
-					// 0 | 1 | 2 : normally(See robocopy's return codes in robocopy.doc for details)
-					if ret < 0 || ret > 2 {
+					// 0 | 1 | 2 | 3 | 4 : normally(See robocopy's return codes in robocopy.doc for details)
+					if ret < 0 || ret > 7 {
 						l.Debugf("Remote copy error")
 						return err
 					}

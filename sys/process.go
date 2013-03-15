@@ -229,7 +229,7 @@ func Process(sd SysDeploy, arr_lo []Layout) error {
 			continue
 		}
 
-		fmt.Printf("status:%d\n", status)
+		l.Debugf("status:%d\n", status)
 		if status == MAINTAIN { // do nothing
 			continue
 		} else if status == INSTALL { // install process

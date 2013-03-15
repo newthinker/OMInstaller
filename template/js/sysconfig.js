@@ -330,20 +330,21 @@ function postAllSeverConfigInfos() {
     }
     var data = JSON.stringify(configInfo);
     console.log(data);
-    debug != -1 ? "" : jx.load("syshandler?input=" + data, postConfigInfosHandler, "", "post");
+    debug != -1 ? "" : jx.load("syshandler?input=" + data, postConfigInfosHandler, "json", "post");
 
     progress.showPregressDialog();
 
 }
 
 function postConfigInfosHandler(data) {
-    /*switch (data.Ret) {
+    switch (data.Ret) {
         case 0:
             alert("服务器配置成功!");
+            window.location.reload();
             break;
         default:
             alert(data.Reason);
-    }*/
+    }
 
 }
 
@@ -483,6 +484,17 @@ function baseContainerValueChangeHandler(obj) {
     var value = obj.value;
     var port = dom.getDom('base_port',tabContainer.selectedTab,"input")[0];
     port.value = value == "Tomcat" ? "8080" : "7001";
+}
+
+function baseoschangehandler(obj){
+    var tab=tabContainer.selectedTab;
+    var mcwrapper=dom.getDom("mcwrapper",tab,"span")[0];
+    if(obj.value=="Windows"){
+        mcwrapper.style.display="inline-block";
+    }
+    else{
+         mcwrapper.style.display="none";
+    }
 }
 
 //验证配置信息
