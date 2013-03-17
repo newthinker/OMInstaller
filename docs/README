@@ -3,6 +3,11 @@ contents:
 2. Installation
 --------------------------------------------------------
 1.Release Notes
+  2013.03.18
+    增加了对windows系统的支持，但目前只提供相同系统之间的安装支持(即不支持跨平台混合安装模式)；
+    支持的Windows操作系统为Windows Server2003, Windows Vista, Windows Server2008, Win7等(也就是支持robocopy组件的windows操作系统);
+    针对windows平台远程拷贝速度慢的特点，专门提供了手动拷贝的支持；
+    
   2013.01.04
     这是OneMap安装程序在Linux平台上发布的第一个正式版本；
     目前只在RHEL5.x系列操作系统上进行了测试；

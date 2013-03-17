@@ -224,32 +224,6 @@ func OpenSMConfig(filename string) (ServerMapping, error) {
 	return sm, nil
 }
 
-/*
-func OpenSIConfig(filename string) (SysInfo, error) {
-	var si SysInfo
-
-	// check the config file whether existed
-	if flag := utl.Exists(filename); flag != true {
-		err := fmt.Errorf("Config file(%s) isn't existed", filename)
-		l.Error(err)
-		return sm, err
-	}
-
-	file, err1 := os.Open(filename)
-	if err1 != nil {
-		return si, err1
-	}
-	data, err2 := ioutil.ReadAll(file)
-	if err2 != nil {
-		return si, err2
-	}
-	if err3 := xml.Unmarshal([]byte(data), &si); err3 != nil {
-		return si, err3
-	}
-
-	return si, nil
-} */
-
 func OpenSCConfig(filename string) (SysConfig, error) {
 	var sc SysConfig
 
@@ -447,83 +421,26 @@ func ResetSysConfig() {
 	}
 }
 
-/*///////////////////////////////////////////////////////
-func main() {
-	file, err := os.Open("../conf/SrvMapping.xml")
-	defer file.Close()
-	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
-	}
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
+// Parse SysDeploy node's IP attribute
+func GetNodeIP(mi *node) (string, error) {
+	var ip string
+
+	if mi == nil {
+		msg := "The SysDeploy node is null"
+		return ip, errors.New(msg)
 	}
 
-	var sm ServerMapping
-	if err := xml.Unmarshal([]byte(data), &sm); err != nil {
-		fmt.Println(err)
-		return
+	// get attributes
+	for i := 0; i < len(mi.Attrs); i++ {
+		attname := mi.Attrs[i].Attrname
+		attvalue := mi.Attrs[i].Attrvalue
+		if attname != "ip" {
+			continue
+		}
+
+		ip = attvalue
+		break
 	}
 
-	fmt.Println("-------------------------------------")
-	fmt.Println("ServerMampping's server:")
-	for i := 0; i < len(sm.Servers); i++ {
-		fmt.Printf("The %d server is:%s\n", i+1, sm.Servers[i])
-	}
-
-	fmt.Println("-------------------------------------")
-	file, err = os.Open("../conf/SysInfo.xml")
-	defer file.Close()
-	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
-	}
-	data, err = ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
-	}
-	fmt.Println("SysInfo's info:")
-
-	var si SysInfo
-	if err := xml.Unmarshal([]byte(data), &si); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	for i := 0; i < len(si.Machines); i++ {
-		fmt.Printf("The %d machine is %s\n", i+1, si.Machines[i])
-	}
-
-	fmt.Println("-------------------------------------")
-	fmt.Println("SysConfig's info:")
-	file, err := os.Open("../conf/SysConfig.xml")
-	defer file.Close()
-	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
-	}
-	data, err = ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
-	}
-
-	var sc SysConfig
-	if err := xml.Unmarshal([]byte(data), &sc); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Printf("The OneMapHome is:%s\n", sc.OneMapHome)
-	for i := 0; i < len(sc.LayOut.Servers); i++ {
-		fmt.Printf("The %d Server is:%s\n", i+1, sc.LayOut.Servers[i])
-	}
-
-	fmt.Println("-------------------------------------")
-	fmt.Printf("The FileMap is:%s\n", sc.FileMap)
-
+	return ip, nil
 }
-*/

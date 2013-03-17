@@ -61,7 +61,7 @@ for %%p in (%inputs%) do (
                     )
                     echo "Install manager database successfully"	>>%log%
                 )
-                if exist %ONEMAP_HOME%\db\Portal\geoshare_portal.sql (
+                if exist %ONEMAP_HOME%\db\Portal\geoshare_portal.sql.bak (
                     call :REPLACE %ONEMAP_HOME%\db\Portal\geoshare_portal.sql
                     if %errorlevel% neq 0 (
                         echo "Update portal script failed"	>>%log%
@@ -156,6 +156,16 @@ for %%p in (%inputs%) do (
                     exit /b -31
                 )
             )
+            rem copy crossdomain files
+            if exist %AGS_HOME%\java\manager\web_output (
+                copy %ONEMAP_HOME%\%CONTAINER_NAME%\webapps\ROOT\crossdomain.xml    %AGS_HOME%\java\manager\web_output
+                copy %ONEMAP_HOME%\%CONTAINER_NAME%\webapps\ROOT\clientaccesspolicy.xml    %AGS_HOME%\java\manager\web_output
+                
+                if %errorlevel% neq 0 (
+                    echo "Copy crossdomain files failed"	>>%log%
+                    exit /b -32
+                )                
+            )            
         )
         if /i "%%p"=="main" (
             rem nothing
