@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--服务器类型映射表-->
+<!--OneMap服务器类型映射表-->
 <root>
 	<db desc="数据库服务器">					<!--数据库服务器-->
-		<srv desc="H2CommonMemDB模块">H2CommonMemDB</srv>
 	</db>				
 	<gis desc="GIS服务器">					<!--gis服务器-->
 		<app desc="Remote模块">Remote</app>
@@ -23,6 +22,7 @@
 		<app desc="ShareExchange模块">ShareExchange</app>
 		<app desc="TileServices模块">TileServices</app>
 		<app desc="dojoweb模块">dojoweb</app>
+		<srv desc="H2CommonMemDB模块">H2CommonMemDB</srv>
 	</main>			
 	<agent desc="监控代理服务器">			<!--监控代理服务器-->
 		<srv desc="GeoShareMonitorAgent模块">GeoShareMonitorAgent</srv>

@@ -61,7 +61,7 @@
         }
     }
 
-    function createDom(/*String ('div')*/tag, /*Object*/opts, parentNode) {
+    function createDom(/*String ('div')*/tag, /*Object*/opts, /*domNode*/parentNode) {
         if (!tag)
             return null;
         var node = document.createElement(tag);
@@ -82,8 +82,8 @@
         return node;
     }
 
-    function getFirstElementChild(node) {
-        var firstElementChild=node.firstElementChild;
+    function getFirstElementChild(/*domNode*/node) {
+        var firstElementChild = node.firstElementChild;
         if (firstElementChild) {
             return firstElementChild;
         } else {
@@ -97,6 +97,13 @@
         }
     }
 
+    function empty(node) {
+        while (node.hasChildNodes())//当div下还存在子节点时 循环继续
+        {
+            node.removeChild(node.firstChild);
+        }
+    }
+
 
     window.dom = {
         hasClass : hasClass,
@@ -104,6 +111,7 @@
         addClass : addClass,
         getDom : getDom,
         createDom : createDom,
-        getFirstElementChild:getFirstElementChild
+        getFirstElementChild : getFirstElementChild,
+        empty:empty
     }
 })(window)

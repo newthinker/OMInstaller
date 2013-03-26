@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# chkconfig: 345 88 12
+# description: Activemq is a JMS Messaging Queue Server.
+#
+### BEGIN INIT INFO
+# Provider: $activemq
+### END INIT INFO
+
+# Source function library
+. /etc/init.d/functions
+. /etc/profile
+
+ACTIVEMQ=/opt/OneMap/services/activemq5.4.1
+
+status() {
+	$ACTIVEMQ/bin/linux-x86-64/activemq status
+}
+
+start() {
+	echo $"Starting activemq"
+	$ACTIVEMQ/bin/linux-x86-64/activemq start
+	status
+}
+
+stop() {
+	echo $"Shutting down activemq"
+	$ACTIVEMQ/bin/linux-x86-64/activemq stop
+	status
+}
+
+restart() {
+	echo $"Restart activemq"
+	$ACTIVEMQ/bin/linux-x86-64/activemq restart
+	status
+}
+
+case "$1" in
+start)
+	start
+	;;
+stop)
+	stop
+	;;
+restart|reload)
+	restart
+	;;
+status)
+	status
+	;;
+*)
+	echo $"Usage: $0 { start|stop|restart|status }"
+esac
